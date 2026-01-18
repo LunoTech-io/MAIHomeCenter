@@ -1,11 +1,12 @@
 # MAIHomeCenter PWA Dashboard
 
-A mobile-friendly Progressive Web App (PWA) dashboard with home screen installation support and web push notifications.
+A mobile-friendly Progressive Web App (PWA) dashboard with home screen installation support, web push notifications, and an admin panel for managing notifications.
 
 ## Features
 
 - **Progressive Web App** - Installable on mobile devices and desktops
 - **Push Notifications** - Real-time notifications using Web Push API
+- **Admin Panel** - Manage subscribers and broadcast notifications
 - **Offline Support** - Service worker caching for offline access
 - **Responsive Design** - Mobile-first, works on all screen sizes
 - **Dark Theme** - Modern dark UI
@@ -14,7 +15,7 @@ A mobile-friendly Progressive Web App (PWA) dashboard with home screen installat
 
 ```
 MAIHomeCenter/
-├── client/                    # React PWA (Vite)
+├── client/                    # React PWA (Vite) - End-user dashboard
 │   ├── public/
 │   │   ├── manifest.json      # PWA manifest
 │   │   ├── sw.js              # Service worker
@@ -23,6 +24,11 @@ MAIHomeCenter/
 │   ├── src/
 │   │   ├── components/        # React components
 │   │   ├── hooks/             # Custom React hooks
+│   │   └── services/          # API services
+│   └── package.json
+├── admin/                     # React Admin Panel (Vite)
+│   ├── src/
+│   │   ├── components/        # Admin components
 │   │   └── services/          # API services
 │   └── package.json
 ├── server/                    # Node.js backend
@@ -50,13 +56,19 @@ MAIHomeCenter/
    npm install
    ```
 
-2. **Install server dependencies:**
+2. **Install admin dependencies:**
+   ```bash
+   cd admin
+   npm install
+   ```
+
+3. **Install server dependencies:**
    ```bash
    cd server
    npm install
    ```
 
-3. **Configure VAPID keys:**
+4. **Configure VAPID keys:**
    ```bash
    cd server
    cp .env.example .env
@@ -73,12 +85,19 @@ MAIHomeCenter/
    ```
    Server runs at http://localhost:3001
 
-2. **Start the frontend dev server:**
+2. **Start the client (end-user dashboard):**
    ```bash
    cd client
    npm run dev
    ```
-   App runs at http://localhost:5173
+   Client runs at http://localhost:5173
+
+3. **Start the admin panel:**
+   ```bash
+   cd admin
+   npm run dev
+   ```
+   Admin runs at http://localhost:5174
 
 ## API Endpoints
 
@@ -124,15 +143,29 @@ curl -X POST http://localhost:3001/api/broadcast \
 2. Click the install icon in the address bar
 3. Or use the custom install prompt
 
+## Admin Panel
+
+The admin panel allows you to:
+- View total subscriber count
+- Send broadcast notifications to all subscribers
+- Monitor notification delivery status
+
+Access the admin panel at http://localhost:5174 during development.
+
 ## Production Deployment
 
-### Build the client:
+### Build the applications:
 ```bash
+# Build client
 cd client
+npm run build
+
+# Build admin
+cd admin
 npm run build
 ```
 
-The built files will be in `client/dist/`.
+The built files will be in `client/dist/` and `admin/dist/`.
 
 ### Environment Variables (server/.env):
 ```env
