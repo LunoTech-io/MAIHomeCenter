@@ -5,12 +5,15 @@ class SurveyService {
   async createQuestionSet(data) {
     const { title, description, notificationTitle, notificationBody, notificationUrl, expiresAt, isDismissable } = data
 
+    // Convert empty string to null for timestamp fields
+    const expiresAtValue = expiresAt && expiresAt.trim() !== '' ? expiresAt : null
+
     const result = await query(
       `INSERT INTO question_sets
        (title, description, notification_title, notification_body, notification_url, expires_at, is_dismissable)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [title, description, notificationTitle, notificationBody, notificationUrl, expiresAt, isDismissable ?? true]
+      [title, description, notificationTitle, notificationBody, notificationUrl, expiresAtValue, isDismissable ?? true]
     )
 
     return result.rows[0]

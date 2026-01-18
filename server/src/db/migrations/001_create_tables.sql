@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS survey_assignments (
     status VARCHAR(20) DEFAULT 'pending',
     notification_sent_at TIMESTAMP,
     completed_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW(),
     UNIQUE(question_set_id, house_id)
 );
 
