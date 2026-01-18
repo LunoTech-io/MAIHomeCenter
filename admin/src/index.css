@@ -247,3 +247,659 @@ body {
     opacity: 1;
   }
 }
+
+/* Navigation */
+.admin-nav {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-link {
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.nav-link.active {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* Section Header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-header h2 {
+  margin-bottom: 0;
+}
+
+/* Survey List */
+.survey-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.survey-card {
+  background: var(--bg-card-hover);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.survey-info h3 {
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.survey-description {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.survey-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.status-active {
+  color: var(--accent-green);
+}
+
+.status-inactive {
+  color: var(--accent-red);
+}
+
+.survey-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.action-btn-small {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.action-btn-small.send {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn-small.view {
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--accent-blue);
+}
+
+.action-btn-small.edit {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--accent-yellow);
+}
+
+.action-btn-small.delete {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--accent-red);
+}
+
+.action-btn-small:hover {
+  opacity: 0.8;
+}
+
+/* Form Enhancements */
+.form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.form-row .form-group {
+  flex: 1;
+  min-width: 150px;
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding-top: 24px;
+}
+
+.checkbox-group label,
+.checkbox-single label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.checkbox-group input[type="checkbox"],
+.checkbox-single input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.form-group select {
+  background: var(--bg-card-hover);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 16px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.cancel-btn {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Question Editor */
+.questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.question-editor {
+  background: var(--bg-card-hover);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.question-number {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.question-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.control-btn {
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.control-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+}
+
+.control-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.control-btn.delete {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--accent-red);
+}
+
+.question-body {
+  padding: 16px;
+}
+
+.question-body .form-row {
+  margin-bottom: 12px;
+}
+
+.checkbox-single {
+  padding-top: 24px;
+}
+
+/* Options Section */
+.options-section {
+  margin-top: 12px;
+}
+
+.options-section > label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.option-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.option-row input {
+  flex: 1;
+  background: var(--bg-dark);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.option-row input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.option-remove-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--accent-red);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.option-remove-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.add-option-btn {
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+  width: 100%;
+  transition: all 0.2s;
+}
+
+.add-option-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 100;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-header h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.survey-title-display {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+/* House Selection */
+.house-selection {
+  margin-top: 8px;
+}
+
+.selection-controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.link-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+.selection-count {
+  margin-left: auto;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.house-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.house-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--bg-card-hover);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.house-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.house-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+.house-item .house-id {
+  font-weight: 500;
+}
+
+.house-item .house-name {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.send-result {
+  text-align: center;
+}
+
+.result-success {
+  margin-bottom: 20px;
+}
+
+.result-success ul {
+  list-style: none;
+  margin-top: 12px;
+}
+
+.result-success li {
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.text-warning {
+  color: var(--accent-yellow) !important;
+}
+
+/* Response Viewer */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.stat-item {
+  background: var(--bg-card-hover);
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.stat-item .stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  display: block;
+}
+
+.stat-item .stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.responses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.response-card {
+  background: var(--bg-card-hover);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.response-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.response-house {
+  font-size: 14px;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.status-badge.status-completed {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--accent-green);
+}
+
+.status-badge.status-pending {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--accent-yellow);
+}
+
+.status-badge.status-dismissed {
+  background: rgba(107, 114, 128, 0.2);
+  color: var(--text-secondary);
+}
+
+.response-answers {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 12px;
+}
+
+.answer-item {
+  margin-bottom: 12px;
+}
+
+.answer-item:last-child {
+  margin-bottom: 0;
+}
+
+.answer-question {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.answer-value {
+  font-size: 14px;
+}
+
+.no-answer {
+  color: var(--text-secondary);
+}
+
+.response-meta {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 12px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Houses List */
+.houses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.house-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card-hover);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.house-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.house-info .house-id {
+  font-weight: 600;
+}
+
+.house-info .house-name {
+  color: var(--text-secondary);
+}
+
+.house-info .house-date {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.house-form {
+  background: var(--bg-card-hover);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.house-form .form-row {
+  margin-bottom: 12px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+}
+
+.error-message {
+  color: var(--accent-red);
+  padding: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 8px;
+}

@@ -1,5 +1,16 @@
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
+// Helper to get auth token
+function getAuthToken() {
+  return localStorage.getItem('authToken')
+}
+
+// Helper for authenticated requests
+function authHeaders() {
+  const token = getAuthToken()
+  return token ? { 'Authorization': `Bearer ${token}` } : {}
+}
+
 export async function getVapidPublicKey() {
   const response = await fetch(`${API_BASE}/vapid-public-key`)
   if (!response.ok) {
@@ -9,13 +20,14 @@ export async function getVapidPublicKey() {
   return data.publicKey
 }
 
-export async function subscribeToNotifications(subscription) {
+export async function subscribeToNotifications(subscription, houseId = null) {
   const response = await fetch(`${API_BASE}/subscribe`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      ...authHeaders()
     },
-    body: JSON.stringify(subscription)
+    body: JSON.stringify({ ...subscription, houseId })
   })
 
   if (!response.ok) {
@@ -92,4 +104,113 @@ export function urlBase64ToUint8Array(base64String) {
   }
 
   return outputArray
+}
+
+// Auth API
+export async function login(houseId, password) {
+  const response = await fetch(`${API_BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ houseId, password })
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Login failed')
+  }
+
+  return response.json()
+}
+
+export async function getCurrentHouse() {
+  const response = await fetch(`${API_BASE}/auth/me`, {
+    headers: authHeaders()
+  })
+
+  if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      return null
+    }
+    throw new Error('Failed to get house info')
+  }
+
+  return response.json()
+}
+
+// Survey API
+export async function getPendingSurveys() {
+  const response = await fetch(`${API_BASE}/my-surveys/pending`, {
+    headers: authHeaders()
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch surveys')
+  }
+
+  return response.json()
+}
+
+export async function getSurvey(assignmentId) {
+  const response = await fetch(`${API_BASE}/my-surveys/${assignmentId}`, {
+    headers: authHeaders()
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch survey')
+  }
+
+  return response.json()
+}
+
+export async function submitSurveyResponses(assignmentId, responses) {
+  const response = await fetch(`${API_BASE}/my-surveys/${assignmentId}/respond`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders()
+    },
+    body: JSON.stringify({ responses })
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to submit survey')
+  }
+
+  return response.json()
+}
+
+export async function dismissSurvey(assignmentId) {
+  const response = await fetch(`${API_BASE}/my-surveys/${assignmentId}/dismiss`, {
+    method: 'POST',
+    headers: authHeaders()
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to dismiss survey')
+  }
+
+  return response.json()
+}
+
+// Link subscription to house
+export async function linkSubscriptionToHouse(endpoint) {
+  const response = await fetch(`${API_BASE}/link-subscription`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders()
+    },
+    body: JSON.stringify({ endpoint })
+  })
+
+  if (!response.ok) {
+    console.warn('Failed to link subscription to house')
+    return null
+  }
+
+  return response.json()
 }

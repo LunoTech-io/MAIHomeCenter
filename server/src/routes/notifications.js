@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import pushService from '../services/pushService.js'
+import { optionalAuth, authenticateToken } from '../middleware/authMiddleware.js'
 
 const router = Router()
 
@@ -15,7 +16,7 @@ router.get('/vapid-public-key', (req, res) => {
 })
 
 // Subscribe to push notifications
-router.post('/subscribe', (req, res) => {
+router.post('/subscribe', optionalAuth, async (req, res) => {
   const subscription = req.body
 
   if (!subscription || !subscription.endpoint) {
@@ -23,7 +24,13 @@ router.post('/subscribe', (req, res) => {
   }
 
   try {
+    // Save to in-memory store (for backwards compatibility)
     const result = pushService.saveSubscription(subscription)
+
+    // Also save to database if available, with house linkage if authenticated
+    const houseId = req.house?.id || null
+    await pushService.saveSubscriptionToDb(subscription, houseId)
+
     res.status(201).json({
       message: 'Subscription saved successfully',
       ...result
@@ -31,6 +38,28 @@ router.post('/subscribe', (req, res) => {
   } catch (error) {
     console.error('Error saving subscription:', error)
     res.status(500).json({ error: 'Failed to save subscription' })
+  }
+})
+
+// Link existing subscription to authenticated house
+router.post('/link-subscription', authenticateToken, async (req, res) => {
+  const { endpoint } = req.body
+
+  if (!endpoint) {
+    return res.status(400).json({ error: 'Endpoint required' })
+  }
+
+  try {
+    const linked = await pushService.linkSubscriptionToHouse(endpoint, req.house.id)
+
+    if (linked) {
+      res.json({ message: 'Subscription linked to house', success: true })
+    } else {
+      res.status(404).json({ error: 'Subscription not found', success: false })
+    }
+  } catch (error) {
+    console.error('Error linking subscription:', error)
+    res.status(500).json({ error: 'Failed to link subscription' })
   }
 })
 
