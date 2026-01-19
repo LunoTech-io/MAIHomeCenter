@@ -20,7 +20,10 @@ app.use(cors({
     'http://localhost:5175',
     'http://localhost:5176',
     process.env.CLIENT_URL,
-    process.env.ADMIN_URL
+    process.env.ADMIN_URL,
+    'https://maihome.nl',
+    'https://www.maihome.nl',
+    'https://admin.maihome.nl'
   ].filter(Boolean)
 }))
 app.use(express.json())
