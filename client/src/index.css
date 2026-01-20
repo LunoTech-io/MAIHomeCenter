@@ -219,6 +219,32 @@ body {
   color: var(--accent-red);
 }
 
+.notification-status.ios-install {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.notification-status.ios-install strong {
+  display: block;
+  color: var(--accent-blue);
+  margin-bottom: 12px;
+}
+
+.notification-status.ios-install ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.notification-status.ios-install li {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.notification-status.ios-install li:last-child {
+  margin-bottom: 0;
+}
+
 /* Quick Actions */
 .quick-actions {
   background: var(--bg-card);

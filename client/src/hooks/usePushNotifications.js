@@ -6,6 +6,18 @@ import {
   urlBase64ToUint8Array
 } from '../services/api'
 
+// Detect iOS device
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+}
+
+// Check if running as installed PWA (standalone mode)
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true
+}
+
 export default function usePushNotifications() {
   const [isSupported, setIsSupported] = useState(false)
   const [permission, setPermission] = useState('default')
@@ -13,13 +25,25 @@ export default function usePushNotifications() {
   const [subscription, setSubscription] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [isiOSDevice, setIsiOSDevice] = useState(false)
+  const [isInstalledPWA, setIsInstalledPWA] = useState(false)
 
   // Check if push notifications are supported
   useEffect(() => {
-    const supported = 'serviceWorker' in navigator && 'PushManager' in window
+    const iOS = isIOS()
+    const standalone = isStandalone()
+    setIsiOSDevice(iOS)
+    setIsInstalledPWA(standalone)
+
+    // On iOS, push is only supported in standalone PWA mode
+    const supported = 'serviceWorker' in navigator &&
+      'PushManager' in window &&
+      'Notification' in window &&
+      (!iOS || standalone) // iOS requires standalone mode
+
     setIsSupported(supported)
 
-    if (supported) {
+    if (supported && 'Notification' in window) {
       setPermission(Notification.permission)
       checkExistingSubscription()
     }
@@ -133,6 +157,10 @@ export default function usePushNotifications() {
     error,
     subscribe,
     unsubscribe,
-    sendTestNotification
+    sendTestNotification,
+    // iOS-specific info
+    isiOSDevice,
+    isInstalledPWA,
+    needsInstall: isiOSDevice && !isInstalledPWA
   }
 }

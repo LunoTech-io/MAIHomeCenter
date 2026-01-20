@@ -9,7 +9,9 @@ function NotificationButton() {
     isLoading,
     error,
     subscribe,
-    sendTestNotification
+    sendTestNotification,
+    needsInstall,
+    isiOSDevice
   } = usePushNotifications()
 
   const [status, setStatus] = useState(null)
@@ -40,10 +42,26 @@ function NotificationButton() {
     }
   }
 
+  // iOS needs PWA to be installed to Home Screen
+  if (needsInstall) {
+    return (
+      <div className="notification-status ios-install">
+        <strong>To enable notifications on iOS:</strong>
+        <ol>
+          <li>Tap the Share button <span style={{fontSize: '1.2em'}}>⎋</span> at the bottom of Safari</li>
+          <li>Scroll down and tap "Add to Home Screen"</li>
+          <li>Open the app from your Home Screen</li>
+          <li>Then enable notifications</li>
+        </ol>
+      </div>
+    )
+  }
+
   if (!isSupported) {
     return (
       <div className="notification-status error">
         Push notifications are not supported in this browser.
+        {isiOSDevice && ' iOS requires iOS 16.4 or later.'}
       </div>
     )
   }
