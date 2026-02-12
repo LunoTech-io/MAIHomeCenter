@@ -39,3 +39,10 @@ coverage/
 # Subscriptions data (server)
 server/subscriptions.json
 server/data/subscriptions.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
