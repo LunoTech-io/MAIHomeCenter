@@ -10,6 +10,7 @@ def _fetch_infisical_secrets() -> dict[str, str]:
     client_id = os.getenv("INFISICAL_CLIENT_ID", "")
     client_secret = os.getenv("INFISICAL_CLIENT_SECRET", "")
     project_id = os.getenv("INFISICAL_PROJECT_ID", "")
+    site_url = os.getenv("INFISICAL_SITE_URL", "https://eu.infisical.com")
 
     if not (client_id and client_secret and project_id):
         logger.info("Infisical credentials not set — skipping remote secrets")
@@ -18,7 +19,7 @@ def _fetch_infisical_secrets() -> dict[str, str]:
     try:
         from infisical_sdk import InfisicalSDKClient
 
-        client = InfisicalSDKClient(host="https://app.infisical.com")
+        client = InfisicalSDKClient(host=site_url)
         client.auth.universal_auth.login(
             client_id=client_id, client_secret=client_secret
         )
