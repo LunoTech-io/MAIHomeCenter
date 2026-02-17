@@ -23,13 +23,14 @@ def _fetch_infisical_secrets() -> dict[str, str]:
             client_id=client_id, client_secret=client_secret
         )
 
-        secrets = client.secrets.list(
+        response = client.secrets.list_secrets(
             project_id=project_id,
             environment_slug="prod",
             secret_path="/",
         )
 
-        result = {s.secret_key: s.secret_value for s in secrets}
+        secrets = response.secrets if hasattr(response, "secrets") else response
+        result = {s.secretKey: s.secretValue for s in secrets}
         logger.info("Fetched %d secret(s) from Infisical", len(result))
         return result
     except Exception:
