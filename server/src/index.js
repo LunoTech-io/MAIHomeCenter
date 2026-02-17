@@ -5,6 +5,7 @@ import notificationRoutes from './routes/notifications.js'
 import authRoutes from './routes/auth.js'
 import surveyRoutes from './routes/surveys.js'
 import tenantSurveyRoutes from './routes/tenantSurveys.js'
+import twinRoutes from './routes/twin.js'
 import { getPool } from './db/index.js'
 
 dotenv.config()
@@ -45,6 +46,7 @@ app.use('/api', notificationRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/surveys', surveyRoutes)
 app.use('/api/my-surveys', tenantSurveyRoutes)
+app.use('/api/twin', twinRoutes)
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

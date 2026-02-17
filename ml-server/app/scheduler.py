@@ -32,13 +32,20 @@ async def run_prediction_cycle():
             logger.error("No sensor data retrieved — skipping prediction")
             return
 
-        # 2. Run ML prediction
+        # 2. Push sensor data to server
+        logger.info("Pushing sensor data to server...")
+        try:
+            await twin_client.push_sensor_data(settings.HOUSE_ID, sensor_df)
+        except Exception:
+            logger.exception("Failed to push sensor data — continuing with prediction")
+
+        # 3. Run ML prediction
         logger.info("Running prediction model...")
         result = predictor.predict(sensor_df)
 
-        # 3. Push prediction results to digital-twin server
-        logger.info("Pushing prediction to twin server...")
-        await twin_client.push_prediction(result)
+        # 4. Push prediction results to server
+        logger.info("Pushing prediction to server...")
+        await twin_client.push_prediction(settings.HOUSE_ID, result)
 
         last_prediction_time = datetime.now(timezone.utc)
         last_prediction_result = result

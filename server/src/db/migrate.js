@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import { readFileSync } from 'fs'
+import { readFileSync, readdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import pg from 'pg'
@@ -25,13 +25,20 @@ async function migrate() {
     await client.connect()
     console.log('Connected to database')
 
-    const migrationPath = join(__dirname, 'migrations', '001_create_tables.sql')
-    const sql = readFileSync(migrationPath, 'utf-8')
+    const migrationsDir = join(__dirname, 'migrations')
+    const files = readdirSync(migrationsDir)
+      .filter(f => f.endsWith('.sql'))
+      .sort()
 
-    console.log('Running migration...')
-    await client.query(sql)
+    for (const file of files) {
+      const filePath = join(migrationsDir, file)
+      const sql = readFileSync(filePath, 'utf-8')
+      console.log(`Running migration: ${file}...`)
+      await client.query(sql)
+      console.log(`Completed: ${file}`)
+    }
 
-    console.log('Migration completed successfully')
+    console.log('All migrations completed successfully')
   } catch (error) {
     console.error('Migration failed:', error)
     process.exit(1)
