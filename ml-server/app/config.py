@@ -1,4 +1,40 @@
+import logging
+import os
+
 from pydantic_settings import BaseSettings
+
+logger = logging.getLogger(__name__)
+
+
+def _fetch_infisical_secrets() -> dict[str, str]:
+    client_id = os.getenv("INFISICAL_CLIENT_ID", "")
+    client_secret = os.getenv("INFISICAL_CLIENT_SECRET", "")
+    project_id = os.getenv("INFISICAL_PROJECT_ID", "")
+
+    if not (client_id and client_secret and project_id):
+        logger.info("Infisical credentials not set — skipping remote secrets")
+        return {}
+
+    try:
+        from infisical_sdk import InfisicalSDKClient
+
+        client = InfisicalSDKClient(host="https://app.infisical.com")
+        client.auth.universal_auth.login(
+            client_id=client_id, client_secret=client_secret
+        )
+
+        secrets = client.secrets.list(
+            project_id=project_id,
+            environment_slug="prod",
+            secret_path="/",
+        )
+
+        result = {s.secret_key: s.secret_value for s in secrets}
+        logger.info("Fetched %d secret(s) from Infisical", len(result))
+        return result
+    except Exception:
+        logger.exception("Failed to fetch secrets from Infisical")
+        return {}
 
 
 class Settings(BaseSettings):
@@ -11,8 +47,18 @@ class Settings(BaseSettings):
     SENSOR_HISTORY_HOURS: int = 24
     MODEL_PATH: str = "model/woning16_model.pth"
     LOG_LEVEL: str = "INFO"
+    INFISICAL_CLIENT_ID: str = ""
+    INFISICAL_CLIENT_SECRET: str = ""
+    INFISICAL_PROJECT_ID: str = ""
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+
+    def __init__(self, **kwargs):
+        infisical_secrets = _fetch_infisical_secrets()
+        for key, value in infisical_secrets.items():
+            if key not in os.environ:
+                os.environ[key] = value
+        super().__init__(**kwargs)
 
 
 settings = Settings()

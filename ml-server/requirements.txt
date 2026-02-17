@@ -7,4 +7,5 @@ pydantic-settings
 numpy
 pandas
 python-dotenv
+infisical-python
 torch
