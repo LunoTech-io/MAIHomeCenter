@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 
+const demoHouses = [
+  { id: 'HOUSE001', name: 'House Alfa', season: 'Winter' },
+  { id: 'HOUSE002', name: 'House Beta', season: 'Autumn' },
+  { id: 'HOUSE003', name: 'House Delta', season: 'Spring' },
+  { id: 'HOUSE004', name: 'House Gamma', season: 'Summer' },
+]
+
 function Login() {
   const { login, demoLogin, error: authError } = useAuth()
   const [form, setForm] = useState({ houseId: '', password: '' })
@@ -37,7 +44,7 @@ function Login() {
       <div className="login-container">
         <div className="login-header">
           <h1>MAIHomeCenter</h1>
-          <p>Sign in to access your surveys</p>
+          <p>Sign in to access your dashboard</p>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
@@ -79,11 +86,21 @@ function Login() {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
 
-          <div className="demo-divider"><span>or</span></div>
+          <div className="demo-divider"><span>or try a demo house</span></div>
 
-          <button type="button" className="login-btn demo-btn" onClick={demoLogin}>
-            Enter Demo Mode
-          </button>
+          <div className="demo-house-grid">
+            {demoHouses.map((h) => (
+              <button
+                key={h.id}
+                type="button"
+                className="demo-house-btn"
+                onClick={() => demoLogin(h.id, h.name)}
+              >
+                <span className="demo-house-name">{h.name}</span>
+                <span className="demo-house-season">{h.season}</span>
+              </button>
+            ))}
+          </div>
         </form>
       </div>
     </div>

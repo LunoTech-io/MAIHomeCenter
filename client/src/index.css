@@ -684,14 +684,43 @@ body {
 .demo-divider::before { left: 0; }
 .demo-divider::after { right: 0; }
 
-.demo-btn {
-  background: var(--bg-card-hover) !important;
-  color: var(--text-secondary) !important;
+.demo-house-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
 }
 
-.demo-btn:hover {
-  background: var(--primary-color) !important;
-  color: white !important;
+.demo-house-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-card-hover);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.demo-house-btn:hover {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.demo-house-name {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.demo-house-season {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.demo-house-btn:hover .demo-house-season {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 /* Survey List Page */

@@ -20,6 +20,14 @@ export function AuthProvider({ children }) {
       return
     }
 
+    // Restore demo session without hitting the server
+    if (token === 'demo') {
+      const demoId = localStorage.getItem('demoHouseId') || 'HOUSE001'
+      setHouse({ id: 'demo', houseId: demoId, name: `Demo ${demoId}` })
+      setLoading(false)
+      return
+    }
+
     try {
       const houseData = await getCurrentHouse()
       if (houseData) {
@@ -54,13 +62,15 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
-  const demoLogin = useCallback(() => {
+  const demoLogin = useCallback((houseId = 'HOUSE001', name = 'Demo Home') => {
     localStorage.setItem('authToken', 'demo')
-    setHouse({ id: 'demo', houseId: 'demo-house', name: 'Demo Home' })
+    localStorage.setItem('demoHouseId', houseId)
+    setHouse({ id: 'demo', houseId, name })
   }, [])
 
   const logout = useCallback(() => {
     localStorage.removeItem('authToken')
+    localStorage.removeItem('demoHouseId')
     setHouse(null)
     setError(null)
   }, [])

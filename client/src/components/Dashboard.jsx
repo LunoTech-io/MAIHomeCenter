@@ -1,47 +1,11 @@
+import { useMemo } from 'react'
 import {
   LineChart, Line, AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts'
 import NotificationButton from './NotificationButton'
-import {
-  temperatureData, humidityData, lightData, occupancyData,
-  powerData, energyTariffData, gasData, currentValues
-} from '../data/dummyData'
-
-const widgets = [
-  { icon: '🌡️', value: `${currentValues.temperature}°C`, label: 'Temperature', color: 'green' },
-  { icon: '💧', value: `${currentValues.humidity}%`, label: 'Humidity', color: 'blue' },
-  { icon: '⚡', value: `${currentValues.power}W`, label: 'Power', color: 'yellow' },
-  { icon: '🔥', value: `${currentValues.gas} m³`, label: 'Gas', color: 'red' }
-]
-
-// Merge temperature & humidity into one series for the dual-axis chart
-const tempHumidityData = temperatureData.map((d, i) => ({
-  time: d.time,
-  temperature: d.value,
-  humidity: humidityData[i].value
-}))
-
-// Merge light & occupancy
-const lightOccupancyData = lightData.map((d, i) => ({
-  time: d.time,
-  light: d.value,
-  occupancy: occupancyData[i].value
-}))
-
-// Power series
-const powerChartData = powerData.map((d) => ({ time: d.time, power: d.value }))
-
-// Energy tariff + gas
-const energyGasData = energyTariffData.map((d, i) => ({
-  time: d.time,
-  tariff1: d.value.tariff1,
-  tariff2: d.value.tariff2,
-  gas: gasData[i].value
-}))
-
-// Show every 12th label (every 2 hours) to avoid clutter
-const tickFilter = (tick, index) => index % 12 === 0
+import { useAuth } from '../contexts/AuthContext'
+import houseData from '../data/dummyData'
 
 const chartTooltipStyle = {
   backgroundColor: '#16213e',
@@ -51,11 +15,49 @@ const chartTooltipStyle = {
 }
 
 function Dashboard() {
+  const { house } = useAuth()
+  const houseId = house?.houseId || 'demo-house'
+  const data = houseData[houseId] || houseData['demo-house']
+
+  const { currentValues } = data
+
+  const widgets = [
+    { icon: '🌡️', value: `${currentValues.temperature}°C`, label: 'Temperature', color: 'green' },
+    { icon: '💧', value: `${currentValues.humidity}%`, label: 'Humidity', color: 'blue' },
+    { icon: '⚡', value: `${currentValues.power}W`, label: 'Power', color: 'yellow' },
+    { icon: '🔥', value: `${currentValues.gas} m³`, label: 'Gas', color: 'red' }
+  ]
+
+  const tempHumidityData = useMemo(() =>
+    data.temperature.map((d, i) => ({
+      time: d.time,
+      temperature: d.value,
+      humidity: data.humidity[i].value
+    })), [data])
+
+  const lightOccupancyData = useMemo(() =>
+    data.light.map((d, i) => ({
+      time: d.time,
+      light: d.value,
+      occupancy: data.occupancy[i].value
+    })), [data])
+
+  const powerChartData = useMemo(() =>
+    data.power.map((d) => ({ time: d.time, power: d.value })), [data])
+
+  const energyGasData = useMemo(() =>
+    data.energyTariff.map((d, i) => ({
+      time: d.time,
+      tariff1: d.value.tariff1,
+      tariff2: d.value.tariff2,
+      gas: data.gas[i].value
+    })), [data])
+
   return (
     <div className="dashboard">
       <header className="dashboard-header">
         <h1>MAIHomeCenter</h1>
-        <p>Welcome home! Everything is running smoothly.</p>
+        <p>{house?.name || 'Dashboard'} — {data.season} profile</p>
       </header>
 
       <div className="widget-grid">
@@ -77,9 +79,9 @@ function Dashboard() {
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={tempHumidityData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-              <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 11 }} tickFormatter={tickFilter} interval={11} />
-              <YAxis yAxisId="temp" tick={{ fill: '#a0aec0', fontSize: 11 }} domain={[16, 26]} unit="°C" />
-              <YAxis yAxisId="hum" orientation="right" tick={{ fill: '#a0aec0', fontSize: 11 }} domain={[30, 70]} unit="%" />
+              <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 11 }} interval={11} />
+              <YAxis yAxisId="temp" tick={{ fill: '#a0aec0', fontSize: 11 }} domain={['dataMin - 2', 'dataMax + 2']} unit="°C" />
+              <YAxis yAxisId="hum" orientation="right" tick={{ fill: '#a0aec0', fontSize: 11 }} domain={['dataMin - 5', 'dataMax + 5']} unit="%" />
               <Tooltip contentStyle={chartTooltipStyle} />
               <Legend />
               <Line yAxisId="temp" type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} name="Temp °C" />
@@ -95,7 +97,7 @@ function Dashboard() {
             <BarChart data={lightOccupancyData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
               <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 11 }} interval={11} />
-              <YAxis yAxisId="light" tick={{ fill: '#a0aec0', fontSize: 11 }} domain={[0, 200]} unit=" lux" />
+              <YAxis yAxisId="light" tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" lux" />
               <YAxis yAxisId="occ" orientation="right" tick={{ fill: '#a0aec0', fontSize: 11 }} domain={[0, 1]} />
               <Tooltip contentStyle={chartTooltipStyle} />
               <Legend />
