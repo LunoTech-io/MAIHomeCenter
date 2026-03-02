@@ -54,6 +54,11 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
+  const demoLogin = useCallback(() => {
+    localStorage.setItem('authToken', 'demo')
+    setHouse({ id: 'demo', houseId: 'demo-house', name: 'Demo Home' })
+  }, [])
+
   const logout = useCallback(() => {
     localStorage.removeItem('authToken')
     setHouse(null)
@@ -81,6 +86,7 @@ export function AuthProvider({ children }) {
     loading,
     error,
     login,
+    demoLogin,
     logout
   }
 

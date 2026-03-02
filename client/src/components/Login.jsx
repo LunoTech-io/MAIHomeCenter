@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 
 function Login() {
-  const { login, error: authError } = useAuth()
+  const { login, demoLogin, error: authError } = useAuth()
   const [form, setForm] = useState({ houseId: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -77,6 +77,12 @@ function Login() {
 
           <button type="submit" className="login-btn" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+
+          <div className="demo-divider"><span>or</span></div>
+
+          <button type="button" className="login-btn demo-btn" onClick={demoLogin}>
+            Enter Demo Mode
           </button>
         </form>
       </div>
