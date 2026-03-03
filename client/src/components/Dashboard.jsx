@@ -81,7 +81,7 @@ function Dashboard() {
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={tempHumidityData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-              <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 11 }} interval={11} />
+              <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval={11} height={50} />
               <YAxis yAxisId="temp" tick={{ fill: '#a0aec0', fontSize: 11 }} domain={['dataMin - 2', 'dataMax + 2']} unit="°C" />
               <YAxis yAxisId="hum" orientation="right" tick={{ fill: '#a0aec0', fontSize: 11 }} domain={['dataMin - 5', 'dataMax + 5']} unit="%" />
               <Tooltip contentStyle={chartTooltipStyle} />
@@ -98,7 +98,7 @@ function Dashboard() {
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={lightOccupancyData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-              <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 11 }} interval={11} />
+              <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval={11} height={50} />
               <YAxis yAxisId="light" tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" lux" />
               <YAxis yAxisId="occ" orientation="right" tick={{ fill: '#a0aec0', fontSize: 11 }} domain={[0, 1]} />
               <Tooltip contentStyle={chartTooltipStyle} />
@@ -115,7 +115,7 @@ function Dashboard() {
           <ResponsiveContainer width="100%" height={250}>
             <AreaChart data={powerChartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-              <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 11 }} interval={11} />
+              <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval={11} height={50} />
               <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit="W" />
               <Tooltip contentStyle={chartTooltipStyle} />
               <Area type="monotone" dataKey="power" stroke="#ef4444" fill="rgba(239,68,68,0.2)" strokeWidth={2} name="Power (W)" />
@@ -129,12 +129,12 @@ function Dashboard() {
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={energyData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-              <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 11 }} interval={11} />
-              <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" Wh" />
+              <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval={11} height={50} />
+              <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" kWh" />
               <Tooltip contentStyle={chartTooltipStyle} />
               <Legend />
-              <Line type="monotone" dataKey="tariff1" stroke="#3b82f6" strokeWidth={2} dot={false} name="Day tariff (Wh)" />
-              <Line type="monotone" dataKey="tariff2" stroke="#8b5cf6" strokeWidth={2} dot={false} name="Night tariff (Wh)" />
+              <Line type="monotone" dataKey="tariff1" stroke="#3b82f6" strokeWidth={2} dot={false} name="Day tariff (kWh)" />
+              <Line type="monotone" dataKey="tariff2" stroke="#8b5cf6" strokeWidth={2} dot={false} name="Night tariff (kWh)" />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -145,10 +145,10 @@ function Dashboard() {
           <ResponsiveContainer width="100%" height={250}>
             <AreaChart data={gasChartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-              <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 11 }} interval={11} />
-              <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" L" />
+              <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval={11} height={50} />
+              <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" m³" />
               <Tooltip contentStyle={chartTooltipStyle} />
-              <Area type="monotone" dataKey="gas" stroke="#f59e0b" fill="rgba(245,158,11,0.2)" strokeWidth={2} name="Gas (L)" />
+              <Area type="monotone" dataKey="gas" stroke="#f59e0b" fill="rgba(245,158,11,0.2)" strokeWidth={2} name="Gas (m³)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>

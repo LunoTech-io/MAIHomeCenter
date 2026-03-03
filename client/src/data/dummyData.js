@@ -129,24 +129,24 @@ function buildHouseData(p) {
     )
   })
 
-  // Per-interval energy consumption (Wh per 10-min interval) split by tariff
+  // Per-interval energy consumption (kWh per 10-min interval) split by tariff
   const energyTariff = generateTimeSeries(0, (hour) => {
     const w = Math.max(0, p.power.baseW + activityFactor(hour) * p.power.activityMulW + noise(p.power.noise))
-    const wh = +(w / 6).toFixed(1) // watts → Wh over 10 min
+    const kwh = +(w / 6000).toFixed(4) // watts → kWh over 10 min
     const isDayTariff = hour >= 7 && hour < 23
     return {
-      tariff1: isDayTariff ? wh : 0,
-      tariff2: isDayTariff ? 0 : wh,
+      tariff1: isDayTariff ? kwh : 0,
+      tariff2: isDayTariff ? 0 : kwh,
     }
   })
 
-  // Per-interval gas consumption (litres per 10-min interval)
+  // Per-interval gas consumption (m³ per 10-min interval)
   const gas = generateTimeSeries(0, (hour) => {
     const heating =
       hour >= 6 && hour < 9 ? p.gas.heatingAm : hour >= 17 && hour < 21 ? p.gas.heatingPm : p.gas.idle
     const cooking = hour >= 18 && hour < 19.5 ? p.gas.cooking : 0
     const m3 = heating + cooking + Math.max(0, noise(0.002))
-    return +(m3 * 1000).toFixed(1) // m³ → litres for readable scale
+    return +m3.toFixed(4)
   })
 
   const latest = (arr) => arr[arr.length - 1]
