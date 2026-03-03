@@ -45,13 +45,15 @@ function Dashboard() {
   const powerChartData = useMemo(() =>
     data.power.map((d) => ({ time: d.time, power: d.value })), [data])
 
-  const energyGasData = useMemo(() =>
-    data.energyTariff.map((d, i) => ({
+  const energyData = useMemo(() =>
+    data.energyTariff.map((d) => ({
       time: d.time,
       tariff1: d.value.tariff1,
       tariff2: d.value.tariff2,
-      gas: data.gas[i].value
     })), [data])
+
+  const gasChartData = useMemo(() =>
+    data.gas.map((d) => ({ time: d.time, gas: d.value })), [data])
 
   return (
     <div className="dashboard">
@@ -121,21 +123,33 @@ function Dashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Energy Tariffs & Gas */}
+        {/* Electricity — tariff breakdown */}
         <div className="chart-card">
-          <h3>Energy Tariffs & Gas (24h)</h3>
+          <h3>Electricity by Tariff (24h)</h3>
           <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={energyGasData}>
+            <LineChart data={energyData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
               <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 11 }} interval={11} />
-              <YAxis yAxisId="kwh" tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" kWh" />
-              <YAxis yAxisId="gas" orientation="right" tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" m³" />
+              <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" Wh" />
               <Tooltip contentStyle={chartTooltipStyle} />
               <Legend />
-              <Line yAxisId="kwh" type="monotone" dataKey="tariff1" stroke="#3b82f6" strokeWidth={2} dot={false} name="Tariff 1 (day)" />
-              <Line yAxisId="kwh" type="monotone" dataKey="tariff2" stroke="#8b5cf6" strokeWidth={2} dot={false} name="Tariff 2 (night)" />
-              <Line yAxisId="gas" type="monotone" dataKey="gas" stroke="#f59e0b" strokeWidth={2} dot={false} name="Gas (m³)" />
+              <Line type="monotone" dataKey="tariff1" stroke="#3b82f6" strokeWidth={2} dot={false} name="Day tariff (Wh)" />
+              <Line type="monotone" dataKey="tariff2" stroke="#8b5cf6" strokeWidth={2} dot={false} name="Night tariff (Wh)" />
             </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Gas consumption */}
+        <div className="chart-card">
+          <h3>Gas Consumption (24h)</h3>
+          <ResponsiveContainer width="100%" height={250}>
+            <AreaChart data={gasChartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+              <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 11 }} interval={11} />
+              <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" L" />
+              <Tooltip contentStyle={chartTooltipStyle} />
+              <Area type="monotone" dataKey="gas" stroke="#f59e0b" fill="rgba(245,158,11,0.2)" strokeWidth={2} name="Gas (L)" />
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
