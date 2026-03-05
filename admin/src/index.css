@@ -891,6 +891,19 @@ body {
   margin-bottom: 12px;
 }
 
+.house-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.house-org {
+  color: var(--accent-blue);
+  font-size: 12px;
+  background: rgba(59, 130, 246, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
 .loading {
   text-align: center;
   padding: 40px;
@@ -902,4 +915,246 @@ body {
   padding: 12px;
   background: rgba(239, 68, 68, 0.1);
   border-radius: 8px;
+}
+
+/* Login Page */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.login-header p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.login-form {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.login-form .form-group {
+  margin-bottom: 16px;
+}
+
+.login-form .form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.login-form .form-group input {
+  width: 100%;
+  background: var(--bg-card-hover);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.login-form .form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.login-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--accent-red);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.login-btn {
+  width: 100%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.login-btn:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Nav admin info & logout */
+.nav-spacer {
+  flex: 1;
+}
+
+.nav-admin-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.nav-admin-name {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.nav-admin-org {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.nav-logout-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--accent-red);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* Dashboard (house detail) */
+.dashboard {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  margin-bottom: 24px;
+}
+
+.dashboard-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.dashboard-header p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.back-btn {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 12px;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Widget Grid */
+.widget-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 640px) {
+  .widget-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.widget {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 16px;
+  transition: all 0.2s;
+}
+
+.widget:hover {
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+.widget-value {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.widget-value.green { color: var(--accent-green); }
+.widget-value.yellow { color: var(--accent-yellow); }
+.widget-value.blue { color: var(--accent-blue); }
+.widget-value.red { color: var(--accent-red); }
+
+.widget-label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Chart Section */
+.chart-section {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+  .chart-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.chart-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.chart-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
 }

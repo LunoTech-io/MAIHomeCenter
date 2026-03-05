@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getHouses, createHouse, deleteHouse } from '../../services/api'
+import { useAdminAuth } from '../../contexts/AdminAuthContext'
 
 function HouseList() {
+  const { admin } = useAdminAuth()
+  const navigate = useNavigate()
   const [houses, setHouses] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -9,7 +13,8 @@ function HouseList() {
   const [form, setForm] = useState({
     houseId: '',
     password: '',
-    name: ''
+    name: '',
+    organization: admin?.organization || 'ou'
   })
   const [saving, setSaving] = useState(false)
 
@@ -49,7 +54,7 @@ function HouseList() {
     try {
       const newHouse = await createHouse(form)
       setHouses(prev => [newHouse, ...prev])
-      setForm({ houseId: '', password: '', name: '' })
+      setForm({ houseId: '', password: '', name: '', organization: admin?.organization || 'ou' })
       setShowForm(false)
     } catch (err) {
       setError(err.message)
@@ -141,6 +146,18 @@ function HouseList() {
                   placeholder="Display name"
                 />
               </div>
+
+              <div className="form-group">
+                <label htmlFor="organization">Organization</label>
+                <input
+                  type="text"
+                  id="organization"
+                  name="organization"
+                  value={form.organization}
+                  onChange={handleChange}
+                  placeholder="e.g., ou"
+                />
+              </div>
             </div>
 
             <button type="submit" className="send-btn" disabled={saving}>
@@ -158,16 +175,25 @@ function HouseList() {
                 <div className="house-info">
                   <strong className="house-id">{house.house_id}</strong>
                   {house.name && <span className="house-name">{house.name}</span>}
+                  <span className="house-org">{house.organization}</span>
                   <span className="house-date">
                     Created: {new Date(house.created_at).toLocaleDateString()}
                   </span>
                 </div>
-                <button
-                  className="action-btn-small delete"
-                  onClick={() => handleDelete(house.id, house.house_id)}
-                >
-                  Delete
-                </button>
+                <div className="house-actions">
+                  <button
+                    className="action-btn-small view"
+                    onClick={() => navigate(`/houses/${house.house_id}`)}
+                  >
+                    Dashboard
+                  </button>
+                  <button
+                    className="action-btn-small delete"
+                    onClick={() => handleDelete(house.id, house.house_id)}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             ))}
           </div>

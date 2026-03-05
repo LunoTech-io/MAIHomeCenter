@@ -68,14 +68,14 @@ class AuthService {
     }
   }
 
-  async createHouse(houseId, password, name = null) {
+  async createHouse(houseId, password, name = null, organization = 'ou') {
     const passwordHash = await this.hashPassword(password)
 
     const result = await query(
-      `INSERT INTO houses (house_id, password_hash, name)
-       VALUES ($1, $2, $3)
-       RETURNING id, house_id, name, created_at`,
-      [houseId, passwordHash, name]
+      `INSERT INTO houses (house_id, password_hash, name, organization)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, house_id, name, organization, created_at`,
+      [houseId, passwordHash, name, organization]
     )
 
     return result.rows[0]
@@ -92,14 +92,25 @@ class AuthService {
 
   async getHouses() {
     const result = await query(
-      'SELECT id, house_id, name, created_at FROM houses ORDER BY created_at DESC'
+      'SELECT id, house_id, name, organization, created_at FROM houses ORDER BY created_at DESC'
+    )
+    return result.rows
+  }
+
+  async getHousesByOrganization(org) {
+    if (org === 'ou') {
+      return this.getHouses()
+    }
+    const result = await query(
+      'SELECT id, house_id, name, organization, created_at FROM houses WHERE organization = $1 ORDER BY created_at DESC',
+      [org]
     )
     return result.rows
   }
 
   async getHouseById(id) {
     const result = await query(
-      'SELECT id, house_id, name, created_at FROM houses WHERE id = $1',
+      'SELECT id, house_id, name, organization, created_at FROM houses WHERE id = $1',
       [id]
     )
     return result.rows[0] || null
@@ -108,6 +119,66 @@ class AuthService {
   async deleteHouse(id) {
     const result = await query('DELETE FROM houses WHERE id = $1', [id])
     return result.rowCount > 0
+  }
+
+  // =====================
+  // Admin methods
+  // =====================
+
+  async adminLogin(username, password) {
+    const result = await query(
+      'SELECT id, username, password_hash, organization, name FROM admins WHERE username = $1',
+      [username]
+    )
+
+    if (result.rows.length === 0) {
+      throw new Error('Invalid username or password')
+    }
+
+    const admin = result.rows[0]
+    const isValid = await this.verifyPassword(password, admin.password_hash)
+
+    if (!isValid) {
+      throw new Error('Invalid username or password')
+    }
+
+    const token = this.generateToken({
+      id: admin.id,
+      username: admin.username,
+      organization: admin.organization,
+      role: 'admin'
+    })
+
+    return {
+      token,
+      admin: {
+        id: admin.id,
+        username: admin.username,
+        organization: admin.organization,
+        name: admin.name
+      }
+    }
+  }
+
+  async getAdminById(id) {
+    const result = await query(
+      'SELECT id, username, organization, name, created_at FROM admins WHERE id = $1',
+      [id]
+    )
+    return result.rows[0] || null
+  }
+
+  async createAdmin(username, password, organization = 'ou', name = null) {
+    const passwordHash = await this.hashPassword(password)
+
+    const result = await query(
+      `INSERT INTO admins (username, password_hash, organization, name)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, username, organization, name, created_at`,
+      [username, passwordHash, organization, name]
+    )
+
+    return result.rows[0]
   }
 }
 

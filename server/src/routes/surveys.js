@@ -2,6 +2,7 @@ import { Router } from 'express'
 import surveyService from '../services/surveyService.js'
 import authService from '../services/authService.js'
 import pushService from '../services/pushService.js'
+import { authenticateAdmin } from '../middleware/authMiddleware.js'
 
 const router = Router()
 
@@ -159,10 +160,10 @@ router.get('/question-sets/:id/responses', async (req, res) => {
 // Houses Management
 // =====================
 
-// GET /api/surveys/houses - List all houses
-router.get('/houses', async (req, res) => {
+// GET /api/surveys/houses - List houses (filtered by admin org)
+router.get('/houses', authenticateAdmin, async (req, res) => {
   try {
-    const houses = await authService.getHouses()
+    const houses = await authService.getHousesByOrganization(req.admin.organization)
     res.json(houses)
   } catch (error) {
     console.error('Error fetching houses:', error)
@@ -171,15 +172,16 @@ router.get('/houses', async (req, res) => {
 })
 
 // POST /api/surveys/houses - Create house
-router.post('/houses', async (req, res) => {
+router.post('/houses', authenticateAdmin, async (req, res) => {
   try {
-    const { houseId, password, name } = req.body
+    const { houseId, password, name, organization } = req.body
 
     if (!houseId || !password) {
       return res.status(400).json({ error: 'House ID and password are required' })
     }
 
-    const house = await authService.createHouse(houseId, password, name)
+    const org = organization || req.admin.organization
+    const house = await authService.createHouse(houseId, password, name, org)
     res.status(201).json(house)
   } catch (error) {
     console.error('Error creating house:', error)
@@ -193,7 +195,7 @@ router.post('/houses', async (req, res) => {
 })
 
 // DELETE /api/surveys/houses/:id - Delete house
-router.delete('/houses/:id', async (req, res) => {
+router.delete('/houses/:id', authenticateAdmin, async (req, res) => {
   try {
     const deleted = await authService.deleteHouse(req.params.id)
 
