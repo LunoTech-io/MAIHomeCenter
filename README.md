@@ -1,195 +1,210 @@
-# MAIHomeCenter PWA Dashboard
+# MAIHomeCenter
 
-A mobile-friendly Progressive Web App (PWA) dashboard with home screen installation support, web push notifications, and an admin panel for managing notifications.
+A multi-tenant smart home monitoring platform with real-time sensor dashboards, digital twin integration, push notifications, and survey management. Built as a Progressive Web App (PWA) with per-organization access control.
 
-## Features
-
-- **Progressive Web App** - Installable on mobile devices and desktops
-- **Push Notifications** - Real-time notifications using Web Push API
-- **Admin Panel** - Manage subscribers and broadcast notifications
-- **Offline Support** - Service worker caching for offline access
-- **Responsive Design** - Mobile-first, works on all screen sizes
-- **Dark Theme** - Modern dark UI
-
-## Project Structure
+## Architecture
 
 ```
 MAIHomeCenter/
-├── client/                    # React PWA (Vite) - End-user dashboard
-│   ├── public/
-│   │   ├── manifest.json      # PWA manifest
-│   │   ├── sw.js              # Service worker
-│   │   ├── offline.html       # Offline fallback page
-│   │   └── icons/             # App icons
-│   ├── src/
-│   │   ├── components/        # React components
-│   │   ├── hooks/             # Custom React hooks
-│   │   └── services/          # API services
-│   └── package.json
-├── admin/                     # React Admin Panel (Vite)
-│   ├── src/
-│   │   ├── components/        # Admin components
-│   │   └── services/          # API services
-│   └── package.json
-├── server/                    # Node.js backend
-│   ├── src/
-│   │   ├── index.js           # Express server
-│   │   ├── routes/            # API routes
-│   │   └── services/          # Business logic
-│   ├── .env.example           # Environment template
-│   └── package.json
-└── README.md
+├── server/           # Node.js/Express API (port 3001)
+├── client/           # React PWA — tenant dashboard (port 5173)
+├── admin/            # React admin panel (port 5174)
+└── ml-server/        # Python/FastAPI ML prediction service (port 8000)
 ```
+
+**Data flow:** Calculus API → ml-server → server (PostgreSQL) → client/admin dashboards
+
+## Features
+
+- **Real-time sensor dashboards** — temperature, setpoint, and motion (PIR) per room, powered by Recharts
+- **Digital twin** — ML server fetches sensor data from Calculus API, stores via twin API, runs PyTorch predictions
+- **Multi-tenancy** — 4 organizations (ou, weller, wonenzuid, wonenlimburg) with org-scoped admin access
+- **16 monitored houses** — each with per-room sensor history
+- **Survey system** — create question sets, assign to houses, collect responses
+- **Push notifications** — Web Push API with broadcast and per-house targeting
+- **PWA** — installable on mobile/desktop, offline support via service worker
+
+## Prerequisites
+
+- Node.js 18+
+- PostgreSQL
+- Python 3.10+ (for ml-server)
 
 ## Quick Start
 
-### Prerequisites
+### 1. Database Setup
 
-- Node.js 18+
-- npm or yarn
+```bash
+cd server
+cp .env.example .env
+# Edit .env — set DATABASE_URL, VAPID keys, JWT_SECRET
+```
 
-### Installation
+Run migrations and seed data:
 
-1. **Install client dependencies:**
-   ```bash
-   cd client
-   npm install
-   ```
+```bash
+node src/db/migrate.js
+node src/db/seed-admin.js            # creates default admin user
+node src/db/seed-houses.js           # seeds 16 houses + 3 org admins
+```
 
-2. **Install admin dependencies:**
-   ```bash
-   cd admin
-   npm install
-   ```
+### 2. Start the Server
 
-3. **Install server dependencies:**
-   ```bash
-   cd server
-   npm install
-   ```
+```bash
+cd server
+npm install
+npm run dev
+```
 
-4. **Configure VAPID keys:**
-   ```bash
-   cd server
-   cp .env.example .env
-   npx web-push generate-vapid-keys
-   ```
-   Copy the generated keys to your `.env` file.
+Server runs at http://localhost:3001
 
-### Running the App
+### 3. Start the Client
 
-1. **Start the backend server:**
-   ```bash
-   cd server
-   npm start
-   ```
-   Server runs at http://localhost:3001
+```bash
+cd client
+npm install
+npm run dev
+```
 
-2. **Start the client (end-user dashboard):**
-   ```bash
-   cd client
-   npm run dev
-   ```
-   Client runs at http://localhost:5173
+Client runs at http://localhost:5173
 
-3. **Start the admin panel:**
-   ```bash
-   cd admin
-   npm run dev
-   ```
-   Admin runs at http://localhost:5174
+### 4. Start the Admin Panel
+
+```bash
+cd admin
+npm install
+npm run dev
+```
+
+Admin runs at http://localhost:5174
+
+### 5. Start the ML Server (optional)
+
+```bash
+cd ml-server
+pip install -r requirements.txt
+cp .env.example .env
+# Edit .env — set CALCULUS_API_KEY, TWIN_SERVER_URL
+uvicorn app.main:app --port 8000
+```
+
+## Environment Variables
+
+### server/.env
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PORT` | Server port | `3001` |
+| `DATABASE_URL` | PostgreSQL connection string | — |
+| `JWT_SECRET` | Secret for JWT tokens | dev fallback |
+| `VAPID_PUBLIC_KEY` | Web Push public key | — |
+| `VAPID_PRIVATE_KEY` | Web Push private key | — |
+| `VAPID_SUBJECT` | VAPID email (`mailto:...`) | — |
+
+Generate VAPID keys: `npx web-push generate-vapid-keys`
+
+### ml-server/.env
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PORT` | ML server port | `8000` |
+| `TWIN_SERVER_URL` | Twin API base URL | `http://localhost:3002` |
+| `CALCULUS_API_URL` | External sensor API | `https://api.calculus.group/v3` |
+| `CALCULUS_API_KEY` | API key for Calculus | — |
+| `PREDICTION_INTERVAL_MINUTES` | Prediction cycle interval | `15` |
+| `SENSOR_HISTORY_HOURS` | Hours of history to fetch | `24` |
+
+## Seeded Data
+
+### Houses (16)
+
+| House ID | Name | Organization |
+|----------|------|-------------|
+| `woning16` | WONING 16 | ou |
+| `weller1`–`weller5` | Weller 1–5 | weller |
+| `wonenzuid1`–`wonenzuid5` | Wonen Zuid 1–5 | wonenzuid |
+| `wonenlimburg1`–`wonenlimburg5` | Wonen in Limburg 1–5 | wonenlimburg |
+
+Default password for all houses: `maihome`
+
+### Admin Users
+
+| Username | Organization | Password |
+|----------|-------------|----------|
+| `admin` | ou (sees all) | `admin` |
+| `weller-admin` | weller | `maihome` |
+| `wonenzuid-admin` | wonenzuid | `maihome` |
+| `wonenlimburg-admin` | wonenlimburg | `maihome` |
 
 ## API Endpoints
 
+### Authentication
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/health` | Health check |
+| POST | `/api/auth/login` | House login (houseId + password) |
+| GET | `/api/auth/me` | Get current house info |
+| POST | `/api/auth/admin/login` | Admin login |
+| GET | `/api/auth/admin/me` | Get current admin info |
+
+### Digital Twin
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/twin/sensor-data` | Store sensor readings (from ml-server) |
+| GET | `/api/twin/sensor-data/:houseId` | Get raw sensor history |
+| GET | `/api/twin/sensor-data/:houseId/grouped` | Get sensor history grouped by room (for charts) |
+| GET | `/api/twin/state/:houseId` | Get latest state per room |
+| POST | `/api/twin/predictions` | Store ML prediction |
+| GET | `/api/twin/predictions/:houseId/latest` | Get latest prediction |
+
+### Surveys
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/surveys/question-sets` | List question sets |
+| POST | `/api/surveys/question-sets` | Create question set |
+| POST | `/api/surveys/send-survey` | Assign survey to houses |
+| GET | `/api/my-surveys/pending` | Get pending surveys (tenant) |
+| POST | `/api/my-surveys/:id/respond` | Submit survey responses |
+
+### Notifications
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
 | GET | `/api/vapid-public-key` | Get VAPID public key |
 | POST | `/api/subscribe` | Subscribe to push notifications |
-| POST | `/api/unsubscribe` | Unsubscribe from notifications |
-| POST | `/api/notify` | Send notification to subscriber |
-| POST | `/api/broadcast` | Send notification to all subscribers |
-| POST | `/api/test-notification` | Send test notification |
-| GET | `/api/stats` | Get subscription statistics |
+| POST | `/api/broadcast` | Broadcast notification to all |
+| GET | `/api/stats` | Subscription statistics |
 
-## Testing Push Notifications
+## Database Migrations
 
-1. Open the app in a supported browser (Chrome, Edge, Firefox)
-2. Click "Enable Notifications" and allow permission
-3. Click "Send Test Notification"
-4. You should receive a push notification
+Migration files live in `server/src/db/migrations/`:
 
-### Test via API (curl)
+| File | Description |
+|------|-------------|
+| `001_create_tables.sql` | Houses, surveys, subscriptions |
+| `002_create_twin_tables.sql` | Sensor data, predictions |
+| `003_create_admins_and_org.sql` | Admins table, organization column |
+
+Run all: `node src/db/migrate.js`
+
+## Tech Stack
+
+- **Server**: Node.js, Express, PostgreSQL, bcrypt, JWT, web-push
+- **Client/Admin**: React 18, Vite, React Router, Recharts
+- **ML Server**: Python, FastAPI, PyTorch, APScheduler, httpx
+- **PWA**: Service Worker, Web App Manifest, Cache API
+
+## Production
 
 ```bash
-# Get stats
-curl http://localhost:3001/api/stats
+# Build frontends
+cd client && npm run build    # → client/dist/
+cd admin && npm run build     # → admin/dist/
 
-# Broadcast to all subscribers
-curl -X POST http://localhost:3001/api/broadcast \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Hello!", "body": "Test broadcast message"}'
+# Start server
+cd server && npm start
 ```
 
-## PWA Installation
-
-### Mobile (iOS/Android)
-1. Open the app in your mobile browser
-2. Tap "Add to Home Screen" or use the install banner
-3. The app will be installed as a standalone app
-
-### Desktop (Chrome/Edge)
-1. Open the app
-2. Click the install icon in the address bar
-3. Or use the custom install prompt
-
-## Admin Panel
-
-The admin panel allows you to:
-- View total subscriber count
-- Send broadcast notifications to all subscribers
-- Monitor notification delivery status
-
-Access the admin panel at http://localhost:5174 during development.
-
-## Production Deployment
-
-### Build the applications:
-```bash
-# Build client
-cd client
-npm run build
-
-# Build admin
-cd admin
-npm run build
-```
-
-The built files will be in `client/dist/` and `admin/dist/`.
-
-### Environment Variables (server/.env):
-```env
-PORT=3001
-VAPID_PUBLIC_KEY=your_public_key
-VAPID_PRIVATE_KEY=your_private_key
-VAPID_SUBJECT=mailto:your-email@example.com
-```
-
-### Security Notes
-- HTTPS is required for service workers in production
-- Store VAPID keys securely
-- Never commit `.env` files to version control
-
-## Browser Support
-
-- Chrome 50+
-- Firefox 44+
-- Edge 17+
-- Safari 11.1+ (limited push notification support)
-
-## Technologies
-
-- **Frontend**: React 18, Vite
-- **Backend**: Node.js, Express
-- **Push**: web-push library, Service Worker API
-- **PWA**: Web App Manifest, Cache API
+HTTPS is required in production for service workers and push notifications.
