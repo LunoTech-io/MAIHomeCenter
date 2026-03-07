@@ -32,8 +32,8 @@ body {
 
 /* Admin Page */
 .admin {
-  padding: 16px;
-  max-width: 600px;
+  padding: 16px 24px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -845,39 +845,57 @@ body {
   color: var(--text-secondary);
 }
 
-/* Houses List */
-.houses-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.house-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--bg-card-hover);
+/* Houses Table */
+.houses-table-wrap {
+  overflow-x: auto;
   border-radius: 12px;
-  padding: 14px 16px;
 }
 
-.house-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.houses-table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.house-info .house-id {
+.houses-table thead th {
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+.houses-table tbody tr {
+  transition: background 0.15s;
+}
+
+.houses-table tbody tr:hover {
+  background: var(--bg-card-hover);
+}
+
+.houses-table td {
+  padding: 12px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  white-space: nowrap;
+}
+
+.house-id-cell {
   font-weight: 600;
 }
 
-.house-info .house-name {
+.house-date-cell {
   color: var(--text-secondary);
+  font-size: 13px;
 }
 
-.house-info .house-date {
-  color: var(--text-secondary);
-  font-size: 12px;
+.house-actions-cell {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
 }
 
 .house-form {
@@ -889,11 +907,6 @@ body {
 
 .house-form .form-row {
   margin-bottom: 12px;
-}
-
-.house-actions {
-  display: flex;
-  gap: 8px;
 }
 
 .house-org {

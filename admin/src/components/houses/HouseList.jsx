@@ -169,33 +169,42 @@ function HouseList() {
         {houses.length === 0 ? (
           <p className="no-subscribers">No houses yet. Add your first house to get started.</p>
         ) : (
-          <div className="houses-list">
-            {houses.map(house => (
-              <div key={house.id} className="house-card">
-                <div className="house-info">
-                  <strong className="house-id">{house.house_id}</strong>
-                  {house.name && <span className="house-name">{house.name}</span>}
-                  <span className="house-org">{house.organization}</span>
-                  <span className="house-date">
-                    Created: {new Date(house.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-                <div className="house-actions">
-                  <button
-                    className="action-btn-small view"
-                    onClick={() => navigate(`/houses/${house.house_id}`)}
-                  >
-                    Dashboard
-                  </button>
-                  <button
-                    className="action-btn-small delete"
-                    onClick={() => handleDelete(house.id, house.house_id)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
+          <div className="houses-table-wrap">
+            <table className="houses-table">
+              <thead>
+                <tr>
+                  <th>House ID</th>
+                  <th>Name</th>
+                  <th>Organization</th>
+                  <th>Created</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {houses.map(house => (
+                  <tr key={house.id}>
+                    <td className="house-id-cell">{house.house_id}</td>
+                    <td>{house.name || '--'}</td>
+                    <td><span className="house-org">{house.organization}</span></td>
+                    <td className="house-date-cell">{new Date(house.created_at).toLocaleDateString()}</td>
+                    <td className="house-actions-cell">
+                      <button
+                        className="action-btn-small view"
+                        onClick={() => navigate(`/houses/${house.house_id}`)}
+                      >
+                        Dashboard
+                      </button>
+                      <button
+                        className="action-btn-small delete"
+                        onClick={() => handleDelete(house.id, house.house_id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
