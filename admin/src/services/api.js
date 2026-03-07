@@ -188,6 +188,16 @@ export async function getTwinState(houseId) {
   return response.json()
 }
 
+// Twin Predictions API
+export async function getLatestPrediction(houseId) {
+  const response = await fetch(`${API_BASE}/twin/predictions/${houseId}/latest`, {
+    headers: authHeaders()
+  })
+  if (response.status === 404) return null
+  if (!response.ok) return null
+  return response.json()
+}
+
 // Houses API
 
 export async function getHouses() {

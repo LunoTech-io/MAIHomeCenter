@@ -4,7 +4,7 @@ import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts'
-import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory } from '../../services/api'
+import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getLatestPrediction } from '../../services/api'
 
 const chartTooltipStyle = {
   backgroundColor: '#16213e',
@@ -38,6 +38,7 @@ function HouseDashboard() {
   const [twinState, setTwinState] = useState(null)
   const [meterData, setMeterData] = useState(null)
   const [applianceData, setApplianceData] = useState(null)
+  const [predictionData, setPredictionData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedRoom, setSelectedRoom] = useState(null)
@@ -51,17 +52,19 @@ function HouseDashboard() {
       setLoading(true)
       setError(null)
       try {
-        const [history, state, meterHist, applianceHist] = await Promise.all([
+        const [history, state, meterHist, applianceHist, prediction] = await Promise.all([
           getSensorHistory(houseId, 24),
           getTwinState(houseId),
           getMeterHistory(houseId, 24).catch(() => null),
           getApplianceHistory(houseId, 24).catch(() => null),
+          getLatestPrediction(houseId).catch(() => null),
         ])
         if (!cancelled) {
           setSensorData(history)
           setTwinState(state)
           setMeterData(meterHist)
           setApplianceData(applianceHist)
+          setPredictionData(prediction)
           if (history.rooms?.length > 0 && !selectedRoom) {
             setSelectedRoom(history.rooms[0])
           }
@@ -105,25 +108,74 @@ function HouseDashboard() {
     return items
   }, [twinState, meterData])
 
+  const predictionPoints = useMemo(() => {
+    if (!predictionData?.prediction?.rooms) return { data: [], rooms: [] }
+    const baseTime = new Date(predictionData.predicted_at)
+    const rooms = predictionData.prediction.rooms
+    const roomMap = {}
+    for (const key of Object.keys(rooms)) {
+      const afterHouse = key.split('__')[1] || key
+      const displayName = afterHouse.replace(/_temperature$/, '').replace(/_/g, ' ')
+      roomMap[displayName] = key
+    }
+    const offsets = new Set()
+    for (const points of Object.values(rooms)) {
+      for (const p of points) offsets.add(p.offset_min)
+    }
+    const sortedOffsets = [...offsets].sort((a, b) => a - b)
+    const data = sortedOffsets.map(offset => {
+      const t = new Date(baseTime.getTime() + offset * 60000)
+      const point = { time: formatTime(t.toISOString()) }
+      for (const [displayName, key] of Object.entries(roomMap)) {
+        const match = rooms[key].find(p => p.offset_min === offset)
+        if (match) point[`${displayName}_pred`] = match.temp
+      }
+      return point
+    })
+    return { data, rooms: Object.keys(roomMap) }
+  }, [predictionData])
+
   const tempByRoomData = useMemo(() => {
     if (!sensorData?.data?.length) return []
-    return sensorData.data.map(d => {
+    const actual = sensorData.data.map(d => {
       const point = { time: formatTime(d.time) }
       for (const room of sensorData.rooms) {
         point[room] = d[`${room}_temp`]
       }
       return point
     })
-  }, [sensorData])
+    if (!predictionPoints.data.length) return actual
+    // Bridge last actual point so prediction line connects
+    const lastActual = actual[actual.length - 1]
+    if (lastActual) {
+      for (const room of predictionPoints.rooms) {
+        const sensorRoom = sensorData.rooms.find(r => r === room)
+        if (sensorRoom && lastActual[sensorRoom] != null) {
+          lastActual[`${room}_pred`] = lastActual[sensorRoom]
+        }
+      }
+    }
+    return [...actual, ...predictionPoints.data]
+  }, [sensorData, predictionPoints])
 
   const tempVsSetpointData = useMemo(() => {
     if (!sensorData?.data?.length || !selectedRoom) return []
-    return sensorData.data.map(d => ({
+    const actual = sensorData.data.map(d => ({
       time: formatTime(d.time),
       temperature: d[`${selectedRoom}_temp`],
       setpoint: d[`${selectedRoom}_set`],
     }))
-  }, [sensorData, selectedRoom])
+    if (predictionPoints.rooms.includes(selectedRoom) && predictionPoints.data.length) {
+      const lastActual = actual[actual.length - 1]
+      if (lastActual && lastActual.temperature != null) {
+        lastActual.temp_pred = lastActual.temperature
+      }
+      for (const p of predictionPoints.data) {
+        actual.push({ time: p.time, temp_pred: p[`${selectedRoom}_pred`] })
+      }
+    }
+    return actual
+  }, [sensorData, selectedRoom, predictionPoints])
 
   const motionData = useMemo(() => {
     if (!sensorData?.data?.length) return []
@@ -252,6 +304,11 @@ function HouseDashboard() {
                   {sensorData.rooms.map((room, i) => (
                     <Line key={room} type="monotone" dataKey={room} stroke={ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} name={room} />
                   ))}
+                  {predictionPoints.rooms.map(room => {
+                    const idx = sensorData.rooms.indexOf(room)
+                    if (idx === -1) return null
+                    return <Line key={`${room}_pred`} type="monotone" dataKey={`${room}_pred`} stroke={ROOM_COLORS[idx % ROOM_COLORS.length]} strokeWidth={1.5} dot={false} strokeDasharray="6 4" name={`${room} (pred)`} />
+                  })}
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -281,6 +338,9 @@ function HouseDashboard() {
                   <Legend />
                   <Line type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} name="Actual °C" />
                   <Line type="monotone" dataKey="setpoint" stroke="#f59e0b" strokeWidth={2} dot={false} strokeDasharray="5 5" name="Setpoint °C" />
+                  {predictionPoints.rooms.includes(selectedRoom) && (
+                    <Line type="monotone" dataKey="temp_pred" stroke="#10b981" strokeWidth={1.5} dot={false} strokeDasharray="6 4" name="Predicted °C" />
+                  )}
                 </LineChart>
               </ResponsiveContainer>
             </div>
