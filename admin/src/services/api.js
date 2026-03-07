@@ -226,6 +226,68 @@ export async function deleteHouse(id) {
   return response.json()
 }
 
+// Alert Rules API
+
+export async function getAlertRules() {
+  const response = await fetch(`${API_BASE}/alerts/rules`, {
+    headers: authHeaders()
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch alert rules')
+  }
+  return response.json()
+}
+
+export async function getAlertRule(id) {
+  const response = await fetch(`${API_BASE}/alerts/rules/${id}`, {
+    headers: authHeaders()
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch alert rule')
+  }
+  return response.json()
+}
+
+export async function createAlertRule(data) {
+  const response = await fetch(`${API_BASE}/alerts/rules`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(data)
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to create alert rule')
+  }
+  return response.json()
+}
+
+export async function updateAlertRule(id, data) {
+  const response = await fetch(`${API_BASE}/alerts/rules/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(data)
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to update alert rule')
+  }
+  return response.json()
+}
+
+export async function deleteAlertRule(id) {
+  const response = await fetch(`${API_BASE}/alerts/rules/${id}`, {
+    method: 'DELETE',
+    headers: authHeaders()
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to delete alert rule')
+  }
+  return response.json()
+}
+
 // Send Survey
 
 export async function sendSurvey(questionSetId, houseIds) {

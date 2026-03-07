@@ -5,6 +5,8 @@ import Admin from './components/Admin'
 import SurveyList from './components/surveys/SurveyList'
 import SurveyEditor from './components/surveys/SurveyEditor'
 import ResponseViewer from './components/surveys/ResponseViewer'
+import AlertRuleList from './components/alerts/AlertRuleList'
+import AlertRuleEditor from './components/alerts/AlertRuleEditor'
 import HouseList from './components/houses/HouseList'
 import HouseDashboard from './components/houses/HouseDashboard'
 
@@ -18,6 +20,9 @@ function Navigation() {
       </NavLink>
       <NavLink to="/surveys" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
         Surveys
+      </NavLink>
+      <NavLink to="/alerts" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+        Alerts
       </NavLink>
       <NavLink to="/houses" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
         Houses
@@ -55,6 +60,9 @@ function AuthenticatedApp() {
           <Route path="/surveys/new" element={<SurveyEditor />} />
           <Route path="/surveys/:id" element={<SurveyEditor />} />
           <Route path="/surveys/:id/responses" element={<ResponseViewer />} />
+          <Route path="/alerts" element={<AlertRuleList />} />
+          <Route path="/alerts/new" element={<AlertRuleEditor />} />
+          <Route path="/alerts/:id" element={<AlertRuleEditor />} />
           <Route path="/houses" element={<HouseList />} />
           <Route path="/houses/:houseId" element={<HouseDashboard />} />
         </Routes>
