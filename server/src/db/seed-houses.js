@@ -1,8 +1,13 @@
+import crypto from 'crypto'
 import dotenv from 'dotenv'
 import bcrypt from 'bcrypt'
 import pg from 'pg'
 
 dotenv.config()
+
+function generatePassword() {
+  return crypto.randomBytes(12).toString('base64url')
+}
 
 const houses = [
   { houseId: 'woning16', name: 'WONING 16', organization: 'ou' },
@@ -24,9 +29,9 @@ const houses = [
 ]
 
 const orgAdmins = [
-  { username: 'weller-admin', password: 'maihome', organization: 'weller', name: 'Weller Admin' },
-  { username: 'wonenzuid-admin', password: 'maihome', organization: 'wonenzuid', name: 'Wonen Zuid Admin' },
-  { username: 'wonenlimburg-admin', password: 'maihome', organization: 'wonenlimburg', name: 'Wonen Limburg Admin' },
+  { username: 'weller-admin', organization: 'weller', name: 'Weller Admin' },
+  { username: 'wonenzuid-admin', organization: 'wonenzuid', name: 'Wonen Zuid Admin' },
+  { username: 'wonenlimburg-admin', organization: 'wonenlimburg', name: 'Wonen Limburg Admin' },
 ]
 
 async function seedHouses() {
@@ -44,34 +49,39 @@ async function seedHouses() {
 
   try {
     await client.connect()
-    const defaultPassword = 'maihome'
-    const passwordHash = await bcrypt.hash(defaultPassword, 10)
 
-    // Seed houses
+    console.log('\n=== House Credentials ===\n')
+
+    // Seed houses with unique passwords
     for (const h of houses) {
+      const password = generatePassword()
+      const passwordHash = await bcrypt.hash(password, 10)
       await client.query(
         `INSERT INTO houses (house_id, password_hash, name, organization)
          VALUES ($1, $2, $3, $4)
-         ON CONFLICT (house_id) DO UPDATE SET name = $3, organization = $4`,
+         ON CONFLICT (house_id) DO UPDATE SET password_hash = $2, name = $3, organization = $4`,
         [h.houseId, passwordHash, h.name, h.organization]
       )
-      console.log(`  House "${h.houseId}" (${h.organization}) — OK`)
+      console.log(`  ${h.houseId.padEnd(20)} ${password}`)
     }
 
-    // Seed org-specific admin users
+    console.log('\n=== Admin Credentials ===\n')
+
+    // Seed org-specific admin users with unique passwords
     for (const a of orgAdmins) {
-      const adminHash = await bcrypt.hash(a.password, 10)
+      const password = generatePassword()
+      const adminHash = await bcrypt.hash(password, 10)
       await client.query(
         `INSERT INTO admins (username, password_hash, organization, name)
          VALUES ($1, $2, $3, $4)
          ON CONFLICT (username) DO UPDATE SET password_hash = $2, organization = $3, name = $4`,
         [a.username, adminHash, a.organization, a.name]
       )
-      console.log(`  Admin "${a.username}" (${a.organization}) — OK`)
+      console.log(`  ${a.username.padEnd(25)} ${password}`)
     }
 
     console.log(`\nSeeded ${houses.length} houses and ${orgAdmins.length} org admins.`)
-    console.log('Default password for all houses: "maihome"')
+    console.log('IMPORTANT: Save the credentials above — they cannot be recovered.\n')
   } catch (error) {
     console.error('Seed failed:', error)
     process.exit(1)

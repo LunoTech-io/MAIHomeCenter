@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import dotenv from 'dotenv'
 import bcrypt from 'bcrypt'
 import pg from 'pg'
@@ -13,7 +14,7 @@ async function seedAdmin() {
   }
 
   const username = process.argv[2] || 'admin'
-  const password = process.argv[3] || 'admin'
+  const password = process.argv[3] || crypto.randomBytes(12).toString('base64url')
   const organization = process.argv[4] || 'ou'
   const name = process.argv[5] || 'Admin'
 
@@ -35,6 +36,10 @@ async function seedAdmin() {
     )
 
     console.log(`Admin user "${username}" created/updated (org: ${organization})`)
+    if (!process.argv[3]) {
+      console.log(`Generated password: ${password}`)
+      console.log('IMPORTANT: Save this password — it cannot be recovered.')
+    }
   } catch (error) {
     console.error('Seed failed:', error)
     process.exit(1)
