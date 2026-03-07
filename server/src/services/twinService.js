@@ -71,6 +71,42 @@ class TwinService {
     )
     return result.rows
   }
+
+  async getSensorHistoryGrouped(houseId, hours = 24) {
+    const result = await query(
+      `SELECT room_name, temperature, temperature_set, pir, recorded_at
+       FROM twin_sensor_data
+       WHERE house_id = $1 AND recorded_at >= NOW() - INTERVAL '1 hour' * $2
+       ORDER BY recorded_at ASC`,
+      [houseId, hours]
+    )
+
+    const rows = result.rows
+    if (rows.length === 0) {
+      return { rooms: [], data: [] }
+    }
+
+    // Collect unique room names
+    const roomSet = new Set()
+    rows.forEach(r => roomSet.add(r.room_name))
+    const rooms = [...roomSet].sort()
+
+    // Group by timestamp
+    const timeMap = new Map()
+    for (const row of rows) {
+      const time = row.recorded_at.toISOString()
+      if (!timeMap.has(time)) {
+        timeMap.set(time, { time })
+      }
+      const entry = timeMap.get(time)
+      const room = row.room_name
+      entry[`${room}_temp`] = row.temperature != null ? parseFloat(row.temperature) : null
+      entry[`${room}_set`] = row.temperature_set != null ? parseFloat(row.temperature_set) : null
+      entry[`${room}_pir`] = row.pir != null ? parseInt(row.pir) : null
+    }
+
+    return { rooms, data: [...timeMap.values()] }
+  }
 }
 
 export default new TwinService()

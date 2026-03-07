@@ -64,6 +64,18 @@ router.get('/predictions/:houseId/latest', async (req, res) => {
   }
 })
 
+// GET /api/twin/sensor-data/:houseId/grouped — Get sensor history grouped by room (for charts)
+router.get('/sensor-data/:houseId/grouped', async (req, res) => {
+  try {
+    const hours = parseInt(req.query.hours) || 24
+    const result = await twinService.getSensorHistoryGrouped(req.params.houseId, hours)
+    res.json({ houseId: req.params.houseId, ...result })
+  } catch (error) {
+    console.error('Error fetching grouped sensor history:', error)
+    res.status(500).json({ error: 'Failed to fetch grouped sensor history' })
+  }
+})
+
 // GET /api/twin/sensor-data/:houseId — Get sensor history
 router.get('/sensor-data/:houseId', async (req, res) => {
   try {

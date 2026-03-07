@@ -117,7 +117,7 @@ function HouseList() {
                   name="houseId"
                   value={form.houseId}
                   onChange={handleChange}
-                  placeholder="e.g., HOUSE001"
+                  placeholder="e.g., weller1"
                   required
                 />
               </div>

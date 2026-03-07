@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
 
     // Restore demo session without hitting the server
     if (token === 'demo') {
-      const demoId = localStorage.getItem('demoHouseId') || 'HOUSE001'
+      const demoId = localStorage.getItem('demoHouseId') || 'woning16'
       setHouse({ id: 'demo', houseId: demoId, name: `Demo ${demoId}` })
       setLoading(false)
       return
@@ -62,7 +62,7 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
-  const demoLogin = useCallback((houseId = 'HOUSE001', name = 'Demo Home') => {
+  const demoLogin = useCallback((houseId = 'woning16', name = 'Demo Home') => {
     localStorage.setItem('authToken', 'demo')
     localStorage.setItem('demoHouseId', houseId)
     setHouse({ id: 'demo', houseId, name })

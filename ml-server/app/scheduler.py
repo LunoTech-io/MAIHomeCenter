@@ -16,46 +16,56 @@ last_prediction_time: datetime | None = None
 last_prediction_result: dict | None = None
 
 
+async def _process_house(house_id: str):
+    """Fetch sensor data for a single house and push to server."""
+    sensor_df = await sensor_client.fetch_sensor_data(house_id=house_id)
+
+    if sensor_df.empty:
+        logger.warning("No sensor data for %s — skipping", house_id)
+        return None
+
+    try:
+        await twin_client.push_sensor_data(house_id, sensor_df)
+    except Exception:
+        logger.exception("Failed to push sensor data for %s", house_id)
+
+    return sensor_df
+
+
 async def run_prediction_cycle():
-    """Execute one full prediction cycle: fetch sensor data → predict → push results."""
+    """Execute one full prediction cycle: fetch sensor data for all houses, predict for woning16."""
     global last_prediction_time, last_prediction_result
 
     cycle_start = datetime.now(timezone.utc)
     logger.info("Prediction cycle started at %s", cycle_start.isoformat())
 
     try:
-        # 1. Fetch sensor history from Calculus API
-        logger.info("Fetching sensor data...")
-        sensor_df = await sensor_client.fetch_sensor_data()
+        all_house_ids = sensor_client.get_all_house_ids()
+        logger.info("Processing %d houses...", len(all_house_ids))
 
-        if sensor_df.empty:
-            logger.error("No sensor data retrieved — skipping prediction")
-            return
+        woning16_df = None
 
-        # 2. Push sensor data to server
-        logger.info("Pushing sensor data to server...")
-        try:
-            await twin_client.push_sensor_data(settings.HOUSE_ID, sensor_df)
-        except Exception:
-            logger.exception("Failed to push sensor data — continuing with prediction")
+        for house_id in all_house_ids:
+            try:
+                sensor_df = await _process_house(house_id)
+                if house_id == settings.HOUSE_ID and sensor_df is not None:
+                    woning16_df = sensor_df
+            except Exception:
+                logger.exception("Failed to process house %s — continuing", house_id)
 
-        # 3. Run ML prediction
-        logger.info("Running prediction model...")
-        result = predictor.predict(sensor_df)
+        # Run ML prediction only for the configured HOUSE_ID (woning16)
+        if woning16_df is not None:
+            logger.info("Running prediction model for %s...", settings.HOUSE_ID)
+            result = predictor.predict(woning16_df)
 
-        # 4. Push prediction results to server
-        logger.info("Pushing prediction to server...")
-        await twin_client.push_prediction(settings.HOUSE_ID, result)
+            logger.info("Pushing prediction to server...")
+            await twin_client.push_prediction(settings.HOUSE_ID, result)
 
-        last_prediction_time = datetime.now(timezone.utc)
-        last_prediction_result = result
+            last_prediction_time = datetime.now(timezone.utc)
+            last_prediction_result = result
 
-        elapsed = (last_prediction_time - cycle_start).total_seconds()
-        logger.info(
-            "Prediction cycle completed in %.2fs — %d rooms predicted",
-            elapsed,
-            len(result.get("rooms", {})),
-        )
+        elapsed = (datetime.now(timezone.utc) - cycle_start).total_seconds()
+        logger.info("Prediction cycle completed in %.2fs", elapsed)
 
     except Exception:
         logger.exception("Prediction cycle failed")
@@ -72,8 +82,9 @@ def start_scheduler():
     )
     scheduler.start()
     logger.info(
-        "Scheduler started — running every %d minutes",
+        "Scheduler started — running every %d minutes for %d houses",
         settings.PREDICTION_INTERVAL_MINUTES,
+        len(sensor_client.get_all_house_ids()),
     )
 
 
@@ -92,6 +103,7 @@ def get_status() -> dict:
     return {
         "scheduler_running": scheduler.running,
         "prediction_interval_minutes": settings.PREDICTION_INTERVAL_MINUTES,
+        "houses": sensor_client.get_all_house_ids(),
         "last_prediction_time": (
             last_prediction_time.isoformat() if last_prediction_time else None
         ),

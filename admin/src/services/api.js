@@ -135,6 +135,33 @@ export async function getQuestionSetResponses(id) {
   return response.json()
 }
 
+// Twin / Sensor API
+export async function getSensorHistory(houseId, hours = 24) {
+  const response = await fetch(`${API_BASE}/twin/sensor-data/${houseId}/grouped?hours=${hours}`, {
+    headers: authHeaders()
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch sensor history')
+  }
+
+  return response.json()
+}
+
+export async function getTwinState(houseId) {
+  const response = await fetch(`${API_BASE}/twin/state/${houseId}`, {
+    headers: authHeaders()
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch twin state')
+  }
+
+  return response.json()
+}
+
 // Houses API
 
 export async function getHouses() {

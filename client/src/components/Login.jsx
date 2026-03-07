@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 
 const demoHouses = [
-  { id: 'HOUSE001', name: 'House Alfa', season: 'Winter' },
-  { id: 'HOUSE002', name: 'House Beta', season: 'Autumn' },
-  { id: 'HOUSE003', name: 'House Delta', season: 'Spring' },
-  { id: 'HOUSE004', name: 'House Gamma', season: 'Summer' },
+  { id: 'woning16', name: 'WONING 16' },
+  { id: 'weller1', name: 'Weller 1' },
+  { id: 'wonenzuid1', name: 'Wonen Zuid 1' },
+  { id: 'wonenlimburg1', name: 'Wonen in Limburg 1' },
 ]
 
 function Login() {
@@ -97,7 +97,6 @@ function Login() {
                 onClick={() => demoLogin(h.id, h.name)}
               >
                 <span className="demo-house-name">{h.name}</span>
-                <span className="demo-house-season">{h.season}</span>
               </button>
             ))}
           </div>
