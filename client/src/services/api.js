@@ -210,6 +210,32 @@ export async function getSensorHistory(houseId, hours = 24) {
   return response.json()
 }
 
+export async function getMeterHistory(houseId, hours = 24) {
+  const response = await fetch(`${API_BASE}/twin/meter-data/${houseId}?hours=${hours}`, {
+    headers: authHeaders()
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch meter history')
+  }
+
+  return response.json()
+}
+
+export async function getApplianceHistory(houseId, hours = 24) {
+  const response = await fetch(`${API_BASE}/twin/appliance-data/${houseId}?hours=${hours}`, {
+    headers: authHeaders()
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch appliance history')
+  }
+
+  return response.json()
+}
+
 export async function getTwinState(houseId) {
   const response = await fetch(`${API_BASE}/twin/state/${houseId}`, {
     headers: authHeaders()

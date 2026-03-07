@@ -7,6 +7,7 @@ import surveyRoutes from './routes/surveys.js'
 import tenantSurveyRoutes from './routes/tenantSurveys.js'
 import twinRoutes from './routes/twin.js'
 import { getPool } from './db/index.js'
+import { startRetentionCron } from './services/retentionService.js'
 
 dotenv.config()
 
@@ -67,6 +68,7 @@ app.listen(PORT, '0.0.0.0', () => {
   const pool = getPool()
   if (pool) {
     console.log('PostgreSQL database configured')
+    startRetentionCron()
   } else {
     console.warn('DATABASE_URL not configured - survey features will be unavailable')
   }

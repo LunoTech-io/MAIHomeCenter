@@ -4,7 +4,7 @@ import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts'
-import { getSensorHistory, getTwinState } from '../../services/api'
+import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory } from '../../services/api'
 
 const chartTooltipStyle = {
   backgroundColor: '#16213e',
@@ -18,6 +18,14 @@ const ROOM_COLORS = [
   '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#84cc16'
 ]
 
+const APPLIANCE_COLORS = {
+  'TV': '#3b82f6',
+  'Koelkast': '#10b981',
+  'Wasmachine': '#f59e0b',
+  'Droogkast': '#ef4444',
+  'Diepvries': '#8b5cf6',
+}
+
 function formatTime(isoString) {
   const d = new Date(isoString)
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
@@ -28,6 +36,8 @@ function HouseDashboard() {
   const navigate = useNavigate()
   const [sensorData, setSensorData] = useState(null)
   const [twinState, setTwinState] = useState(null)
+  const [meterData, setMeterData] = useState(null)
+  const [applianceData, setApplianceData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedRoom, setSelectedRoom] = useState(null)
@@ -41,13 +51,17 @@ function HouseDashboard() {
       setLoading(true)
       setError(null)
       try {
-        const [history, state] = await Promise.all([
+        const [history, state, meterHist, applianceHist] = await Promise.all([
           getSensorHistory(houseId, 24),
-          getTwinState(houseId)
+          getTwinState(houseId),
+          getMeterHistory(houseId, 24).catch(() => null),
+          getApplianceHistory(houseId, 24).catch(() => null),
         ])
         if (!cancelled) {
           setSensorData(history)
           setTwinState(state)
+          setMeterData(meterHist)
+          setApplianceData(applianceHist)
           if (history.rooms?.length > 0 && !selectedRoom) {
             setSelectedRoom(history.rooms[0])
           }
@@ -70,13 +84,26 @@ function HouseDashboard() {
     const avgTemp = (rooms.reduce((s, r) => s + (parseFloat(r.temperature) || 0), 0) / rooms.length).toFixed(1)
     const motionRooms = rooms.filter(r => parseInt(r.pir) > 0).length
     const setpoint = rooms[0]?.temperature_set != null ? parseFloat(rooms[0].temperature_set).toFixed(1) : '--'
-    return [
+
+    const items = [
       { label: 'Avg Temperature', value: `${avgTemp} °C`, color: 'green' },
       { label: 'Motion Detected', value: `${motionRooms} room${motionRooms !== 1 ? 's' : ''}`, color: 'blue' },
       { label: 'Setpoint', value: `${setpoint} °C`, color: 'yellow' },
       { label: 'Rooms Monitored', value: `${rooms.length}`, color: 'red' },
     ]
-  }, [twinState])
+
+    if (meterData?.data?.length > 0) {
+      const latest = meterData.data[meterData.data.length - 1]
+      if (latest.positive_active_power != null) {
+        items.push({ label: 'Power Draw', value: `${Math.round(latest.positive_active_power)} W`, color: 'blue' })
+      }
+      if (latest.gas_kuub != null) {
+        items.push({ label: 'Gas Meter', value: `${latest.gas_kuub.toFixed(2)} m³`, color: 'yellow' })
+      }
+    }
+
+    return items
+  }, [twinState, meterData])
 
   const tempByRoomData = useMemo(() => {
     if (!sensorData?.data?.length) return []
@@ -108,6 +135,53 @@ function HouseDashboard() {
       return point
     })
   }, [sensorData])
+
+  const { humidityData, humidityRooms } = useMemo(() => {
+    if (!sensorData?.data?.length) return { humidityData: [], humidityRooms: [] }
+    const hRooms = sensorData.rooms.filter(r =>
+      sensorData.data.some(d => d[`${r}_humidity`] != null || d[`${r}_co2`] != null)
+    )
+    if (hRooms.length === 0) return { humidityData: [], humidityRooms: [] }
+    const data = sensorData.data.map(d => {
+      const point = { time: formatTime(d.time) }
+      for (const room of hRooms) {
+        point[`${room} humidity`] = d[`${room}_humidity`]
+        point[`${room} CO2`] = d[`${room}_co2`]
+      }
+      return point
+    })
+    return { humidityData: data, humidityRooms: hRooms }
+  }, [sensorData])
+
+  const electricityData = useMemo(() => {
+    if (!meterData?.data?.length) return []
+    return meterData.data.map(d => ({
+      time: formatTime(d.time),
+      draw: d.positive_active_power,
+      return: d.negative_active_power,
+    }))
+  }, [meterData])
+
+  const gasData = useMemo(() => {
+    if (!meterData?.data?.length) return []
+    return meterData.data
+      .filter(d => d.gas_kuub != null)
+      .map(d => ({
+        time: formatTime(d.time),
+        gas: d.gas_kuub,
+      }))
+  }, [meterData])
+
+  const { applianceChartData, applianceNames } = useMemo(() => {
+    if (!applianceData?.data?.length) return { applianceChartData: [], applianceNames: [] }
+    return {
+      applianceChartData: applianceData.data.map(d => ({
+        time: formatTime(d.time),
+        ...d,
+      })),
+      applianceNames: applianceData.appliances || [],
+    }
+  }, [applianceData])
 
   if (loading) {
     return (
@@ -226,6 +300,83 @@ function HouseDashboard() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
+
+            {/* Humidity & CO2 (conditional) */}
+            {humidityRooms.length > 0 && (
+              <div className="chart-card">
+                <h3>Humidity & CO2 (24h)</h3>
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={humidityData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                    <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                    <YAxis yAxisId="humidity" tick={{ fill: '#a0aec0', fontSize: 11 }} unit="%" />
+                    <YAxis yAxisId="co2" orientation="right" tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" ppm" />
+                    <Tooltip contentStyle={chartTooltipStyle} />
+                    <Legend />
+                    {humidityRooms.map((room, i) => (
+                      <Line key={`${room}-h`} yAxisId="humidity" type="monotone" dataKey={`${room} humidity`} stroke={ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} />
+                    ))}
+                    {humidityRooms.map((room, i) => (
+                      <Line key={`${room}-c`} yAxisId="co2" type="monotone" dataKey={`${room} CO2`} stroke={ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={1} dot={false} strokeDasharray="5 5" />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* Electricity (conditional) */}
+            {electricityData.length > 0 && (
+              <div className="chart-card">
+                <h3>Electricity (24h)</h3>
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={electricityData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                    <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                    <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" W" />
+                    <Tooltip contentStyle={chartTooltipStyle} />
+                    <Legend />
+                    <Line type="monotone" dataKey="draw" stroke="#f59e0b" strokeWidth={2} dot={false} name="Draw (W)" />
+                    <Line type="monotone" dataKey="return" stroke="#10b981" strokeWidth={2} dot={false} name="Return (W)" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* Gas (conditional) */}
+            {gasData.length > 0 && (
+              <div className="chart-card">
+                <h3>Gas Usage (24h)</h3>
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={gasData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                    <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                    <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" m³" />
+                    <Tooltip contentStyle={chartTooltipStyle} />
+                    <Legend />
+                    <Line type="monotone" dataKey="gas" stroke="#8b5cf6" strokeWidth={2} dot={false} name="Gas (m³)" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* Appliance Power (conditional) */}
+            {applianceNames.length > 0 && (
+              <div className="chart-card">
+                <h3>Appliance Power (24h)</h3>
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={applianceChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                    <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                    <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" W" />
+                    <Tooltip contentStyle={chartTooltipStyle} />
+                    <Legend />
+                    {applianceNames.map((name, i) => (
+                      <Line key={name} type="monotone" dataKey={name} stroke={APPLIANCE_COLORS[name] || ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} name={name} />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </div>
         </>
       )}

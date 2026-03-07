@@ -6,13 +6,13 @@ const router = Router()
 // POST /api/twin/sensor-data — Store sensor readings from ML server
 router.post('/sensor-data', async (req, res) => {
   try {
-    const { houseId, timestamp, rooms } = req.body
+    const { houseId, timestamp, rooms, meter, appliances, water } = req.body
 
     if (!houseId || !timestamp || !rooms) {
       return res.status(400).json({ error: 'houseId, timestamp, and rooms are required' })
     }
 
-    await twinService.storeSensorData(houseId, timestamp, rooms)
+    await twinService.storeSensorData(houseId, timestamp, rooms, meter, appliances, water)
     res.json({ success: true })
   } catch (error) {
     console.error('Error storing sensor data:', error)
@@ -85,6 +85,42 @@ router.get('/sensor-data/:houseId', async (req, res) => {
   } catch (error) {
     console.error('Error fetching sensor history:', error)
     res.status(500).json({ error: 'Failed to fetch sensor history' })
+  }
+})
+
+// GET /api/twin/meter-data/:houseId — Get electricity & gas meter history
+router.get('/meter-data/:houseId', async (req, res) => {
+  try {
+    const hours = parseInt(req.query.hours) || 24
+    const data = await twinService.getMeterHistory(req.params.houseId, hours)
+    res.json({ houseId: req.params.houseId, data })
+  } catch (error) {
+    console.error('Error fetching meter history:', error)
+    res.status(500).json({ error: 'Failed to fetch meter history' })
+  }
+})
+
+// GET /api/twin/appliance-data/:houseId — Get appliance power history
+router.get('/appliance-data/:houseId', async (req, res) => {
+  try {
+    const hours = parseInt(req.query.hours) || 24
+    const result = await twinService.getApplianceHistory(req.params.houseId, hours)
+    res.json({ houseId: req.params.houseId, ...result })
+  } catch (error) {
+    console.error('Error fetching appliance history:', error)
+    res.status(500).json({ error: 'Failed to fetch appliance history' })
+  }
+})
+
+// GET /api/twin/water-data/:houseId — Get water meter history
+router.get('/water-data/:houseId', async (req, res) => {
+  try {
+    const hours = parseInt(req.query.hours) || 24
+    const data = await twinService.getWaterHistory(req.params.houseId, hours)
+    res.json({ houseId: req.params.houseId, data })
+  } catch (error) {
+    console.error('Error fetching water history:', error)
+    res.status(500).json({ error: 'Failed to fetch water history' })
   }
 })
 
