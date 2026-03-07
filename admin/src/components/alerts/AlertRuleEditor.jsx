@@ -16,6 +16,8 @@ const OPERATORS = [
   { value: 'below', label: 'Below' }
 ]
 
+const emptyCondition = { sensorField: 'temperature', operator: 'above', threshold: '' }
+
 function AlertRuleEditor() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -27,14 +29,13 @@ function AlertRuleEditor() {
 
   const [form, setForm] = useState({
     name: '',
-    sensorField: 'temperature',
-    operator: 'above',
-    threshold: '',
     sustainedMinutes: 0,
     notificationTitle: '',
     notificationBody: '',
     isActive: true
   })
+
+  const [conditions, setConditions] = useState([{ ...emptyCondition }])
 
   useEffect(() => {
     if (!isNew) {
@@ -48,14 +49,18 @@ function AlertRuleEditor() {
       const data = await getAlertRule(id)
       setForm({
         name: data.name || '',
-        sensorField: data.sensor_field || 'temperature',
-        operator: data.operator || 'above',
-        threshold: data.threshold ?? '',
         sustainedMinutes: data.sustained_minutes ?? 0,
         notificationTitle: data.notification_title || '',
         notificationBody: data.notification_body || '',
         isActive: data.is_active ?? true
       })
+      setConditions(
+        (data.conditions || []).map(c => ({
+          sensorField: c.sensorField || 'temperature',
+          operator: c.operator || 'above',
+          threshold: c.threshold ?? ''
+        }))
+      )
       setError(null)
     } catch (err) {
       setError(err.message)
@@ -64,7 +69,7 @@ function AlertRuleEditor() {
     }
   }
 
-  const handleChange = (e) => {
+  const handleFormChange = (e) => {
     const { name, value, type, checked } = e.target
     setForm(prev => ({
       ...prev,
@@ -72,11 +77,30 @@ function AlertRuleEditor() {
     }))
   }
 
+  const updateCondition = (index, field, value) => {
+    setConditions(prev => prev.map((c, i) =>
+      i === index ? { ...c, [field]: value } : c
+    ))
+  }
+
+  const addCondition = () => {
+    setConditions(prev => [...prev, { ...emptyCondition }])
+  }
+
+  const removeCondition = (index) => {
+    setConditions(prev => prev.filter((_, i) => i !== index))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!form.name || !form.notificationTitle || !form.notificationBody || form.threshold === '') {
-      setError('Name, threshold, notification title, and notification body are required')
+    if (!form.name || !form.notificationTitle || !form.notificationBody) {
+      setError('Name, notification title, and notification body are required')
+      return
+    }
+
+    if (conditions.length === 0 || conditions.some(c => c.threshold === '')) {
+      setError('At least one condition with a threshold is required')
       return
     }
 
@@ -86,8 +110,12 @@ function AlertRuleEditor() {
     try {
       const payload = {
         ...form,
-        threshold: parseFloat(form.threshold),
-        sustainedMinutes: parseInt(form.sustainedMinutes, 10) || 0
+        sustainedMinutes: parseInt(form.sustainedMinutes, 10) || 0,
+        conditions: conditions.map(c => ({
+          sensorField: c.sensorField,
+          operator: c.operator,
+          threshold: parseFloat(c.threshold)
+        }))
       }
 
       if (isNew) {
@@ -137,54 +165,10 @@ function AlertRuleEditor() {
               id="name"
               name="name"
               value={form.name}
-              onChange={handleChange}
-              placeholder="e.g., High temperature warning"
+              onChange={handleFormChange}
+              placeholder="e.g., High temperature + low humidity"
               required
             />
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="sensorField">Sensor Field</label>
-              <select
-                id="sensorField"
-                name="sensorField"
-                value={form.sensorField}
-                onChange={handleChange}
-              >
-                {SENSOR_FIELDS.map(sf => (
-                  <option key={sf.value} value={sf.value}>{sf.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="operator">Operator</label>
-              <select
-                id="operator"
-                name="operator"
-                value={form.operator}
-                onChange={handleChange}
-              >
-                {OPERATORS.map(op => (
-                  <option key={op.value} value={op.value}>{op.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="threshold">Threshold</label>
-              <input
-                type="number"
-                id="threshold"
-                name="threshold"
-                value={form.threshold}
-                onChange={handleChange}
-                placeholder="e.g., 28"
-                step="any"
-                required
-              />
-            </div>
           </div>
 
           <div className="form-row">
@@ -195,7 +179,7 @@ function AlertRuleEditor() {
                 id="sustainedMinutes"
                 name="sustainedMinutes"
                 value={form.sustainedMinutes}
-                onChange={handleChange}
+                onChange={handleFormChange}
                 min="0"
                 placeholder="0 = instant"
               />
@@ -210,12 +194,76 @@ function AlertRuleEditor() {
                   type="checkbox"
                   name="isActive"
                   checked={form.isActive}
-                  onChange={handleChange}
+                  onChange={handleFormChange}
                 />
                 Active
               </label>
             </div>
           </div>
+        </div>
+
+        <div className="admin-section">
+          <div className="section-header">
+            <h2>Conditions</h2>
+            <button type="button" className="send-btn" onClick={addCondition}>
+              + Add Condition
+            </button>
+          </div>
+          <small style={{ color: '#888', display: 'block', marginBottom: '12px' }}>
+            All conditions must be true simultaneously (AND logic)
+          </small>
+
+          {conditions.map((condition, index) => (
+            <div key={index} className="form-row" style={{ alignItems: 'flex-end', marginBottom: '8px' }}>
+              <div className="form-group">
+                {index === 0 && <label>Sensor Field</label>}
+                <select
+                  value={condition.sensorField}
+                  onChange={(e) => updateCondition(index, 'sensorField', e.target.value)}
+                >
+                  {SENSOR_FIELDS.map(sf => (
+                    <option key={sf.value} value={sf.value}>{sf.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                {index === 0 && <label>Operator</label>}
+                <select
+                  value={condition.operator}
+                  onChange={(e) => updateCondition(index, 'operator', e.target.value)}
+                >
+                  {OPERATORS.map(op => (
+                    <option key={op.value} value={op.value}>{op.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                {index === 0 && <label>Threshold</label>}
+                <input
+                  type="number"
+                  value={condition.threshold}
+                  onChange={(e) => updateCondition(index, 'threshold', e.target.value)}
+                  placeholder="e.g., 28"
+                  step="any"
+                  required
+                />
+              </div>
+
+              <div className="form-group" style={{ flex: '0 0 auto' }}>
+                {index === 0 && <label>&nbsp;</label>}
+                <button
+                  type="button"
+                  className="action-btn-small delete"
+                  onClick={() => removeCondition(index)}
+                  disabled={conditions.length === 1}
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="admin-section">
@@ -228,8 +276,8 @@ function AlertRuleEditor() {
               id="notificationTitle"
               name="notificationTitle"
               value={form.notificationTitle}
-              onChange={handleChange}
-              placeholder="e.g., High temperature in {room}"
+              onChange={handleFormChange}
+              placeholder="e.g., Alert in {room}"
               required
             />
           </div>
@@ -240,13 +288,13 @@ function AlertRuleEditor() {
               id="notificationBody"
               name="notificationBody"
               value={form.notificationBody}
-              onChange={handleChange}
-              placeholder="e.g., Temperature in {room} is {value}°C"
+              onChange={handleFormChange}
+              placeholder="e.g., Conditions exceeded in {room} (current: {value})"
               rows={3}
               required
             />
             <small style={{ color: '#888', marginTop: '4px', display: 'block' }}>
-              Use {'{room}'} for room name and {'{value}'} for the sensor reading
+              Use {'{room}'} for room name and {'{value}'} for the first condition's reading
             </small>
           </div>
         </div>

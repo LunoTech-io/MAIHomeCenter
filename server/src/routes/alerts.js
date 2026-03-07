@@ -41,26 +41,16 @@ router.get('/rules/:id', async (req, res) => {
 // POST /api/alerts/rules - Create rule
 router.post('/rules', async (req, res) => {
   try {
-    const { name, sensorField, operator, threshold, sustainedMinutes, notificationTitle, notificationBody, isActive } = req.body
+    const { name, conditions, sustainedMinutes, notificationTitle, notificationBody, isActive } = req.body
 
-    if (!name || !sensorField || !operator || threshold == null || !notificationTitle || !notificationBody) {
-      return res.status(400).json({ error: 'Name, sensor field, operator, threshold, notification title, and notification body are required' })
-    }
-
-    if (!alertService.ALLOWED_SENSOR_FIELDS.includes(sensorField)) {
-      return res.status(400).json({ error: `Invalid sensor field. Allowed: ${alertService.ALLOWED_SENSOR_FIELDS.join(', ')}` })
-    }
-
-    if (!alertService.ALLOWED_OPERATORS.includes(operator)) {
-      return res.status(400).json({ error: `Invalid operator. Allowed: ${alertService.ALLOWED_OPERATORS.join(', ')}` })
+    if (!name || !conditions || !notificationTitle || !notificationBody) {
+      return res.status(400).json({ error: 'Name, conditions, notification title, and notification body are required' })
     }
 
     const rule = await alertService.createRule({
       organization: req.admin.organization,
       name,
-      sensorField,
-      operator,
-      threshold,
+      conditions,
       sustainedMinutes,
       notificationTitle,
       notificationBody,
@@ -70,6 +60,9 @@ router.post('/rules', async (req, res) => {
 
     res.status(201).json(rule)
   } catch (error) {
+    if (error.message.includes('Invalid') || error.message.includes('required')) {
+      return res.status(400).json({ error: error.message })
+    }
     console.error('Error creating alert rule:', error)
     res.status(500).json({ error: 'Failed to create alert rule' })
   }
@@ -86,21 +79,11 @@ router.put('/rules/:id', async (req, res) => {
       return res.status(403).json({ error: 'Access denied' })
     }
 
-    const { name, sensorField, operator, threshold, sustainedMinutes, notificationTitle, notificationBody, isActive } = req.body
-
-    if (sensorField && !alertService.ALLOWED_SENSOR_FIELDS.includes(sensorField)) {
-      return res.status(400).json({ error: `Invalid sensor field. Allowed: ${alertService.ALLOWED_SENSOR_FIELDS.join(', ')}` })
-    }
-
-    if (operator && !alertService.ALLOWED_OPERATORS.includes(operator)) {
-      return res.status(400).json({ error: `Invalid operator. Allowed: ${alertService.ALLOWED_OPERATORS.join(', ')}` })
-    }
+    const { name, conditions, sustainedMinutes, notificationTitle, notificationBody, isActive } = req.body
 
     const rule = await alertService.updateRule(req.params.id, {
       name,
-      sensorField,
-      operator,
-      threshold,
+      conditions,
       sustainedMinutes,
       notificationTitle,
       notificationBody,
@@ -109,6 +92,9 @@ router.put('/rules/:id', async (req, res) => {
 
     res.json(rule)
   } catch (error) {
+    if (error.message.includes('Invalid') || error.message.includes('required')) {
+      return res.status(400).json({ error: error.message })
+    }
     console.error('Error updating alert rule:', error)
     res.status(500).json({ error: 'Failed to update alert rule' })
   }

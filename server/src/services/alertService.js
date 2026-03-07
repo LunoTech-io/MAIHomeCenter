@@ -10,6 +10,27 @@ let intervalId = null
 let isEvaluating = false
 
 // =====================
+// Validation
+// =====================
+
+function validateConditions(conditions) {
+  if (!Array.isArray(conditions) || conditions.length === 0) {
+    throw new Error('At least one condition is required')
+  }
+  for (const c of conditions) {
+    if (!ALLOWED_SENSOR_FIELDS.includes(c.sensorField)) {
+      throw new Error(`Invalid sensor field: ${c.sensorField}`)
+    }
+    if (!ALLOWED_OPERATORS.includes(c.operator)) {
+      throw new Error(`Invalid operator: ${c.operator}`)
+    }
+    if (c.threshold == null || isNaN(Number(c.threshold))) {
+      throw new Error('Each condition must have a numeric threshold')
+    }
+  }
+}
+
+// =====================
 // CRUD
 // =====================
 
@@ -26,45 +47,35 @@ async function getRuleById(id) {
   return result.rows[0] || null
 }
 
-async function createRule({ organization, name, sensorField, operator, threshold, sustainedMinutes, notificationTitle, notificationBody, isActive, createdBy }) {
-  if (!ALLOWED_SENSOR_FIELDS.includes(sensorField)) {
-    throw new Error(`Invalid sensor field: ${sensorField}`)
-  }
-  if (!ALLOWED_OPERATORS.includes(operator)) {
-    throw new Error(`Invalid operator: ${operator}`)
-  }
+async function createRule({ organization, name, conditions, sustainedMinutes, notificationTitle, notificationBody, isActive, createdBy }) {
+  validateConditions(conditions)
 
   const result = await query(
-    `INSERT INTO alert_rules (organization, name, sensor_field, operator, threshold, sustained_minutes, notification_title, notification_body, is_active, created_by)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    `INSERT INTO alert_rules (organization, name, conditions, sustained_minutes, notification_title, notification_body, is_active, created_by)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      RETURNING *`,
-    [organization, name, sensorField, operator, threshold, sustainedMinutes ?? 0, notificationTitle, notificationBody, isActive ?? true, createdBy]
+    [organization, name, JSON.stringify(conditions), sustainedMinutes ?? 0, notificationTitle, notificationBody, isActive ?? true, createdBy]
   )
   return result.rows[0]
 }
 
-async function updateRule(id, { name, sensorField, operator, threshold, sustainedMinutes, notificationTitle, notificationBody, isActive }) {
-  if (sensorField && !ALLOWED_SENSOR_FIELDS.includes(sensorField)) {
-    throw new Error(`Invalid sensor field: ${sensorField}`)
-  }
-  if (operator && !ALLOWED_OPERATORS.includes(operator)) {
-    throw new Error(`Invalid operator: ${operator}`)
+async function updateRule(id, { name, conditions, sustainedMinutes, notificationTitle, notificationBody, isActive }) {
+  if (conditions) {
+    validateConditions(conditions)
   }
 
   const result = await query(
     `UPDATE alert_rules
      SET name = COALESCE($2, name),
-         sensor_field = COALESCE($3, sensor_field),
-         operator = COALESCE($4, operator),
-         threshold = COALESCE($5, threshold),
-         sustained_minutes = COALESCE($6, sustained_minutes),
-         notification_title = COALESCE($7, notification_title),
-         notification_body = COALESCE($8, notification_body),
-         is_active = COALESCE($9, is_active),
+         conditions = COALESCE($3, conditions),
+         sustained_minutes = COALESCE($4, sustained_minutes),
+         notification_title = COALESCE($5, notification_title),
+         notification_body = COALESCE($6, notification_body),
+         is_active = COALESCE($7, is_active),
          updated_at = NOW()
      WHERE id = $1
      RETURNING *`,
-    [id, name, sensorField, operator, threshold, sustainedMinutes, notificationTitle, notificationBody, isActive]
+    [id, name, conditions ? JSON.stringify(conditions) : null, sustainedMinutes, notificationTitle, notificationBody, isActive]
   )
   return result.rows[0] || null
 }
@@ -119,7 +130,6 @@ async function evaluateRules() {
 }
 
 async function evaluateRule(rule) {
-  // Get houses for this rule's organization (need both id UUID and house_id VARCHAR)
   const housesResult = await query(
     'SELECT id, house_id FROM houses WHERE organization = $1',
     [rule.organization]
@@ -128,8 +138,13 @@ async function evaluateRule(rule) {
 
   if (houses.length === 0) return
 
-  // Validate sensor_field against allowed list (defense in depth)
-  if (!ALLOWED_SENSOR_FIELDS.includes(rule.sensor_field)) return
+  const conditions = rule.conditions
+  if (!Array.isArray(conditions) || conditions.length === 0) return
+
+  // Validate all sensor fields against allowlist (defense in depth)
+  for (const c of conditions) {
+    if (!ALLOWED_SENSOR_FIELDS.includes(c.sensorField)) return
+  }
 
   for (const house of houses) {
     try {
@@ -141,16 +156,22 @@ async function evaluateRule(rule) {
 }
 
 async function evaluateRuleForHouse(rule, house) {
-  const windowMinutes = rule.sustained_minutes || 1 // at least 1 minute window for instant
-  const sensorField = rule.sensor_field // already validated against allowlist
+  const windowMinutes = rule.sustained_minutes || 1
+  const conditions = rule.conditions
 
-  // Query sensor readings within the sustained window, grouped by room
+  // Collect the unique sensor fields we need to query
+  const sensorFields = [...new Set(conditions.map(c => c.sensorField))]
+
+  // Build SELECT for all needed fields in one query
+  const fieldSelects = sensorFields.map(f => f).join(', ')
+  const fieldNotNullClauses = sensorFields.map(f => `${f} IS NOT NULL`).join(' OR ')
+
   const dataResult = await query(
-    `SELECT room_name, ${sensorField} as value, recorded_at
+    `SELECT room_name, ${fieldSelects}, recorded_at
      FROM twin_sensor_data
      WHERE house_id = $1
        AND recorded_at >= NOW() - INTERVAL '${windowMinutes} minutes'
-       AND ${sensorField} IS NOT NULL
+       AND (${fieldNotNullClauses})
      ORDER BY room_name, recorded_at DESC`,
     [house.house_id]
   )
@@ -174,7 +195,6 @@ async function evaluateRuleForHouse(rule, house) {
     stateByRoom[row.room_name] = row
   }
 
-  // Check each room that has state (for resolving triggered rooms with no recent data)
   const allRoomNames = new Set([...Object.keys(roomReadings), ...Object.keys(stateByRoom)])
 
   for (const roomName of allRoomNames) {
@@ -184,18 +204,26 @@ async function evaluateRuleForHouse(rule, house) {
 
     if (readings.length > 0) {
       if (rule.sustained_minutes === 0) {
-        // Instant: just check the latest reading
-        conditionMet = violatesThreshold(parseFloat(readings[0].value), rule.operator, parseFloat(rule.threshold))
+        // Instant: latest reading must violate ALL conditions
+        const latest = readings[0]
+        conditionMet = conditions.every(c =>
+          latest[c.sensorField] != null &&
+          violatesThreshold(parseFloat(latest[c.sensorField]), c.operator, parseFloat(c.threshold))
+        )
       } else {
-        // Sustained: need >= 2 readings and ALL must violate
-        conditionMet = readings.length >= 2 &&
-          readings.every(r => violatesThreshold(parseFloat(r.value), rule.operator, parseFloat(rule.threshold)))
+        // Sustained: need >= 2 readings and ALL readings must violate ALL conditions
+        conditionMet = readings.length >= 2 && readings.every(row =>
+          conditions.every(c =>
+            row[c.sensorField] != null &&
+            violatesThreshold(parseFloat(row[c.sensorField]), c.operator, parseFloat(c.threshold))
+          )
+        )
       }
     }
 
     if (conditionMet && (!state || state.status === 'resolved')) {
-      // TRIGGER
-      const latestValue = readings[0].value
+      // TRIGGER — build notification with first condition's latest value for {value}
+      const latestValue = readings[0][conditions[0].sensorField]
       const title = rule.notification_title
         .replace(/\{room\}/g, roomName)
         .replace(/\{value\}/g, latestValue)
@@ -211,14 +239,13 @@ async function evaluateRuleForHouse(rule, house) {
         [rule.id, house.house_id, roomName]
       )
 
-      // Send push notification (uses house UUID for subscriptions)
       await pushService.sendToHouses([house.id], {
         title,
         body,
         data: { type: 'alert', ruleId: rule.id }
       })
 
-      console.log(`[alerts] TRIGGERED rule "${rule.name}" — house=${house.house_id} room="${roomName}" value=${latestValue}`)
+      console.log(`[alerts] TRIGGERED rule "${rule.name}" — house=${house.house_id} room="${roomName}"`)
     } else if (!conditionMet && state && state.status === 'triggered') {
       // RESOLVE
       await query(

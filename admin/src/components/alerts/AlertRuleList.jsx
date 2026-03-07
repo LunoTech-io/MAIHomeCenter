@@ -20,11 +20,17 @@ const SENSOR_UNITS = {
   light_level: 'lux'
 }
 
-function formatCondition(rule) {
-  const field = SENSOR_LABELS[rule.sensor_field] || rule.sensor_field
-  const unit = SENSOR_UNITS[rule.sensor_field] || ''
+function formatCondition(c) {
+  const field = SENSOR_LABELS[c.sensorField] || c.sensorField
+  const unit = SENSOR_UNITS[c.sensorField] || ''
+  return `${field} ${c.operator} ${c.threshold}${unit}`
+}
+
+function formatConditions(rule) {
+  const conditions = rule.conditions || []
+  const parts = conditions.map(formatCondition)
   const duration = rule.sustained_minutes > 0 ? ` for ${rule.sustained_minutes}m` : ''
-  return `${field} ${rule.operator} ${rule.threshold}${unit}${duration}`
+  return parts.join(' AND ') + duration
 }
 
 function AlertRuleList() {
@@ -105,7 +111,7 @@ function AlertRuleList() {
                 {rules.map(rule => (
                   <tr key={rule.id}>
                     <td><strong>{rule.name}</strong></td>
-                    <td>{formatCondition(rule)}</td>
+                    <td>{formatConditions(rule)}</td>
                     <td>
                       <span className={rule.is_active ? 'status-active' : 'status-inactive'}>
                         {rule.is_active ? 'Active' : 'Inactive'}
