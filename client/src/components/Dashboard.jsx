@@ -170,14 +170,14 @@ function Dashboard() {
     }))
   }, [meterData])
 
-  // Gas chart data
+  // Gas chart data (consumption per interval, not cumulative)
   const gasData = useMemo(() => {
     if (!meterData?.data?.length) return []
     return meterData.data
-      .filter(d => d.gas_kuub != null)
+      .filter(d => d.gas_usage != null)
       .map(d => ({
         time: formatTime(d.time),
-        gas: d.gas_kuub,
+        gas: d.gas_usage,
       }))
   }, [meterData])
 
@@ -357,7 +357,7 @@ function Dashboard() {
                     <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" m³" />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
-                    <Line type="monotone" dataKey="gas" stroke="#8b5cf6" strokeWidth={2} dot={false} name="Gas (m³)" />
+                    <Line type="monotone" dataKey="gas" stroke="#8b5cf6" strokeWidth={2} dot={false} name="Usage (m³)" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>

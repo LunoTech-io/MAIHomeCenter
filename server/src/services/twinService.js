@@ -257,18 +257,32 @@ class TwinService {
          ORDER BY recorded_at ASC`
 
     const result = await query(sql, [houseId, hours])
-    return result.rows.map(row => ({
-      time: row.recorded_at.toISOString(),
-      positive_active_power: row.positive_active_power != null ? parseFloat(row.positive_active_power) : null,
-      negative_active_power: row.negative_active_power != null ? parseFloat(row.negative_active_power) : null,
-      gas_kuub: row.gas_kuub != null ? parseFloat(row.gas_kuub) : null,
-      tariff1_pos_energy: row.tariff1_pos_energy != null ? parseFloat(row.tariff1_pos_energy) : null,
-      tariff2_pos_energy: row.tariff2_pos_energy != null ? parseFloat(row.tariff2_pos_energy) : null,
-      tariff1_neg_energy: row.tariff1_neg_energy != null ? parseFloat(row.tariff1_neg_energy) : null,
-      tariff2_neg_energy: row.tariff2_neg_energy != null ? parseFloat(row.tariff2_neg_energy) : null,
-      current_tariff: row.current_tariff != null ? parseInt(row.current_tariff) : null,
-      phase_a_current: row.phase_a_current != null ? parseFloat(row.phase_a_current) : null,
-    }))
+
+    // Compute gas_usage as delta between consecutive gas_kuub readings
+    let prevGas = null
+    return result.rows.map(row => {
+      const gasKuub = row.gas_kuub != null ? parseFloat(row.gas_kuub) : null
+      let gasUsage = null
+      if (gasKuub != null && prevGas != null) {
+        const delta = gasKuub - prevGas
+        gasUsage = delta >= 0 ? Math.round(delta * 1000) / 1000 : null // ignore resets
+      }
+      prevGas = gasKuub
+
+      return {
+        time: row.recorded_at.toISOString(),
+        positive_active_power: row.positive_active_power != null ? parseFloat(row.positive_active_power) : null,
+        negative_active_power: row.negative_active_power != null ? parseFloat(row.negative_active_power) : null,
+        gas_kuub: gasKuub,
+        gas_usage: gasUsage,
+        tariff1_pos_energy: row.tariff1_pos_energy != null ? parseFloat(row.tariff1_pos_energy) : null,
+        tariff2_pos_energy: row.tariff2_pos_energy != null ? parseFloat(row.tariff2_pos_energy) : null,
+        tariff1_neg_energy: row.tariff1_neg_energy != null ? parseFloat(row.tariff1_neg_energy) : null,
+        tariff2_neg_energy: row.tariff2_neg_energy != null ? parseFloat(row.tariff2_neg_energy) : null,
+        current_tariff: row.current_tariff != null ? parseInt(row.current_tariff) : null,
+        phase_a_current: row.phase_a_current != null ? parseFloat(row.phase_a_current) : null,
+      }
+    })
   }
 
   async getApplianceHistory(houseId, hours = 24) {
