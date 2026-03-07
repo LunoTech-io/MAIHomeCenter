@@ -184,7 +184,7 @@ function AlertRuleEditor() {
                 placeholder="0 = instant"
               />
               <small style={{ color: '#888', marginTop: '4px', display: 'block' }}>
-                0 = trigger immediately, e.g. 120 = must hold for 2 hours
+                0 = trigger immediately. Sensors report every ~15 min, so use at least 30 min for sustained rules.
               </small>
             </div>
 
