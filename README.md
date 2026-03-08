@@ -17,6 +17,7 @@ MAIHomeCenter/
 ## Features
 
 - **Real-time sensor dashboards** — temperature, setpoint, and motion (PIR) per room, powered by Recharts
+- **Temperature prediction overlays** — ML predictions are shown as dashed continuation lines on the "Temperature by Room" and "Temperature vs Setpoint" charts, providing a 3-hour forecast at 10-minute resolution; houses without predictions render normally
 - **Digital twin** — ML server fetches sensor data from Calculus API, stores via twin API, runs PyTorch predictions
 - **Multi-tenancy** — 4 organizations (ou, weller, wonenzuid, wonenlimburg) with org-scoped admin access
 - **16 monitored houses** — each with per-room sensor history
@@ -155,6 +156,9 @@ Default password for all houses: `maihome`
 | GET | `/api/twin/sensor-data/:houseId` | Get raw sensor history |
 | GET | `/api/twin/sensor-data/:houseId/grouped` | Get sensor history grouped by room (for charts) |
 | GET | `/api/twin/state/:houseId` | Get latest state per room |
+| GET | `/api/twin/meter-data/:houseId` | Get electricity & gas meter history |
+| GET | `/api/twin/appliance-data/:houseId` | Get appliance power history |
+| GET | `/api/twin/water-data/:houseId` | Get water meter history |
 | POST | `/api/twin/predictions` | Store ML prediction |
 | GET | `/api/twin/predictions/:houseId/latest` | Get latest prediction |
 
@@ -177,6 +181,16 @@ Default password for all houses: `maihome`
 | POST | `/api/broadcast` | Broadcast notification to all |
 | GET | `/api/stats` | Subscription statistics |
 
+### Alerts
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/alerts/rules` | List rules for admin's organization |
+| GET | `/api/alerts/rules/:id` | Get single rule |
+| POST | `/api/alerts/rules` | Create rule |
+| PUT | `/api/alerts/rules/:id` | Update rule |
+| DELETE | `/api/alerts/rules/:id` | Delete rule (cascades state) |
+
 ## Database Migrations
 
 Migration files live in `server/src/db/migrations/`:
@@ -186,6 +200,10 @@ Migration files live in `server/src/db/migrations/`:
 | `001_create_tables.sql` | Houses, surveys, subscriptions |
 | `002_create_twin_tables.sql` | Sensor data, predictions |
 | `003_create_admins_and_org.sql` | Admins table, organization column |
+| `004_expand_sensor_tables.sql` | Humidity/CO2/TVOC sensor columns, meter/appliance/water tables |
+| `005_create_hourly_tables.sql` | Hourly aggregates for sensor, meter, appliance, and water data |
+| `006_create_alert_tables.sql` | Alert rules and per-house/room state tracking |
+| `007_alert_composite_conditions.sql` | Migrate single-condition rules to JSONB conditions array |
 
 Run all: `node src/db/migrate.js`
 

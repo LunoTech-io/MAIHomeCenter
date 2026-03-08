@@ -1,0 +1,83 @@
+import { useState, useEffect } from 'react'
+import { getMyAlerts } from '../services/api'
+
+function formatRelativeTime(isoString) {
+  const diff = Date.now() - new Date(isoString).getTime()
+  const minutes = Math.floor(diff / 60000)
+  if (minutes < 1) return 'just now'
+  if (minutes < 60) return `${minutes}m ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  return `${days}d ago`
+}
+
+function AlertList() {
+  const [alerts, setAlerts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    loadAlerts()
+  }, [])
+
+  const loadAlerts = async () => {
+    try {
+      setLoading(true)
+      const data = await getMyAlerts()
+      setAlerts(data)
+      setError(null)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="survey-list-page">
+        <div className="page-header">
+          <h1>Alerts</h1>
+        </div>
+        <div className="loading">Loading alerts...</div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="survey-list-page">
+      <div className="page-header">
+        <h1>Alerts</h1>
+        <p>Recent alert notifications for your home</p>
+      </div>
+
+      {error && (
+        <div className="error-message">{error}</div>
+      )}
+
+      {alerts.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-icon">🔔</div>
+          <h2>No alerts yet</h2>
+          <p>Alert notifications will appear here when triggered.</p>
+        </div>
+      ) : (
+        <div className="survey-cards">
+          {alerts.map(a => (
+            <div key={a.id} className="survey-card">
+              <h3>{a.title}</h3>
+              {a.body && <p className="survey-description">{a.body}</p>}
+              <div className="survey-card-meta">
+                {a.room_name && <span>{a.room_name}</span>}
+                <span>{formatRelativeTime(a.created_at)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default AlertList

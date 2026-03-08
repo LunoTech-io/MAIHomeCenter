@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Dashboard from './components/Dashboard'
 import InstallPrompt from './components/InstallPrompt'
 import Login from './components/Login'
+import AlertList from './components/AlertList'
 import SurveyList from './components/surveys/SurveyList'
 import SurveyView from './components/surveys/SurveyView'
 
@@ -57,6 +58,13 @@ function Navigation() {
         </svg>
         <span className="nav-label">Surveys</span>
       </NavLink>
+      <NavLink to="/alerts" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+        <svg className="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+        <span className="nav-label">Alerts</span>
+      </NavLink>
       <button className="nav-item" onClick={logout}>
         <svg className="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -83,6 +91,11 @@ function AppContent() {
           <Route path="/" element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/alerts" element={
+            <ProtectedRoute>
+              <AlertList />
             </ProtectedRoute>
           } />
           <Route path="/surveys" element={
