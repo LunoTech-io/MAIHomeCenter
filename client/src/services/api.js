@@ -256,6 +256,24 @@ export async function getMyAlerts() {
   return response.json()
 }
 
+export async function markAlertRead(id) {
+  const response = await fetch(`${API_BASE}/my-alerts/${id}/read`, {
+    method: 'PATCH',
+    headers: authHeaders()
+  })
+  if (!response.ok) throw new Error('Failed to mark alert as read')
+  return response.json()
+}
+
+export async function markAllAlertsRead() {
+  const response = await fetch(`${API_BASE}/my-alerts/mark-all-read`, {
+    method: 'POST',
+    headers: authHeaders()
+  })
+  if (!response.ok) throw new Error('Failed to mark all alerts as read')
+  return response.json()
+}
+
 // Link subscription to house
 export async function linkSubscriptionToHouse(endpoint) {
   const response = await fetch(`${API_BASE}/link-subscription`, {

@@ -1060,6 +1060,33 @@ body {
   font-size: 14px;
 }
 
+/* Alert Read/Unread States */
+.alert-card-unread {
+  border-left: 3px solid var(--accent-blue);
+}
+
+.alert-card-read {
+  opacity: 0.6;
+}
+
+.mark-all-read-btn {
+  background: none;
+  border: 1px solid var(--accent-blue);
+  color: var(--accent-blue);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.2s;
+}
+
+.mark-all-read-btn:hover {
+  background: var(--accent-blue);
+  color: white;
+}
+
 .loading {
   text-align: center;
   padding: 40px;

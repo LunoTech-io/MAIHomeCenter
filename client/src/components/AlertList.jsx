@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getMyAlerts } from '../services/api'
+import { getMyAlerts, markAlertRead, markAllAlertsRead } from '../services/api'
 
 function formatRelativeTime(isoString) {
   const diff = Date.now() - new Date(isoString).getTime()
@@ -34,6 +34,28 @@ function AlertList() {
     }
   }
 
+  const unreadCount = alerts.filter(a => !a.is_read).length
+
+  const handleCardClick = async (alert) => {
+    if (alert.is_read) return
+    setAlerts(prev => prev.map(a => a.id === alert.id ? { ...a, is_read: true } : a))
+    try {
+      await markAlertRead(alert.id)
+    } catch {
+      setAlerts(prev => prev.map(a => a.id === alert.id ? { ...a, is_read: false } : a))
+    }
+  }
+
+  const handleMarkAllRead = async () => {
+    const previousAlerts = alerts
+    setAlerts(prev => prev.map(a => ({ ...a, is_read: true })))
+    try {
+      await markAllAlertsRead()
+    } catch {
+      setAlerts(previousAlerts)
+    }
+  }
+
   if (loading) {
     return (
       <div className="survey-list-page">
@@ -49,7 +71,16 @@ function AlertList() {
     <div className="survey-list-page">
       <div className="page-header">
         <h1>Alerts</h1>
-        <p>Recent alert notifications for your home</p>
+        <p>
+          {unreadCount > 0
+            ? `${unreadCount} unread alert${unreadCount !== 1 ? 's' : ''}`
+            : 'Recent alert notifications for your home'}
+        </p>
+        {unreadCount > 0 && (
+          <button className="mark-all-read-btn" onClick={handleMarkAllRead}>
+            Mark all as read
+          </button>
+        )}
       </div>
 
       {error && (
@@ -65,7 +96,12 @@ function AlertList() {
       ) : (
         <div className="survey-cards">
           {alerts.map(a => (
-            <div key={a.id} className="survey-card">
+            <div
+              key={a.id}
+              className={`survey-card ${a.is_read ? 'alert-card-read' : 'alert-card-unread'}`}
+              onClick={() => handleCardClick(a)}
+              style={{ cursor: a.is_read ? 'default' : 'pointer' }}
+            >
               <h3>{a.title}</h3>
               {a.body && <p className="survey-description">{a.body}</p>}
               <div className="survey-card-meta">

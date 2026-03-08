@@ -1,0 +1,1 @@
+ALTER TABLE alert_notifications ADD COLUMN is_read BOOLEAN DEFAULT FALSE;
