@@ -7,6 +7,7 @@ import surveyRoutes from './routes/surveys.js'
 import tenantSurveyRoutes from './routes/tenantSurveys.js'
 import twinRoutes from './routes/twin.js'
 import alertRoutes from './routes/alerts.js'
+import tenantAlertRoutes from './routes/tenantAlerts.js'
 import { getPool } from './db/index.js'
 import { startRetentionCron } from './services/retentionService.js'
 import { startAlertCron } from './services/alertService.js'
@@ -51,6 +52,7 @@ app.use('/api/surveys', surveyRoutes)
 app.use('/api/my-surveys', tenantSurveyRoutes)
 app.use('/api/twin', twinRoutes)
 app.use('/api/alerts', alertRoutes)
+app.use('/api/my-alerts', tenantAlertRoutes)
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

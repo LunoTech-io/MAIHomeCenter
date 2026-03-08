@@ -5,7 +5,7 @@ import {
 } from 'recharts'
 import NotificationButton from './NotificationButton'
 import { useAuth } from '../contexts/AuthContext'
-import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory } from '../services/api'
+import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getMyAlerts } from '../services/api'
 
 const chartTooltipStyle = {
   backgroundColor: '#16213e',
@@ -32,6 +32,17 @@ function formatTime(isoString) {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
+function formatRelativeTime(isoString) {
+  const diff = Date.now() - new Date(isoString).getTime()
+  const minutes = Math.floor(diff / 60000)
+  if (minutes < 1) return 'just now'
+  if (minutes < 60) return `${minutes}m ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  return `${days}d ago`
+}
+
 function Dashboard() {
   const { house } = useAuth()
   const houseId = house?.houseId
@@ -39,6 +50,7 @@ function Dashboard() {
   const [twinState, setTwinState] = useState(null)
   const [meterData, setMeterData] = useState(null)
   const [applianceData, setApplianceData] = useState(null)
+  const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedRoom, setSelectedRoom] = useState(null)
@@ -52,17 +64,19 @@ function Dashboard() {
       setLoading(true)
       setError(null)
       try {
-        const [history, state, meterHist, applianceHist] = await Promise.all([
+        const [history, state, meterHist, applianceHist, alertHist] = await Promise.all([
           getSensorHistory(houseId, 24),
           getTwinState(houseId),
           getMeterHistory(houseId, 24).catch(() => null),
           getApplianceHistory(houseId, 24).catch(() => null),
+          getMyAlerts().catch(() => []),
         ])
         if (!cancelled) {
           setSensorData(history)
           setTwinState(state)
           setMeterData(meterHist)
           setApplianceData(applianceHist)
+          setAlerts(alertHist)
           if (history.rooms?.length > 0 && !selectedRoom) {
             setSelectedRoom(history.rooms[0])
           }
@@ -240,6 +254,28 @@ function Dashboard() {
               ))}
             </div>
           )}
+
+          <div className="chart-card" style={{ marginBottom: 16 }}>
+            <h3>Alerts</h3>
+            {alerts.length === 0 ? (
+              <p style={{ color: '#a0aec0', margin: '8px 0' }}>No recent alerts</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {alerts.map(a => (
+                  <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                    <div>
+                      <span style={{ fontWeight: 600 }}>{a.title}</span>
+                      {a.body && <span style={{ color: '#a0aec0', marginLeft: 8 }}>{a.body}</span>}
+                    </div>
+                    <div style={{ whiteSpace: 'nowrap', color: '#a0aec0', fontSize: 12, marginLeft: 12 }}>
+                      {a.room_name && <span style={{ marginRight: 8 }}>{a.room_name}</span>}
+                      <span>{formatRelativeTime(a.created_at)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           <div className="chart-section">
             {/* Temperature by Room */}

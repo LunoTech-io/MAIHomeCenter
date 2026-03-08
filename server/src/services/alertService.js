@@ -245,6 +245,12 @@ async function evaluateRuleForHouse(rule, house) {
         data: { type: 'alert', ruleId: rule.id }
       })
 
+      await query(
+        `INSERT INTO alert_notifications (rule_id, house_id, room_name, title, body)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [rule.id, house.house_id, roomName, title, body]
+      )
+
       console.log(`[alerts] TRIGGERED rule "${rule.name}" — house=${house.house_id} room="${roomName}"`)
     } else if (!conditionMet && state && state.status === 'triggered') {
       // RESOLVE

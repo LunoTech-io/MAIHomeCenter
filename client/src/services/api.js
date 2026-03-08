@@ -249,6 +249,13 @@ export async function getTwinState(houseId) {
   return response.json()
 }
 
+// Alert notifications
+export async function getMyAlerts() {
+  const response = await fetch(`${API_BASE}/my-alerts`, { headers: authHeaders() })
+  if (!response.ok) return []
+  return response.json()
+}
+
 // Link subscription to house
 export async function linkSubscriptionToHouse(endpoint) {
   const response = await fetch(`${API_BASE}/link-subscription`, {
