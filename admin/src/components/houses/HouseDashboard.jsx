@@ -84,7 +84,10 @@ function HouseDashboard() {
   const widgets = useMemo(() => {
     if (!twinState?.rooms?.length) return null
     const rooms = twinState.rooms
-    const avgTemp = (rooms.reduce((s, r) => s + (parseFloat(r.temperature) || 0), 0) / rooms.length).toFixed(1)
+    const roomsWithTemp = rooms.filter(r => r.temperature != null)
+    const avgTemp = roomsWithTemp.length > 0
+      ? (roomsWithTemp.reduce((s, r) => s + parseFloat(r.temperature), 0) / roomsWithTemp.length).toFixed(1)
+      : '--'
     const motionRooms = rooms.filter(r => parseInt(r.pir) > 0).length
     const setpoint = rooms[0]?.temperature_set != null ? parseFloat(rooms[0].temperature_set).toFixed(1) : '--'
 
