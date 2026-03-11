@@ -249,6 +249,16 @@ export async function getTwinState(houseId) {
   return response.json()
 }
 
+// Predictions
+export async function getLatestPrediction(houseId) {
+  const response = await fetch(`${API_BASE}/twin/predictions/${houseId}/latest`, {
+    headers: authHeaders()
+  })
+  if (response.status === 404) return null
+  if (!response.ok) return null
+  return response.json()
+}
+
 // Alert notifications
 export async function getMyAlerts() {
   const response = await fetch(`${API_BASE}/my-alerts`, { headers: authHeaders() })
