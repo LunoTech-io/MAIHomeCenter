@@ -46,7 +46,7 @@ router.post('/admin/login', async (req, res) => {
       return res.status(400).json({ error: 'Username and password are required' })
     }
 
-    const result = await authService.adminLogin(username, password)
+    const result = await authService.adminLogin(username, password, req.ip)
     res.json(result)
   } catch (error) {
     console.error('Admin login error:', error)

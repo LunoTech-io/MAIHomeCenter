@@ -125,7 +125,7 @@ class AuthService {
   // Admin methods
   // =====================
 
-  async adminLogin(username, password) {
+  async adminLogin(username, password, ip = 'unknown') {
     const result = await query(
       'SELECT id, username, password_hash, organization, name FROM admins WHERE username = $1',
       [username]
@@ -141,6 +141,11 @@ class AuthService {
     if (!isValid) {
       throw new Error('Invalid username or password')
     }
+
+    await query(
+      'INSERT INTO admin_login_log (admin_id, username, ip_address) VALUES ($1, $2, $3)',
+      [admin.id, admin.username, ip]
+    )
 
     const token = this.generateToken({
       id: admin.id,
