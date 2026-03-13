@@ -4,7 +4,7 @@ import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts'
-import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getLatestPrediction } from '../../services/api'
+import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getLatestPrediction, getWeatherHistory } from '../../services/api'
 
 const chartTooltipStyle = {
   backgroundColor: '#16213e',
@@ -39,6 +39,7 @@ function HouseDashboard() {
   const [meterData, setMeterData] = useState(null)
   const [applianceData, setApplianceData] = useState(null)
   const [predictionData, setPredictionData] = useState(null)
+  const [weatherData, setWeatherData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedRoom, setSelectedRoom] = useState(null)
@@ -52,12 +53,13 @@ function HouseDashboard() {
       setLoading(true)
       setError(null)
       try {
-        const [history, state, meterHist, applianceHist, prediction] = await Promise.all([
+        const [history, state, meterHist, applianceHist, prediction, weatherHist] = await Promise.all([
           getSensorHistory(houseId, 24),
           getTwinState(houseId),
           getMeterHistory(houseId, 24).catch(() => null),
           getApplianceHistory(houseId, 24).catch(() => null),
           getLatestPrediction(houseId).catch(() => null),
+          getWeatherHistory(houseId, 24).catch(() => null),
         ])
         if (!cancelled) {
           setSensorData(history)
@@ -65,6 +67,7 @@ function HouseDashboard() {
           setMeterData(meterHist)
           setApplianceData(applianceHist)
           setPredictionData(prediction)
+          setWeatherData(weatherHist)
           if (history.rooms?.length > 0 && !selectedRoom) {
             setSelectedRoom(history.rooms[0])
           }
@@ -91,8 +94,13 @@ function HouseDashboard() {
     const motionRooms = rooms.filter(r => parseInt(r.pir) > 0).length
     const setpoint = rooms[0]?.temperature_set != null ? parseFloat(rooms[0].temperature_set).toFixed(1) : '--'
 
+    const outsideTemp = twinState.weather?.temperature != null
+      ? parseFloat(twinState.weather.temperature).toFixed(1)
+      : null
+
     const items = [
       { label: 'Avg Temperature', value: `${avgTemp} °C`, color: 'green' },
+      ...(outsideTemp != null ? [{ label: 'Outside Temp', value: `${outsideTemp} °C`, color: 'cyan' }] : []),
       { label: 'Motion Detected', value: `${motionRooms} room${motionRooms !== 1 ? 's' : ''}`, color: 'blue' },
       { label: 'Setpoint', value: `${setpoint} °C`, color: 'yellow' },
       { label: 'Rooms Monitored', value: `${rooms.length}`, color: 'red' },
@@ -138,12 +146,26 @@ function HouseDashboard() {
     return { data, rooms: Object.keys(roomMap) }
   }, [predictionData])
 
+  // Build a time→temperature lookup from weather history
+  const weatherByTime = useMemo(() => {
+    if (!weatherData?.data?.length) return {}
+    const map = {}
+    for (const d of weatherData.data) {
+      map[formatTime(d.recorded_at)] = parseFloat(d.temperature)
+    }
+    return map
+  }, [weatherData])
+
   const tempByRoomData = useMemo(() => {
     if (!sensorData?.data?.length) return []
     const actual = sensorData.data.map(d => {
-      const point = { time: formatTime(d.time) }
+      const time = formatTime(d.time)
+      const point = { time }
       for (const room of sensorData.rooms) {
         point[room] = d[`${room}_temp`]
+      }
+      if (weatherByTime[time] != null) {
+        point.outside = weatherByTime[time]
       }
       return point
     })
@@ -159,7 +181,7 @@ function HouseDashboard() {
       }
     }
     return [...actual, ...predictionPoints.data]
-  }, [sensorData, predictionPoints])
+  }, [sensorData, predictionPoints, weatherByTime])
 
   const tempVsSetpointData = useMemo(() => {
     if (!sensorData?.data?.length || !selectedRoom) return []
@@ -312,6 +334,9 @@ function HouseDashboard() {
                     if (idx === -1) return null
                     return <Line key={`${room}_pred`} type="monotone" dataKey={`${room}_pred`} stroke={ROOM_COLORS[idx % ROOM_COLORS.length]} strokeWidth={1.5} dot={false} strokeDasharray="6 4" name={`${room} (pred)`} />
                   })}
+                  {weatherData?.data?.length > 0 && (
+                    <Line type="monotone" dataKey="outside" stroke="#94a3b8" strokeWidth={2} dot={false} strokeDasharray="8 4" name="Outside" />
+                  )}
                 </LineChart>
               </ResponsiveContainer>
             </div>
