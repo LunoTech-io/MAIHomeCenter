@@ -150,27 +150,31 @@ function Dashboard() {
     return { data, rooms: Object.keys(roomMap) }
   }, [predictionData])
 
-  // Build a time→temperature lookup from weather history
-  const weatherByTime = useMemo(() => {
-    if (!weatherData?.data?.length) return {}
-    const map = {}
-    for (const d of weatherData.data) {
-      map[formatTime(d.recorded_at)] = parseFloat(d.temperature)
-    }
-    return map
+  // Build sorted weather readings for forward-fill lookup
+  const weatherReadings = useMemo(() => {
+    if (!weatherData?.data?.length) return []
+    return weatherData.data
+      .map(d => ({ time: new Date(d.recorded_at).getTime(), temp: parseFloat(d.temperature) }))
+      .sort((a, b) => a.time - b.time)
   }, [weatherData])
 
   // Chart data: temperature by room (with prediction dashed lines + outside temp)
   const tempByRoomData = useMemo(() => {
     if (!sensorData?.data?.length) return []
+    let wi = 0
     const actual = sensorData.data.map(d => {
       const time = formatTime(d.time)
       const point = { time }
       for (const room of sensorData.rooms) {
         point[room] = d[`${room}_temp`]
       }
-      if (weatherByTime[time] != null) {
-        point.outside = weatherByTime[time]
+      // Forward-fill: advance weather index to the last reading at or before this sensor time
+      if (weatherReadings.length > 0) {
+        const t = new Date(d.time).getTime()
+        while (wi < weatherReadings.length - 1 && weatherReadings[wi + 1].time <= t) wi++
+        if (weatherReadings[wi].time <= t) {
+          point.outside = weatherReadings[wi].temp
+        }
       }
       return point
     })
@@ -186,7 +190,7 @@ function Dashboard() {
       }
     }
     return [...actual, ...predictionPoints.data]
-  }, [sensorData, predictionPoints, weatherByTime])
+  }, [sensorData, predictionPoints, weatherReadings])
 
   // Chart data: temp vs setpoint for selected room (with prediction)
   const tempVsSetpointData = useMemo(() => {
