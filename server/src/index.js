@@ -11,6 +11,7 @@ import tenantAlertRoutes from './routes/tenantAlerts.js'
 import { getPool } from './db/index.js'
 import { startRetentionCron } from './services/retentionService.js'
 import { startAlertCron } from './services/alertService.js'
+import { startWeatherCron } from './services/weatherService.js'
 
 dotenv.config()
 
@@ -75,6 +76,7 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log('PostgreSQL database configured')
     startRetentionCron()
     startAlertCron()
+    startWeatherCron()
   } else {
     console.warn('DATABASE_URL not configured - survey features will be unavailable')
   }

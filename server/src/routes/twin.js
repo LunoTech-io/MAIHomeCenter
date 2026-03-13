@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import twinService from '../services/twinService.js'
+import weatherService from '../services/weatherService.js'
 
 const router = Router()
 
@@ -40,8 +41,11 @@ router.post('/predictions', async (req, res) => {
 // GET /api/twin/state/:houseId — Get latest room states
 router.get('/state/:houseId', async (req, res) => {
   try {
-    const rooms = await twinService.getLatestState(req.params.houseId)
-    res.json({ houseId: req.params.houseId, rooms })
+    const [rooms, weather] = await Promise.all([
+      twinService.getLatestState(req.params.houseId),
+      weatherService.getLatestWeather(req.params.houseId)
+    ])
+    res.json({ houseId: req.params.houseId, rooms, weather })
   } catch (error) {
     console.error('Error fetching twin state:', error)
     res.status(500).json({ error: 'Failed to fetch twin state' })
@@ -121,6 +125,32 @@ router.get('/water-data/:houseId', async (req, res) => {
   } catch (error) {
     console.error('Error fetching water history:', error)
     res.status(500).json({ error: 'Failed to fetch water history' })
+  }
+})
+
+// GET /api/twin/weather/:houseId — Get latest outside temperature
+router.get('/weather/:houseId', async (req, res) => {
+  try {
+    const weather = await weatherService.getLatestWeather(req.params.houseId)
+    if (!weather) {
+      return res.status(404).json({ error: 'No weather data found' })
+    }
+    res.json({ houseId: req.params.houseId, ...weather })
+  } catch (error) {
+    console.error('Error fetching weather:', error)
+    res.status(500).json({ error: 'Failed to fetch weather data' })
+  }
+})
+
+// GET /api/twin/weather-history/:houseId?hours=N — Get outside temperature history
+router.get('/weather-history/:houseId', async (req, res) => {
+  try {
+    const hours = parseInt(req.query.hours) || 24
+    const data = await weatherService.getWeatherHistory(req.params.houseId, hours)
+    res.json({ houseId: req.params.houseId, data })
+  } catch (error) {
+    console.error('Error fetching weather history:', error)
+    res.status(500).json({ error: 'Failed to fetch weather history' })
   }
 })
 

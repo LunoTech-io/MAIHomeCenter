@@ -56,6 +56,8 @@ class SurveyService {
   async updateQuestionSet(id, data) {
     const { title, description, notificationTitle, notificationBody, notificationUrl, expiresAt, isDismissable, isActive } = data
 
+    const expiresAtValue = expiresAt && expiresAt.trim() !== '' ? expiresAt : null
+
     const result = await query(
       `UPDATE question_sets
        SET title = COALESCE($1, title),
@@ -68,7 +70,7 @@ class SurveyService {
            is_active = COALESCE($8, is_active)
        WHERE id = $9
        RETURNING *`,
-      [title, description, notificationTitle, notificationBody, notificationUrl, expiresAt, isDismissable, isActive, id]
+      [title, description, notificationTitle, notificationBody, notificationUrl, expiresAtValue, isDismissable, isActive, id]
     )
 
     return result.rows[0]

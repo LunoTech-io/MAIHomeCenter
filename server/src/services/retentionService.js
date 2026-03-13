@@ -127,6 +127,25 @@ class RetentionService {
         `DELETE FROM twin_water_data WHERE recorded_at < NOW() - INTERVAL '${FULL_RES_HOURS} hours'`
       )
 
+      // Weather data
+      await client.query(`
+        INSERT INTO weather_data_hourly
+          (house_id, hour_bucket, avg_temperature, sample_count)
+        SELECT
+          house_id, date_trunc('hour', recorded_at),
+          AVG(temperature), COUNT(*)
+        FROM weather_data
+        WHERE recorded_at < NOW() - INTERVAL '${FULL_RES_HOURS} hours'
+        GROUP BY house_id, date_trunc('hour', recorded_at)
+        ON CONFLICT (house_id, hour_bucket)
+        DO UPDATE SET
+          avg_temperature = EXCLUDED.avg_temperature,
+          sample_count    = EXCLUDED.sample_count
+      `)
+      const weatherDel = await client.query(
+        `DELETE FROM weather_data WHERE recorded_at < NOW() - INTERVAL '${FULL_RES_HOURS} hours'`
+      )
+
       // Predictions — just delete old ones (no aggregation needed)
       const predDel = await client.query(
         `DELETE FROM twin_predictions WHERE predicted_at < NOW() - INTERVAL '${HOURLY_RETENTION_DAYS} days'`
@@ -146,6 +165,9 @@ class RetentionService {
       await client.query(
         `DELETE FROM twin_water_data_hourly WHERE hour_bucket < NOW() - INTERVAL '${HOURLY_RETENTION_DAYS} days'`
       )
+      await client.query(
+        `DELETE FROM weather_data_hourly WHERE hour_bucket < NOW() - INTERVAL '${HOURLY_RETENTION_DAYS} days'`
+      )
 
       await client.query('COMMIT')
 
@@ -154,7 +176,7 @@ class RetentionService {
         `[retention] completed in ${elapsed}s — deleted: ` +
         `sensor=${sensorDel.rowCount}, meter=${meterDel.rowCount}, ` +
         `appliance=${appDel.rowCount}, water=${waterDel.rowCount}, ` +
-        `predictions=${predDel.rowCount}`
+        `weather=${weatherDel.rowCount}, predictions=${predDel.rowCount}`
       )
     } catch (error) {
       await client.query('ROLLBACK')

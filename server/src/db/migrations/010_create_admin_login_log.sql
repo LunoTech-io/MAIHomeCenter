@@ -6,4 +6,4 @@ CREATE TABLE IF NOT EXISTS admin_login_log (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_admin_login_log_admin ON admin_login_log(admin_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_admin_login_log_admin ON admin_login_log(admin_id, created_at DESC);
