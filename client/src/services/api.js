@@ -259,6 +259,15 @@ export async function getLatestPrediction(houseId) {
   return response.json()
 }
 
+// Weather
+export async function getWeatherHistory(houseId, hours = 24) {
+  const response = await fetch(`${API_BASE}/twin/weather-history/${houseId}?hours=${hours}`, {
+    headers: authHeaders()
+  })
+  if (!response.ok) return null
+  return response.json()
+}
+
 // Alert notifications
 export async function getMyAlerts() {
   const response = await fetch(`${API_BASE}/my-alerts`, { headers: authHeaders() })
