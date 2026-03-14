@@ -141,7 +141,7 @@ body {
   background: var(--bg-card);
   border-radius: 16px;
   padding: 16px;
-  transition: all 0.2s;
+  transition: background 0.2s, transform 0.2s;
   box-shadow: var(--card-shadow);
 }
 
@@ -275,6 +275,10 @@ body {
   background: var(--bg-card-hover);
   color: var(--text-primary);
   margin-top: 12px;
+}
+
+.notification-btn.test:hover:not(:disabled) {
+  background: var(--border-subtle);
 }
 
 .notification-btn:disabled {
@@ -760,7 +764,7 @@ body {
 .demo-house-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 
 .demo-house-btn {
@@ -773,7 +777,7 @@ body {
   border: 1px solid var(--overlay-subtle);
   background: var(--bg-card-hover);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .demo-house-btn:hover {
@@ -792,6 +796,7 @@ body {
   font-size: 12px;
 }
 
+.demo-house-btn:hover .demo-house-name,
 .demo-house-btn:hover .demo-house-season {
   color: white;
 }
@@ -831,7 +836,7 @@ body {
   background: var(--bg-card);
   border-radius: 16px;
   padding: 20px;
-  transition: all 0.2s;
+  transition: background 0.2s, transform 0.2s;
   box-shadow: var(--card-shadow);
 }
 
@@ -916,9 +921,13 @@ body {
   color: var(--primary-color);
   font-size: 14px;
   cursor: pointer;
-  padding: 0;
-  margin-bottom: 12px;
-  display: block;
+  padding: 6px 0;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+.back-link:hover {
+  text-decoration: underline;
 }
 
 .survey-header h1 {
@@ -988,7 +997,7 @@ body {
   font-size: 16px;
   text-align: left;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .radio-option:hover {
@@ -1053,6 +1062,11 @@ body {
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dismiss-btn:hover:not(:disabled) {
+  background: var(--bg-card-hover);
 }
 
 .submit-btn {
@@ -1065,6 +1079,11 @@ body {
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: var(--primary-hover);
 }
 
 .submit-btn:disabled,
@@ -1112,6 +1131,11 @@ body {
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.primary-btn:hover {
+  background: var(--primary-hover);
 }
 
 .back-btn {
@@ -1124,6 +1148,11 @@ body {
   font-weight: 600;
   cursor: pointer;
   margin-top: 16px;
+  transition: background 0.2s;
+}
+
+.back-btn:hover {
+  background: var(--bg-card-hover);
 }
 
 .error-message {
@@ -1168,7 +1197,7 @@ button.alert-card-interactive.survey-card {
   font-weight: 500;
   cursor: pointer;
   margin-top: 12px;
-  transition: all 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
 .mark-all-read-btn:hover {
@@ -1186,6 +1215,7 @@ button.alert-card-interactive.survey-card {
 .view-toggle-link {
   display: inline-block;
   margin-top: 8px;
+  padding: 6px 0;
   color: var(--primary-color);
   font-size: 13px;
   font-weight: 500;
@@ -1205,6 +1235,7 @@ button.alert-card-interactive.survey-card {
   border-radius: 16px;
   padding: 12px 16px;
   margin-bottom: 16px;
+  box-shadow: var(--card-shadow);
 }
 
 .outside-temp-label {
@@ -1231,6 +1262,7 @@ button.alert-card-interactive.survey-card {
   background: var(--bg-card);
   border-radius: 16px;
   padding: 16px;
+  box-shadow: var(--card-shadow);
 }
 
 .room-gauge-header {
@@ -1298,7 +1330,7 @@ button.alert-card-interactive.survey-card {
   text-align: center;
 }
 
-/* Focus indicators (H1) */
+/* Focus indicators */
 :focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
@@ -1320,7 +1352,7 @@ textarea:focus-visible {
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
 }
 
-/* Restore focus styles for input/textarea that use outline:none */
+/* Input focus styles */
 .form-group input:focus-visible,
 .form-group textarea:focus-visible,
 .text-input:focus-visible {
@@ -1328,7 +1360,7 @@ textarea:focus-visible {
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
 }
 
-/* Alert card keyboard styles (C2) */
+/* Alert card interactive styles */
 .alert-card-interactive {
   cursor: pointer;
 }
@@ -1355,7 +1387,7 @@ textarea:focus-visible {
   border: 0;
 }
 
-/* Reduced motion (M9) */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
