@@ -1,26 +1,25 @@
-const CACHE_NAME = 'maihomecenter-v1';
+const CACHE_NAME = 'maihomecenter-v2';
 const OFFLINE_URL = '/offline.html';
 
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
+  '/offline.html',
   '/manifest.json',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png'
 ];
 
-// Install event - cache static assets
+// Install event - cache only offline fallback assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Caching static assets');
+      console.log('Caching offline fallback assets');
       return cache.addAll(STATIC_ASSETS);
     })
   );
   self.skipWaiting();
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up old caches and take control immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -34,42 +33,64 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - network-first for HTML, cache-first for hashed assets
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
 
-  // Skip API requests
+  // Skip API requests - always go to network
   if (event.request.url.includes('/api/')) return;
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+  // Navigation requests (HTML pages) - always network-first
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => {
+          return caches.match(OFFLINE_URL);
+        })
+    );
+    return;
+  }
 
-      return fetch(event.request)
-        .then((response) => {
-          // Don't cache non-successful responses
-          if (!response || response.status !== 200) {
-            return response;
+  // Hashed assets (Vite build output like main-abc123.js) - cache-first (immutable)
+  const url = new URL(event.request.url);
+  const isHashedAsset = /\.[a-f0-9]{8,}\.(js|css|woff2?|png|jpg|svg)$/.test(url.pathname);
+
+  if (isHashedAsset) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        return fetch(event.request).then((response) => {
+          if (response && response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
           }
+          return response;
+        });
+      })
+    );
+    return;
+  }
 
-          // Clone the response before caching
+  // All other static assets - network-first with cache fallback
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        if (response && response.status === 200) {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
           });
-
-          return response;
-        })
-        .catch(() => {
-          // Return offline page for navigation requests
-          if (event.request.mode === 'navigate') {
-            return caches.match(OFFLINE_URL);
-          }
-        });
-    })
+        }
+        return response;
+      })
+      .catch(() => {
+        return caches.match(event.request);
+      })
   );
 });
 
