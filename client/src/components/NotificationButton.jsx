@@ -9,7 +9,6 @@ function NotificationButton() {
     isLoading,
     error,
     subscribe,
-    sendTestNotification,
     needsInstall,
     isiOSDevice
   } = usePushNotifications()
@@ -26,79 +25,59 @@ function NotificationButton() {
     setStatus(null)
     const result = await subscribe()
     if (result.success) {
-      setStatus({ type: 'success', message: 'Notifications enabled successfully!' })
+      setStatus({ type: 'success', message: 'Notifications enabled!' })
     } else {
       setStatus({ type: 'error', message: result.error || 'Failed to enable notifications' })
     }
   }
 
-  const handleTest = async () => {
-    setStatus(null)
-    const result = await sendTestNotification()
-    if (result.success) {
-      setStatus({ type: 'success', message: 'Test notification sent!' })
-    } else {
-      setStatus({ type: 'error', message: result.error || 'Failed to send test notification' })
-    }
-  }
+  // Already subscribed — nothing to show
+  if (isSubscribed) return null
 
-  // iOS needs PWA to be installed to Home Screen
+  // iOS needs PWA installed first
   if (needsInstall) {
     return (
-      <div className="notification-status ios-install">
-        <strong>To enable notifications on iOS:</strong>
-        <ol>
-          <li>Tap the Share button <span style={{fontSize: '1.2em'}}>⎋</span> at the bottom of Safari</li>
-          <li>Scroll down and tap "Add to Home Screen"</li>
-          <li>Open the app from your Home Screen</li>
-          <li>Then enable notifications</li>
-        </ol>
+      <div className="notification-section">
+        <h2>Notifications</h2>
+        <div className="notification-status ios-install">
+          <strong>To enable notifications on iOS:</strong>
+          <ol>
+            <li>Tap the Share button at the bottom of Safari</li>
+            <li>Scroll down and tap "Add to Home Screen"</li>
+            <li>Open the app from your Home Screen</li>
+            <li>Then enable notifications</li>
+          </ol>
+        </div>
       </div>
     )
   }
 
-  if (!isSupported) {
-    return (
-      <div className="notification-status error">
-        Push notifications are not supported in this browser.
-        {isiOSDevice && ' iOS requires iOS 16.4 or later.'}
-      </div>
-    )
-  }
+  // Not supported
+  if (!isSupported) return null
 
+  // Permission denied
   if (permission === 'denied') {
     return (
-      <div className="notification-status error">
-        Notifications are blocked. Please enable them in your browser settings.
+      <div className="notification-section">
+        <h2>Notifications</h2>
+        <div className="notification-status error">
+          Notifications are blocked. Please enable them in your browser settings.
+        </div>
       </div>
     )
   }
 
+  // Not subscribed — show enable button
   return (
-    <>
-      {isSubscribed ? (
-        <>
-          <button className="notification-btn enabled" disabled>
-            <span>🔔</span>
-            Notifications Enabled
-          </button>
-          <button
-            className="notification-btn test"
-            onClick={handleTest}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Sending...' : 'Send Test Notification'}
-          </button>
-        </>
-      ) : (
-        <button
-          className="notification-btn enable"
-          onClick={handleEnable}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Enabling...' : 'Enable Notifications'}
-        </button>
-      )}
+    <div className="notification-section">
+      <h2>Notifications</h2>
+      <button
+        className="notification-btn enable"
+        onClick={handleEnable}
+        disabled={isLoading}
+      >
+        {isLoading ? 'Enabling...' : 'Enable Notifications'}
+      </button>
 
       <div aria-live="polite" role="status">
         {status && (
@@ -107,7 +86,7 @@ function NotificationButton() {
           </div>
         )}
       </div>
-    </>
+    </div>
   )
 }
 

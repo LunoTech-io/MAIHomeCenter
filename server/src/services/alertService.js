@@ -34,6 +34,29 @@ function validateConditions(conditions) {
 // CRUD
 // =====================
 
+async function getHouseAlertSummary(organization, startOfDay, startOfWeek) {
+  const result = await query(
+    `SELECT
+       an.house_id,
+       h.name AS house_name,
+       COUNT(*) FILTER (WHERE an.created_at >= $2) AS alerts_today,
+       COUNT(*) FILTER (WHERE an.created_at >= $3) AS alerts_week
+     FROM alert_notifications an
+     JOIN houses h ON h.house_id = an.house_id
+     WHERE h.organization = $1
+       AND an.created_at >= $3
+     GROUP BY an.house_id, h.name
+     ORDER BY alerts_today DESC, alerts_week DESC`,
+    [organization, startOfDay, startOfWeek]
+  )
+  return result.rows.map(r => ({
+    houseId: r.house_id,
+    houseName: r.house_name,
+    alertsToday: parseInt(r.alerts_today),
+    alertsWeek: parseInt(r.alerts_week),
+  }))
+}
+
 async function getRulesByOrganization(organization) {
   const result = await query(
     'SELECT * FROM alert_rules WHERE organization = $1 ORDER BY created_at DESC',
@@ -289,6 +312,7 @@ export function stopAlertCron() {
 }
 
 export default {
+  getHouseAlertSummary,
   getRulesByOrganization,
   getRuleById,
   createRule,

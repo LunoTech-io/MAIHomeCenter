@@ -481,10 +481,7 @@ function Dashboard() {
         </>
       )}
 
-      <div className="notification-section">
-        <h2>Notifications</h2>
-        <NotificationButton />
-      </div>
+      <NotificationButton />
     </div>
   )
 }

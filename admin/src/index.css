@@ -279,6 +279,7 @@ body {
   display: flex;
   gap: 8px;
   padding: 12px 16px;
+  padding-right: 48px;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -933,6 +934,83 @@ body {
 
 .house-form .form-row {
   margin-bottom: 12px;
+}
+
+/* House Filters */
+.house-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.house-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  box-shadow: var(--card-shadow);
+}
+
+.house-filter-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+.house-filter-btn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.house-filter-btn.active .filter-count {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.filter-count {
+  background: var(--overlay-subtle);
+  color: var(--text-secondary);
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 22px;
+  text-align: center;
+}
+
+/* Alert badges in table */
+.alert-count-cell {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.alert-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.alert-badge.today {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-red);
+}
+
+.alert-badge.week {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-yellow);
 }
 
 .house-org {

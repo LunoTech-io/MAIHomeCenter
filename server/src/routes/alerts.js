@@ -7,6 +7,22 @@ const router = Router()
 // All endpoints require admin auth
 router.use(authenticateAdmin)
 
+// GET /api/alerts/house-summary - Alert counts by house for today/week
+router.get('/house-summary', async (req, res) => {
+  try {
+    const org = req.admin.organization
+    const now = new Date()
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
+    const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay() + 1).toISOString()
+
+    const result = await alertService.getHouseAlertSummary(org, startOfDay, startOfWeek)
+    res.json(result)
+  } catch (error) {
+    console.error('Error fetching house alert summary:', error)
+    res.status(500).json({ error: 'Failed to fetch house alert summary' })
+  }
+})
+
 // GET /api/alerts/rules - List rules for admin's organization
 router.get('/rules', async (req, res) => {
   try {
