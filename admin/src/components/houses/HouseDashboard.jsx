@@ -7,10 +7,10 @@ import {
 import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getLatestPrediction, getWeatherHistory } from '../../services/api'
 
 const chartTooltipStyle = {
-  backgroundColor: '#16213e',
-  border: '1px solid rgba(255,255,255,0.1)',
+  backgroundColor: 'var(--bg-card)',
+  border: '1px solid var(--border-subtle)',
   borderRadius: '8px',
-  color: '#fff'
+  color: 'var(--text-primary)'
 }
 
 const ROOM_COLORS = [
@@ -325,9 +325,9 @@ function HouseDashboard() {
               <h3>Temperature by Room (24h)</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={tempByRoomData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                  <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                  <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} domain={['dataMin - 1', 'dataMax + 1']} unit="°C" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
+                  <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                  <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} domain={['dataMin - 1', 'dataMax + 1']} unit="°C" />
                   <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
                   {sensorData.rooms.map((room, i) => (
@@ -353,7 +353,7 @@ function HouseDashboard() {
                   <select
                     value={selectedRoom || ''}
                     onChange={e => setSelectedRoom(e.target.value)}
-                    style={{ marginLeft: 12, fontSize: 13, padding: '2px 8px', background: '#1a1a2e', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 4 }}
+                    style={{ marginLeft: 12, fontSize: 13, padding: '4px 10px', background: 'var(--bg-dark)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)', borderRadius: 6 }}
                   >
                     {sensorData.rooms.map(r => (
                       <option key={r} value={r}>{r}</option>
@@ -363,9 +363,9 @@ function HouseDashboard() {
               </h3>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={tempVsSetpointData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                  <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                  <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} domain={['dataMin - 1', 'dataMax + 1']} unit="°C" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
+                  <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                  <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} domain={['dataMin - 1', 'dataMax + 1']} unit="°C" />
                   <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
                   <Line type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} name="Actual °C" />
@@ -382,9 +382,9 @@ function HouseDashboard() {
               <h3>Motion Activity (24h)</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={motionData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                  <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                  <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
+                  <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                  <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                   <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
                   {sensorData.rooms.map((room, i) => (
@@ -400,10 +400,10 @@ function HouseDashboard() {
                 <h3>Humidity & CO2 (24h)</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={humidityData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                    <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                    <YAxis yAxisId="humidity" tick={{ fill: '#a0aec0', fontSize: 11 }} unit="%" />
-                    <YAxis yAxisId="co2" orientation="right" tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" ppm" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
+                    <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                    <YAxis yAxisId="humidity" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit="%" />
+                    <YAxis yAxisId="co2" orientation="right" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" ppm" />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
                     {humidityRooms.map((room, i) => (
@@ -423,9 +423,9 @@ function HouseDashboard() {
                 <h3>Electricity (24h)</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={electricityData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                    <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                    <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" W" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
+                    <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
                     <Line type="monotone" dataKey="draw" stroke="#f59e0b" strokeWidth={2} dot={false} name="Draw (W)" />
@@ -441,9 +441,9 @@ function HouseDashboard() {
                 <h3>Gas Usage (24h)</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={gasData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                    <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                    <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" m³" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
+                    <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" m³" />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
                     <Line type="monotone" dataKey="gas" stroke="#8b5cf6" strokeWidth={2} dot={false} name="Usage (m³)" />
@@ -458,9 +458,9 @@ function HouseDashboard() {
                 <h3>Appliance Power (24h)</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={applianceChartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                    <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                    <YAxis tick={{ fill: '#a0aec0', fontSize: 11 }} unit=" W" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
+                    <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
                     {applianceNames.map((name, i) => (

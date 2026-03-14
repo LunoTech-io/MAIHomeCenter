@@ -100,11 +100,13 @@ function NotificationButton() {
         </button>
       )}
 
-      {status && (
-        <div className={`notification-status ${status.type}`}>
-          {status.message}
-        </div>
-      )}
+      <div aria-live="polite" role="status">
+        {status && (
+          <div className={`notification-status ${status.type}`}>
+            {status.message}
+          </div>
+        )}
+      </div>
     </>
   )
 }

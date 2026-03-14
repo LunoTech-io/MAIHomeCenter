@@ -84,7 +84,7 @@ function AlertList() {
       </div>
 
       {error && (
-        <div className="error-message">{error}</div>
+        <div className="error-message" role="alert">{error}</div>
       )}
 
       {alerts.length === 0 ? (
@@ -94,22 +94,38 @@ function AlertList() {
           <p>Alert notifications will appear here when triggered.</p>
         </div>
       ) : (
-        <div className="survey-cards">
-          {alerts.map(a => (
-            <div
-              key={a.id}
-              className={`survey-card ${a.is_read ? 'alert-card-read' : 'alert-card-unread'}`}
-              onClick={() => handleCardClick(a)}
-              style={{ cursor: a.is_read ? 'default' : 'pointer' }}
-            >
-              <h3>{a.title}</h3>
-              {a.body && <p className="survey-description">{a.body}</p>}
-              <div className="survey-card-meta">
-                {a.room_name && <span>{a.room_name}</span>}
-                <span>{formatRelativeTime(a.created_at)}</span>
+        <div className="survey-cards" role="list" aria-label="Alert notifications">
+          {alerts.map(a => {
+            const isUnread = !a.is_read
+            return isUnread ? (
+              <button
+                key={a.id}
+                className={`survey-card alert-card-unread alert-card-interactive`}
+                onClick={() => handleCardClick(a)}
+                aria-label={`Mark as read: ${a.title}`}
+              >
+                <h2 className="alert-title">{a.title}</h2>
+                {a.body && <p className="survey-description">{a.body}</p>}
+                <div className="survey-card-meta">
+                  {a.room_name && <span>{a.room_name}</span>}
+                  <span>{formatRelativeTime(a.created_at)}</span>
+                </div>
+              </button>
+            ) : (
+              <div
+                key={a.id}
+                className="survey-card alert-card-read"
+                role="listitem"
+              >
+                <h2 className="alert-title">{a.title}</h2>
+                {a.body && <p className="survey-description">{a.body}</p>}
+                <div className="survey-card-meta">
+                  {a.room_name && <span>{a.room_name}</span>}
+                  <span>{formatRelativeTime(a.created_at)}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>

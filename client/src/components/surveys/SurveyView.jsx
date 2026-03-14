@@ -104,8 +104,8 @@ function SurveyView() {
   if (success) {
     return (
       <div className="survey-view-page">
-        <div className="success-state">
-          <div className="success-icon">✓</div>
+        <div className="success-state" role="status" aria-live="polite">
+          <div className="success-icon" aria-hidden="true">✓</div>
           <h2>Thank You!</h2>
           <p>Your responses have been submitted successfully.</p>
           <button className="primary-btn" onClick={() => navigate('/surveys')}>
@@ -129,7 +129,7 @@ function SurveyView() {
       </div>
 
       {error && (
-        <div className="error-message">{error}</div>
+        <div className="error-message" role="alert">{error}</div>
       )}
 
       <form onSubmit={handleSubmit} className="survey-form">

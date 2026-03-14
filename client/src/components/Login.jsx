@@ -47,9 +47,9 @@ function Login() {
           <p>Sign in to access your dashboard</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit} className="login-form" noValidate>
           {(error || authError) && (
-            <div className="login-error">
+            <div className="login-error" id="login-error" role="alert">
               {error || authError}
             </div>
           )}
@@ -65,6 +65,7 @@ function Login() {
               placeholder="Enter your house ID"
               autoComplete="username"
               required
+              aria-describedby={(error || authError) ? 'login-error' : undefined}
             />
           </div>
 
