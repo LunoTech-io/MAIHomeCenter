@@ -78,28 +78,38 @@ class DigitalTwinModel(nn.Module):
         num_targets = len(self.target_rooms)
         output_dim = num_targets * self.forecast_steps
         
-        # Expanded MLP to handle multi-room complexity
-        self.net = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(self.lookback_steps * self.input_dim, 1024),
+
+        self.hidden_size = 128
+        self.num_layers = 2
+        
+        self.lstm = nn.LSTM(
+            input_size=self.input_dim, 
+            hidden_size=self.hidden_size, 
+            num_layers=self.num_layers, 
+            batch_first=True,
+            dropout=0.2
+        )
+        
+        self.fc = nn.Sequential(
+            nn.Linear(self.hidden_size, 128),
             nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(1024, 512),
-            nn.ReLU(),
-            nn.Linear(512, output_dim) 
+            nn.Linear(128, output_dim)
         )
 
         if model_path and os.path.exists(model_path):
             self.load_state_dict(torch.load(model_path, map_location='cpu'))
             self.eval()
-            print(f"✅ Weights loaded for {num_targets} rooms.")
+            print(f"✅ LSTM Weights loaded for {num_targets} rooms.")
         else:
-            print(f"⚠️ Random weights initialized for {num_targets} rooms.")
+            print(f"⚠️ Random LSTM weights initialized.")
 
     def forward(self, x):
-        return self.net(x)
+        lstm_out, _ = self.lstm(x)
+        last_time_step = lstm_out[:, -1, :] 
+        return self.fc(last_time_step)
 
-    def predict_future(self, input_tensor):
+    # 注意：这里多加了一个参数 df_processed，为了安全获取当前真实温度
+    def predict_future(self, input_tensor, df_processed):
         if input_tensor.dim() == 2:
             x = input_tensor.unsqueeze(0)
         else:
@@ -107,21 +117,31 @@ class DigitalTwinModel(nn.Module):
 
         with torch.no_grad():
             raw_out = self.forward(x) 
+            # 现在 room_forecasts 里存的是归一化的变化量 (ΔT / 35)
             room_forecasts = raw_out.view(len(self.target_rooms), self.forecast_steps)
         
         result_dict = {
             "meta": {
-                "type": "Multi-Room Prediction (No Watermeter)",
+                "type": "Multi-Room ΔT Prediction (Residual Learning)",
                 "horizon": "3 Hours",
                 "resolution": "10 min"
             },
             "rooms": {}
         }
 
-        # Denormalize: $T_{actual} = T_{norm} \times 35 + 10$
         for i, room_name in enumerate(self.target_rooms):
-            room_data = room_forecasts[i].tolist()
-            actual_temps = [round(t * 35 + 10, 2) for t in room_data]
+            # 1. 拿到当前房间在历史窗口中的最后一个真实温度 (未归一化的绝对度数)
+            current_actual_temp = df_processed[room_name].iloc[-1]
+            
+            # 2. 拿到模型预测的归一化偏移量
+            deltas_norm = room_forecasts[i].tolist()
+            
+            # 3. 核心计算：实际温度 = 当前温度 + (归一化偏移量 * 35)
+            # 因为 ΔT_norm = ΔT / 35，所以 ΔT = ΔT_norm * 35
+            actual_temps = [
+                round(current_actual_temp + (d * 35), 2) 
+                for d in deltas_norm
+            ]
             
             result_dict["rooms"][room_name] = [
                 {"offset_min": (j+1)*10, "temp": t} 
