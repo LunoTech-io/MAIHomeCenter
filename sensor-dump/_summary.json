@@ -1,0 +1,1074 @@
+{
+  "WONING 16 - digitale meter": {
+    "P1": [
+      {
+        "key": "p1|current_tariff#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1|gas.kuub#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1|negative_active_power#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1|phase_a.current#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1|phase_a.negative_active_power#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1|phase_a.positive_active_power#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1|positive_active_power#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1|tariff1.negative_active_energy#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1|tariff1.positive_active_energy#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1|tariff2.negative_active_energy#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1|tariff2.positive_active_energy#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  },
+  "WONING 16 - Badkamer": {
+    "Bewegingssensor": [
+      {
+        "key": "bewegingssensor|battery#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "bewegingssensor|light_level#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "bewegingssensor|pir_status#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ],
+    "Thermostaat wt101": [
+      {
+        "key": "thermostaat_wt101|battery#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|motor.position#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|motor.stroke#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|temperature#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|temperature.set#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  },
+  "WONING 16 - Eetkamer": {
+    "Bewegingssensor": [
+      {
+        "key": "bewegingssensor|battery#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "bewegingssensor|light_level#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "bewegingssensor|pir_status#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  },
+  "WONING 16 - gasmeter": {
+    "P1 port": [
+      {
+        "key": "p1_port|current_tariff#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1_port|gas.kuub#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1_port|negative_active_power#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1_port|phase_a.current#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1_port|phase_a.negative_active_power#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1_port|phase_a.positive_active_power#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1_port|positive_active_power#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1_port|tariff1.negative_active_energy#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1_port|tariff1.positive_active_energy#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1_port|tariff2.negative_active_energy#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "p1_port|tariff2.positive_active_energy#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  },
+  "WONING 16 - Hal beneden": {
+    "Deursensor": [
+      {
+        "key": "deursensor|accMotion#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deursensor|digital#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deursensor|door.status#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deursensor|pulseAbs#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deursensor|vdd#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deursensor|x#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deursensor|y#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deursensor|z#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ],
+    "Thermostaat wt101": [
+      {
+        "key": "thermostaat_wt101|battery#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|motor.position#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|motor.stroke#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|temperature#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|temperature.set#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  },
+  "WONING 16 - hal boven": {
+    "Bewegingssensor": [
+      {
+        "key": "bewegingssensor|battery#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "bewegingssensor|light_level#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "bewegingssensor|pir_status#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  },
+  "WONING 16 - Keuken": {
+    "Bewegingssensor": [
+      {
+        "key": "bewegingssensor|battery#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "bewegingssensor|light_level#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "bewegingssensor|pir_status#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ],
+    "Thermostaat wt101": [
+      {
+        "key": "thermostaat_wt101|battery#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|motor.position#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|motor.stroke#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|temperature#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|temperature.set#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  },
+  "WONING 16 - Koelkast": {
+    "Milesight WS523 smart portable socket": [
+      {
+        "key": "milesight_ws523_smart_portable_socket|active_power#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "milesight_ws523_smart_portable_socket|current#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "milesight_ws523_smart_portable_socket|state#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "milesight_ws523_smart_portable_socket|total_active_energy#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "milesight_ws523_smart_portable_socket|voltage#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  },
+  "WONING 16 - Living": {
+    "AM307": [
+      {
+        "key": "am307|battery#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "am307|buzzer_status#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "am307|co2#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "am307|humidity#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "am307|light_level#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "am307|pir_status#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "am307|power_on#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "am307|pressure#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "am307|temperature#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "am307|tvoc#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  },
+  "WONING 16 - slaapkamer 1": {
+    "Deurcontact Elsys EMS": [
+      {
+        "key": "deurcontact|accMotion#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|digital#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|door.status#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|pulseAbs#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|vdd#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|x#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|y#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|z#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ],
+    "Thermostaat wt101": [
+      {
+        "key": "thermostaat_wt101|battery#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|motor.position#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|motor.stroke#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|temperature#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|temperature.set#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  },
+  "WONING 16 - slaapkamer 2": {
+    "Deurcontact Elsys EMS": [
+      {
+        "key": "deurcontact|accMotion#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|digital#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|door.status#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|pulseAbs#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|vdd#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|x#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|y#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|z#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ],
+    "Thermostaat wt101": [
+      {
+        "key": "thermostaat_wt101|battery#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": 78.0
+        }
+      },
+      {
+        "key": "thermostaat_wt101|motor.position#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": 0.0
+        }
+      },
+      {
+        "key": "thermostaat_wt101|motor.stroke#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": 517.0
+        }
+      },
+      {
+        "key": "thermostaat_wt101|temperature#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": 18.1
+        }
+      },
+      {
+        "key": "thermostaat_wt101|temperature.set#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": 20.0
+        }
+      }
+    ]
+  },
+  "WONING 16 - slaapkamer 3": {
+    "Deurcontact Elsys EMS": [
+      {
+        "key": "deurcontact|accMotion#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|digital#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|door.status#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|pulseAbs#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|vdd#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|x#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|y#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "deurcontact|z#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ],
+    "Thermostaat wt101": [
+      {
+        "key": "thermostaat_wt101|battery#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|motor.position#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|motor.stroke#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|temperature#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "thermostaat_wt101|temperature.set#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  },
+  "WONING 16 - TV": {
+    "Milesight WS523 smart portable socket": [
+      {
+        "key": "milesight_ws523_smart_portable_socket|active_power#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "milesight_ws523_smart_portable_socket|current#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "milesight_ws523_smart_portable_socket|state#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "milesight_ws523_smart_portable_socket|total_active_energy#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "milesight_ws523_smart_portable_socket|voltage#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  },
+  "WONING 16 - Wasmachine": {
+    "Milesight WS523 smart portable socket": [
+      {
+        "key": "milesight_ws523_smart_portable_socket|active_power#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "milesight_ws523_smart_portable_socket|current#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "milesight_ws523_smart_portable_socket|state#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "milesight_ws523_smart_portable_socket|total_active_energy#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "milesight_ws523_smart_portable_socket|voltage#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  },
+  "WONING 16 - watermeter": {
+    "EM300": [
+      {
+        "key": "em300|battery#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "em300|humidity#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "em300|pulsecounter.pulses#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      },
+      {
+        "key": "em300|temperature#LAST",
+        "count": 121,
+        "sample": {
+          "key": "2026-03-07T09:37:00+00:00",
+          "value": null
+        }
+      }
+    ]
+  }
+}

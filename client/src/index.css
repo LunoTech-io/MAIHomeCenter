@@ -1226,6 +1226,123 @@ button.alert-card-interactive.survey-card {
   text-decoration: underline;
 }
 
+.view-toggle-links {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+/* Room Summary Table */
+.summary-outside {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  box-shadow: var(--card-shadow);
+}
+
+.summary-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--bg-card);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+
+.summary-header {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .summary-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    padding: 10px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    background: var(--overlay-subtle);
+  }
+
+  .summary-header span:nth-child(2) {
+    text-align: center;
+  }
+}
+
+.summary-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 16px 20px;
+  border-top: 1px solid var(--overlay-subtle);
+}
+
+.summary-row:first-of-type {
+  border-top: none;
+}
+
+@media (max-width: 639px) {
+  .summary-row {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 4px 12px;
+  }
+
+  .summary-notes {
+    grid-column: 1 / -1;
+  }
+}
+
+.summary-room {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.summary-room-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.summary-readings {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.summary-face {
+  text-align: center;
+}
+
+.face-emoji {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.summary-notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.summary-note {
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: var(--overlay-subtle);
+  padding: 2px 10px;
+  border-radius: 10px;
+}
+
 /* Gauge Dashboard */
 .outside-temp-gauge {
   display: flex;

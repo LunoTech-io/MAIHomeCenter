@@ -16,14 +16,12 @@ import { startWeatherCron } from './services/weatherService.js'
 dotenv.config()
 
 const app = express()
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 5801
 
 // CORS configuration
 const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://localhost:5175',
-  'http://localhost:5176',
+  'http://localhost:5802',
+  'http://localhost:5803',
   'https://maihome.nl',
   'https://www.maihome.nl',
   'https://admin.maihome.nl',

@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class Settings(BaseSettings):
     PORT: int = 8000
-    TWIN_SERVER_URL: str = "http://localhost:3001"
+    TWIN_SERVER_URL: str = "http://localhost:5801"
     CALCULUS_API_URL: str = "https://api.calculus.group/v3"
     CALCULUS_API_KEY: str = ""
     HOUSE_ID: str = "woning16"

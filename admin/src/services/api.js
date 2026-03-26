@@ -247,6 +247,17 @@ export async function deleteHouse(id) {
 
 // Alert Summary API
 
+export async function getHousesByAlertRule() {
+  const response = await fetch(`${API_BASE}/alerts/houses-by-rule`, {
+    headers: authHeaders()
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch houses by alert rule')
+  }
+  return response.json()
+}
+
 export async function getHouseAlertSummary() {
   const response = await fetch(`${API_BASE}/alerts/house-summary`, {
     headers: authHeaders()

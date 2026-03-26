@@ -307,7 +307,10 @@ function Dashboard() {
       <header className="dashboard-header">
         <h1>MAIHomeCenter</h1>
         <p>{house?.name || 'Dashboard'}</p>
-        <Link to="/status" className="view-toggle-link">Room status</Link>
+        <div className="view-toggle-links">
+          <Link to="/status" className="view-toggle-link">Gauges</Link>
+          <Link to="/summary" className="view-toggle-link">Summary</Link>
+        </div>
       </header>
 
       {!hasData ? (

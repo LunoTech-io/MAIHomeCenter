@@ -7,6 +7,17 @@ const router = Router()
 // All endpoints require admin auth
 router.use(authenticateAdmin)
 
+// GET /api/alerts/houses-by-rule - Houses grouped by which alert rule triggered (last 30 days)
+router.get('/houses-by-rule', async (req, res) => {
+  try {
+    const result = await alertService.getHousesByAlertRule(req.admin.organization)
+    res.json(result)
+  } catch (error) {
+    console.error('Error fetching houses by alert rule:', error)
+    res.status(500).json({ error: 'Failed to fetch houses by alert rule' })
+  }
+})
+
 // GET /api/alerts/house-summary - Alert counts by house for today/week
 router.get('/house-summary', async (req, res) => {
   try {

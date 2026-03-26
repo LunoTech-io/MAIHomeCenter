@@ -181,7 +181,10 @@ function GaugeDashboard() {
       <header className="dashboard-header">
         <h1>MAIHomeCenter</h1>
         <p>{house?.name || 'Room Status'}</p>
-        <Link to="/" className="view-toggle-link">Charts view</Link>
+        <div className="view-toggle-links">
+          <Link to="/" className="view-toggle-link">Charts</Link>
+          <Link to="/summary" className="view-toggle-link">Summary</Link>
+        </div>
       </header>
 
       {loading && <div className="loading-message">Loading...</div>}

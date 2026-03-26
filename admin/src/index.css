@@ -676,6 +676,56 @@ body {
   border-radius: 8px;
 }
 
+/* Alert Rule Shortcuts */
+.alert-rule-shortcuts {
+  margin-bottom: 12px;
+}
+
+.shortcut-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 8px;
+}
+
+.shortcut-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.shortcut-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.shortcut-btn:hover {
+  border-color: var(--accent-red);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.shortcut-count {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-red);
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
 /* House Selection */
 .house-selection {
   margin-top: 8px;

@@ -8,6 +8,7 @@ import Login from './components/Login'
 // Lazy-load heavy routes (Recharts ~200KB, react-gauge-component ~50KB)
 const Dashboard = lazy(() => import('./components/Dashboard'))
 const GaugeDashboard = lazy(() => import('./components/GaugeDashboard'))
+const RoomSummary = lazy(() => import('./components/RoomSummary'))
 const AlertList = lazy(() => import('./components/AlertList'))
 const SurveyList = lazy(() => import('./components/surveys/SurveyList'))
 const SurveyView = lazy(() => import('./components/surveys/SurveyView'))
@@ -133,6 +134,11 @@ function AppContent() {
             <Route path="/status" element={
               <ProtectedRoute>
                 <GaugeDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/summary" element={
+              <ProtectedRoute>
+                <RoomSummary />
               </ProtectedRoute>
             } />
             <Route path="/alerts" element={

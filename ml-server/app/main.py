@@ -39,9 +39,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         settings.TWIN_SERVER_URL,
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:3002",
+        "http://localhost:5801",
+        "http://localhost:5802",
+        "http://localhost:5803",
     ],
     allow_credentials=True,
     allow_methods=["*"],

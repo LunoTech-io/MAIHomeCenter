@@ -34,6 +34,28 @@ function validateConditions(conditions) {
 // CRUD
 // =====================
 
+async function getHousesByAlertRule(organization) {
+  const result = await query(
+    `SELECT
+       ar.id AS rule_id,
+       ar.name AS rule_name,
+       array_agg(DISTINCT h.id) AS house_ids
+     FROM alert_notifications an
+     JOIN alert_rules ar ON ar.id = an.rule_id
+     JOIN houses h ON h.house_id = an.house_id
+     WHERE h.organization = $1
+       AND an.created_at >= NOW() - INTERVAL '30 days'
+     GROUP BY ar.id, ar.name
+     ORDER BY ar.name`,
+    [organization]
+  )
+  return result.rows.map(r => ({
+    ruleId: r.rule_id,
+    ruleName: r.rule_name,
+    houseIds: r.house_ids,
+  }))
+}
+
 async function getHouseAlertSummary(organization, startOfDay, startOfWeek) {
   const result = await query(
     `SELECT
@@ -312,6 +334,7 @@ export function stopAlertCron() {
 }
 
 export default {
+  getHousesByAlertRule,
   getHouseAlertSummary,
   getRulesByOrganization,
   getRuleById,

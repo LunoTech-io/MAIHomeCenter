@@ -57,7 +57,7 @@ npm install
 npm run dev
 ```
 
-Server runs at http://localhost:3001
+Server runs at http://localhost:5801
 
 ### 3. Start the Client
 
@@ -67,7 +67,7 @@ npm install
 npm run dev
 ```
 
-Client runs at http://localhost:5173
+Client runs at http://localhost:5802
 
 ### 4. Start the Admin Panel
 
@@ -77,7 +77,7 @@ npm install
 npm run dev
 ```
 
-Admin runs at http://localhost:5174
+Admin runs at http://localhost:5803
 
 ### 5. Start the ML Server (optional)
 
@@ -95,7 +95,7 @@ uvicorn app.main:app --port 8000
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `PORT` | Server port | `3001` |
+| `PORT` | Server port | `5801` |
 | `DATABASE_URL` | PostgreSQL connection string | — |
 | `JWT_SECRET` | Secret for JWT tokens | dev fallback |
 | `VAPID_PUBLIC_KEY` | Web Push public key | — |
@@ -109,7 +109,7 @@ Generate VAPID keys: `npx web-push generate-vapid-keys`
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `PORT` | ML server port | `8000` |
-| `TWIN_SERVER_URL` | Twin API base URL | `http://localhost:3002` |
+| `TWIN_SERVER_URL` | Twin API base URL | `http://localhost:5801` |
 | `CALCULUS_API_URL` | External sensor API | `https://api.calculus.group/v3` |
 | `CALCULUS_API_KEY` | API key for Calculus | — |
 | `PREDICTION_INTERVAL_MINUTES` | Prediction cycle interval | `15` |

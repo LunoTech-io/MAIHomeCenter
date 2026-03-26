@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { getHouses, sendSurvey } from '../../services/api'
+import { getHouses, sendSurvey, getHousesByAlertRule } from '../../services/api'
 
 function SendSurveyModal({ survey, onClose }) {
   const [houses, setHouses] = useState([])
+  const [alertRuleGroups, setAlertRuleGroups] = useState([])
   const [selectedHouses, setSelectedHouses] = useState([])
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
@@ -10,20 +11,32 @@ function SendSurveyModal({ survey, onClose }) {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    loadHouses()
+    loadData()
   }, [])
 
-  const loadHouses = async () => {
+  const loadData = async () => {
     try {
       setLoading(true)
-      const data = await getHouses()
-      setHouses(data)
+      const [housesData, alertData] = await Promise.all([
+        getHouses(),
+        getHousesByAlertRule().catch(() => [])
+      ])
+      setHouses(housesData)
+      setAlertRuleGroups(alertData)
       setError(null)
     } catch (err) {
       setError(err.message)
     } finally {
       setLoading(false)
     }
+  }
+
+  const selectByAlertRule = (houseIds) => {
+    setSelectedHouses(prev => {
+      const set = new Set(prev)
+      for (const id of houseIds) set.add(id)
+      return [...set]
+    })
   }
 
   const toggleHouse = (houseId) => {
@@ -96,6 +109,25 @@ function SendSurveyModal({ survey, onClose }) {
           ) : (
             <>
               <div className="house-selection">
+                {alertRuleGroups.length > 0 && (
+                  <div className="alert-rule-shortcuts">
+                    <label className="shortcut-label">Select by alert (last 30 days):</label>
+                    <div className="shortcut-btns">
+                      {alertRuleGroups.map(group => (
+                        <button
+                          key={group.ruleId}
+                          type="button"
+                          className="shortcut-btn"
+                          onClick={() => selectByAlertRule(group.houseIds)}
+                        >
+                          {group.ruleName}
+                          <span className="shortcut-count">{group.houseIds.length}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="selection-controls">
                   <button type="button" className="link-btn" onClick={selectAll}>Select All</button>
                   <button type="button" className="link-btn" onClick={selectNone}>Select None</button>
