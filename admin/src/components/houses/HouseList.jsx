@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getHouses, createHouse, deleteHouse, getHouseAlertSummary } from '../../services/api'
 import { useAdminAuth } from '../../contexts/AdminAuthContext'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 function HouseList() {
   const { admin } = useAdminAuth()
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const [houses, setHouses] = useState([])
   const [alertSummary, setAlertSummary] = useState([])
@@ -103,9 +105,9 @@ function HouseList() {
     return (
       <div className="admin">
         <div className="admin-header">
-          <h1>Houses</h1>
+          <h1>{t('houses.title')}</h1>
         </div>
-        <div className="loading">Loading...</div>
+        <div className="loading">{t('common.loading')}</div>
       </div>
     )
   }
@@ -113,8 +115,8 @@ function HouseList() {
   return (
     <div className="admin">
       <div className="admin-header">
-        <h1>Houses</h1>
-        <p>Manage tenant houses for surveys</p>
+        <h1>{t('houses.title')}</h1>
+        <p>{t('houses.subtitle')}</p>
       </div>
 
       {error && (
@@ -126,21 +128,21 @@ function HouseList() {
           className={`house-filter-btn ${filter === 'today' ? 'active' : ''}`}
           onClick={() => setFilter(filter === 'today' ? 'all' : 'today')}
         >
-          Alerts today
+          {t('houses.alertsToday')}
           {todayCount > 0 && <span className="filter-count">{todayCount}</span>}
         </button>
         <button
           className={`house-filter-btn ${filter === 'week' ? 'active' : ''}`}
           onClick={() => setFilter(filter === 'week' ? 'all' : 'week')}
         >
-          Alerts this week
+          {t('houses.alertsWeek')}
           {weekCount > 0 && <span className="filter-count">{weekCount}</span>}
         </button>
         <button
           className={`house-filter-btn ${filter === 'all' ? 'active' : ''}`}
           onClick={() => setFilter('all')}
         >
-          All houses
+          {t('houses.allHouses')}
           <span className="filter-count">{houses.length}</span>
         </button>
       </div>
@@ -148,11 +150,11 @@ function HouseList() {
       <div className="admin-section">
         <div className="section-header">
           <h2>
-            {filter === 'today' ? 'Houses with alerts today' : filter === 'week' ? 'Houses with alerts this week' : 'All houses'}
+            {filter === 'today' ? t('houses.withAlertsToday') : filter === 'week' ? t('houses.withAlertsWeek') : t('houses.allHouses')}
             {' '}({filteredHouses.length})
           </h2>
           <button className="send-btn" onClick={() => setShowForm(!showForm)}>
-            {showForm ? 'Cancel' : '+ Add House'}
+            {showForm ? t('houses.cancel') : t('houses.addHouse')}
           </button>
         </div>
 
@@ -211,25 +213,25 @@ function HouseList() {
             </div>
 
             <button type="submit" className="send-btn" disabled={saving}>
-              {saving ? 'Creating...' : 'Create House'}
+              {saving ? t('houses.creating') : t('houses.create')}
             </button>
           </form>
         )}
 
         {filteredHouses.length === 0 ? (
           <p className="no-subscribers">
-            {filter === 'all' ? 'No houses yet. Add your first house to get started.' : 'No houses with alerts in this period.'}
+            {filter === 'all' ? t('houses.noHouses') : t('houses.noAlertsInPeriod')}
           </p>
         ) : (
           <div className="houses-table-wrap">
             <table className="houses-table">
               <thead>
                 <tr>
-                  <th>House ID</th>
-                  <th>Name</th>
-                  <th>Alerts</th>
-                  <th>Organization</th>
-                  <th>Created</th>
+                  <th>{t('houses.houseId')}</th>
+                  <th>{t('houses.name')}</th>
+                  <th>{t('houses.alerts')}</th>
+                  <th>{t('houses.organization')}</th>
+                  <th>{t('houses.created')}</th>
                   <th></th>
                 </tr>
               </thead>
@@ -244,10 +246,10 @@ function HouseList() {
                         {summary ? (
                           <span className="alert-count-cell">
                             {summary.alertsToday > 0 && (
-                              <span className="alert-badge today">{summary.alertsToday} today</span>
+                              <span className="alert-badge today">{summary.alertsToday} {t('houses.today')}</span>
                             )}
                             {summary.alertsWeek > 0 && summary.alertsToday !== summary.alertsWeek && (
-                              <span className="alert-badge week">{summary.alertsWeek} this week</span>
+                              <span className="alert-badge week">{summary.alertsWeek} {t('houses.thisWeek')}</span>
                             )}
                           </span>
                         ) : (
@@ -261,13 +263,13 @@ function HouseList() {
                           className="action-btn-small view"
                           onClick={() => navigate(`/houses/${house.house_id}`)}
                         >
-                          Dashboard
+                          {t('houses.dashboard')}
                         </button>
                         <button
                           className="action-btn-small delete"
                           onClick={() => handleDelete(house.id, house.house_id)}
                         >
-                          Delete
+                          {t('houses.delete')}
                         </button>
                       </td>
                     </tr>

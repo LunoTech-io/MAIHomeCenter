@@ -6,6 +6,7 @@ import {
 } from 'recharts'
 import NotificationButton from './NotificationButton'
 import { useAuth } from '../contexts/AuthContext'
+import { useLanguage } from '../contexts/LanguageContext'
 import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getLatestPrediction, getWeatherHistory } from '../services/api'
 
 const chartTooltipStyle = {
@@ -35,6 +36,7 @@ function formatTime(isoString) {
 
 function Dashboard() {
   const { house } = useAuth()
+  const { t } = useLanguage()
   const houseId = house?.houseId
   const [sensorData, setSensorData] = useState(null)
   const [twinState, setTwinState] = useState(null)
@@ -102,21 +104,20 @@ function Dashboard() {
       : null
 
     const items = [
-      { label: 'Avg Temperature', value: `${avgTemp} °C`, color: 'green' },
-      ...(outsideTemp != null ? [{ label: 'Outside Temp', value: `${outsideTemp} °C`, color: 'cyan' }] : []),
-      { label: 'Motion Detected', value: `${motionRooms} room${motionRooms !== 1 ? 's' : ''}`, color: 'blue' },
-      { label: 'Setpoint', value: `${setpoint} °C`, color: 'yellow' },
-      { label: 'Rooms Monitored', value: `${rooms.length}`, color: 'red' },
+      { label: t('widget.avgTemp'), value: `${avgTemp} °C`, color: 'green' },
+      ...(outsideTemp != null ? [{ label: t('widget.outsideTemp'), value: `${outsideTemp} °C`, color: 'cyan' }] : []),
+      { label: t('widget.motionDetected'), value: `${motionRooms} ${motionRooms !== 1 ? t('widget.rooms') : t('widget.room')}`, color: 'blue' },
+      { label: t('widget.setpoint'), value: `${setpoint} °C`, color: 'yellow' },
+      { label: t('widget.roomsMonitored'), value: `${rooms.length}`, color: 'red' },
     ]
 
-    // Add power draw widget if meter data available
     if (meterData?.data?.length > 0) {
       const latest = meterData.data[meterData.data.length - 1]
       if (latest.positive_active_power != null) {
-        items.push({ label: 'Power Draw', value: `${Math.round(latest.positive_active_power)} W`, color: 'blue' })
+        items.push({ label: t('widget.powerDraw'), value: `${Math.round(latest.positive_active_power)} W`, color: 'blue' })
       }
       if (latest.gas_kuub != null) {
-        items.push({ label: 'Gas Meter', value: `${latest.gas_kuub.toFixed(2)} m³`, color: 'yellow' })
+        items.push({ label: t('widget.gasMeter'), value: `${latest.gas_kuub.toFixed(2)} m³`, color: 'yellow' })
       }
     }
 
@@ -280,10 +281,10 @@ function Dashboard() {
     return (
       <div className="dashboard">
         <header className="dashboard-header">
-          <h1>MAIHomeCenter</h1>
-          <p>{house?.name || 'Dashboard'}</p>
+          <h1>{t('dashboard.title')}</h1>
+          <p>{house?.name || t('dashboard.charts')}</p>
         </header>
-        <div className="loading-message">Loading sensor data...</div>
+        <div className="loading-message">{t('common.loadingData')}</div>
       </div>
     )
   }
@@ -292,10 +293,10 @@ function Dashboard() {
     return (
       <div className="dashboard">
         <header className="dashboard-header">
-          <h1>MAIHomeCenter</h1>
-          <p>{house?.name || 'Dashboard'}</p>
+          <h1>{t('dashboard.title')}</h1>
+          <p>{house?.name || t('dashboard.charts')}</p>
         </header>
-        <div className="error-message">Failed to load data: {error}</div>
+        <div className="error-message">{t('common.failedToLoad')}: {error}</div>
       </div>
     )
   }
@@ -305,16 +306,16 @@ function Dashboard() {
   return (
     <div className="dashboard">
       <header className="dashboard-header">
-        <h1>MAIHomeCenter</h1>
-        <p>{house?.name || 'Dashboard'}</p>
+        <h1>{t('dashboard.title')}</h1>
+        <p>{house?.name || t('dashboard.charts')}</p>
         <div className="view-toggle-links">
-          <Link to="/status" className="view-toggle-link">Gauges</Link>
-          <Link to="/summary" className="view-toggle-link">Summary</Link>
+          <Link to="/status" className="view-toggle-link">{t('dashboard.gauges')}</Link>
+          <Link to="/summary" className="view-toggle-link">{t('dashboard.summary')}</Link>
         </div>
       </header>
 
       {!hasData ? (
-        <div className="empty-message">No sensor data available yet. Data will appear once sensors start reporting.</div>
+        <div className="empty-message">{t('dashboard.noData')}</div>
       ) : (
         <>
           {widgets && (
@@ -331,7 +332,7 @@ function Dashboard() {
           <div className="chart-section">
             {/* Temperature by Room */}
             <div className="chart-card" role="img" aria-label="Line chart showing temperature readings by room over the last 24 hours">
-              <h3>Temperature by Room (24h)</h3>
+              <h3>{t('dashboard.tempByRoom')}</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={tempByRoomData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
@@ -348,7 +349,7 @@ function Dashboard() {
                     return <Line key={`${room}_pred`} type="monotone" dataKey={`${room}_pred`} stroke={ROOM_COLORS[idx % ROOM_COLORS.length]} strokeWidth={1.5} dot={false} strokeDasharray="6 4" name={`${room} (pred)`} />
                   })}
                   {weatherData?.data?.length > 0 && (
-                    <Line type="monotone" dataKey="outside" stroke="#94a3b8" strokeWidth={2} dot={false} strokeDasharray="8 4" name="Outside" />
+                    <Line type="monotone" dataKey="outside" stroke="#94a3b8" strokeWidth={2} dot={false} strokeDasharray="8 4" name={t('chart.outside')} />
                   )}
                 </LineChart>
               </ResponsiveContainer>
@@ -357,7 +358,7 @@ function Dashboard() {
             {/* Temperature vs Setpoint */}
             <div className="chart-card" role="img" aria-label="Line chart comparing actual temperature to setpoint for the selected room">
               <div className="chart-card-header">
-                <h3>Temperature vs Setpoint</h3>
+                <h3>{t('dashboard.tempVsSetpoint')}</h3>
                 {sensorData.rooms.length > 1 && (
                   <select
                     value={selectedRoom || ''}
@@ -378,10 +379,10 @@ function Dashboard() {
                   <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} domain={['dataMin - 1', 'dataMax + 1']} unit="°C" />
                   <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
-                  <Line type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} name="Actual °C" />
-                  <Line type="monotone" dataKey="setpoint" stroke="#f59e0b" strokeWidth={2} dot={false} strokeDasharray="5 5" name="Setpoint °C" />
+                  <Line type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} name={t('chart.actual')} />
+                  <Line type="monotone" dataKey="setpoint" stroke="#f59e0b" strokeWidth={2} dot={false} strokeDasharray="5 5" name={t('chart.setpoint')} />
                   {predictionPoints.rooms.includes(selectedRoom) && (
-                    <Line type="monotone" dataKey="temp_pred" stroke="#10b981" strokeWidth={1.5} dot={false} strokeDasharray="6 4" name="Predicted °C" />
+                    <Line type="monotone" dataKey="temp_pred" stroke="#10b981" strokeWidth={1.5} dot={false} strokeDasharray="6 4" name={t('chart.predicted')} />
                   )}
                 </LineChart>
               </ResponsiveContainer>
@@ -389,7 +390,7 @@ function Dashboard() {
 
             {/* Motion Activity */}
             <div className="chart-card" role="img" aria-label="Bar chart showing motion activity by room over the last 24 hours">
-              <h3>Motion Activity (24h)</h3>
+              <h3>{t('dashboard.motionActivity')}</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={motionData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
@@ -407,7 +408,7 @@ function Dashboard() {
             {/* Humidity & CO2 (conditional) */}
             {humidityRooms.length > 0 && (
               <div className="chart-card" role="img" aria-label="Line chart showing humidity and CO2 levels by room over the last 24 hours">
-                <h3>Humidity & CO2 (24h)</h3>
+                <h3>{t('dashboard.humidityCo2')}</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={humidityData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
@@ -430,7 +431,7 @@ function Dashboard() {
             {/* Electricity (conditional) */}
             {electricityData.length > 0 && (
               <div className="chart-card" role="img" aria-label="Line chart showing electricity draw and return over the last 24 hours">
-                <h3>Electricity (24h)</h3>
+                <h3>{t('dashboard.electricity')}</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={electricityData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
@@ -438,8 +439,8 @@ function Dashboard() {
                     <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
-                    <Line type="monotone" dataKey="draw" stroke="#f59e0b" strokeWidth={2} dot={false} name="Draw (W)" />
-                    <Line type="monotone" dataKey="return" stroke="#10b981" strokeWidth={2} dot={false} name="Return (W)" />
+                    <Line type="monotone" dataKey="draw" stroke="#f59e0b" strokeWidth={2} dot={false} name={t('chart.draw')} />
+                    <Line type="monotone" dataKey="return" stroke="#10b981" strokeWidth={2} dot={false} name={t('chart.return')} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -448,7 +449,7 @@ function Dashboard() {
             {/* Gas (conditional) */}
             {gasData.length > 0 && (
               <div className="chart-card" role="img" aria-label="Line chart showing gas usage over the last 24 hours">
-                <h3>Gas Usage (24h)</h3>
+                <h3>{t('dashboard.gasUsage')}</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={gasData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
@@ -456,7 +457,7 @@ function Dashboard() {
                     <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" m³" />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
-                    <Line type="monotone" dataKey="gas" stroke="#8b5cf6" strokeWidth={2} dot={false} name="Usage (m³)" />
+                    <Line type="monotone" dataKey="gas" stroke="#8b5cf6" strokeWidth={2} dot={false} name={t('chart.gasUsage')} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -465,7 +466,7 @@ function Dashboard() {
             {/* Appliance Power (conditional) */}
             {applianceNames.length > 0 && (
               <div className="chart-card" role="img" aria-label="Line chart showing power consumption by appliance over the last 24 hours">
-                <h3>Appliance Power (24h)</h3>
+                <h3>{t('dashboard.appliancePower')}</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={applianceChartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />

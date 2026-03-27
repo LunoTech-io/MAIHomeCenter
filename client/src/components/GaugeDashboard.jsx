@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import GaugeComponent from 'react-gauge-component'
 import { useAuth } from '../contexts/AuthContext'
+import { useLanguage } from '../contexts/LanguageContext'
 import { getTwinState } from '../services/api'
 
 const GAUGE_CONFIGS = {
@@ -144,6 +145,7 @@ function RoomCard({ room }) {
 
 function GaugeDashboard() {
   const { house } = useAuth()
+  const { t } = useLanguage()
   const houseId = house?.houseId
   const [twinState, setTwinState] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -179,22 +181,22 @@ function GaugeDashboard() {
   return (
     <div className="dashboard">
       <header className="dashboard-header">
-        <h1>MAIHomeCenter</h1>
-        <p>{house?.name || 'Room Status'}</p>
+        <h1>{t('dashboard.title')}</h1>
+        <p>{house?.name || t('gauge.roomStatus')}</p>
         <div className="view-toggle-links">
-          <Link to="/" className="view-toggle-link">Charts</Link>
-          <Link to="/summary" className="view-toggle-link">Summary</Link>
+          <Link to="/" className="view-toggle-link">{t('dashboard.charts')}</Link>
+          <Link to="/summary" className="view-toggle-link">{t('dashboard.summary')}</Link>
         </div>
       </header>
 
-      {loading && <div className="loading-message">Loading...</div>}
-      {error && <div className="error-message">Failed to load data: {error}</div>}
+      {loading && <div className="loading-message">{t('common.loading')}</div>}
+      {error && <div className="error-message">{t('common.failedToLoad')}: {error}</div>}
 
       {!loading && !error && twinState?.rooms?.length > 0 && (
         <>
           {outsideTemp != null && (
             <div className="outside-temp-gauge">
-              <span className="outside-temp-label">Outside</span>
+              <span className="outside-temp-label">{t('gauge.outside')}</span>
               <SensorGauge value={outsideTemp} configKey="temperature" size={100} />
             </div>
           )}
@@ -207,7 +209,7 @@ function GaugeDashboard() {
       )}
 
       {!loading && !error && (!twinState?.rooms?.length) && (
-        <div className="empty-message">No sensor data available yet.</div>
+        <div className="empty-message">{t('summary.noData')}</div>
       )}
     </div>
   )

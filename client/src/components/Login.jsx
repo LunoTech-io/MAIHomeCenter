@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useLanguage } from '../contexts/LanguageContext'
 
 const demoHouses = [
   { id: 'woning16', name: 'WONING 16' },
@@ -10,6 +11,7 @@ const demoHouses = [
 
 function Login() {
   const { login, demoLogin, error: authError } = useAuth()
+  const { t } = useLanguage()
   const [form, setForm] = useState({ houseId: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -23,7 +25,7 @@ function Login() {
     e.preventDefault()
 
     if (!form.houseId || !form.password) {
-      setError('Please enter your house ID and password')
+      setError(t('login.error'))
       return
     }
 
@@ -43,8 +45,8 @@ function Login() {
     <div className="login-page">
       <div className="login-container">
         <div className="login-header">
-          <h1>MAIHomeCenter</h1>
-          <p>Sign in to access your dashboard</p>
+          <h1>{t('login.title')}</h1>
+          <p>{t('login.subtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form" noValidate>
@@ -55,14 +57,14 @@ function Login() {
           )}
 
           <div className="form-group">
-            <label htmlFor="houseId">House ID</label>
+            <label htmlFor="houseId">{t('login.houseId')}</label>
             <input
               type="text"
               id="houseId"
               name="houseId"
               value={form.houseId}
               onChange={handleChange}
-              placeholder="Enter your house ID"
+              placeholder={t('login.houseIdPlaceholder')}
               autoComplete="username"
               required
               aria-describedby={(error || authError) ? 'login-error' : undefined}
@@ -70,24 +72,24 @@ function Login() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">{t('login.password')}</label>
             <input
               type="password"
               id="password"
               name="password"
               value={form.password}
               onChange={handleChange}
-              placeholder="Enter your password"
+              placeholder={t('login.passwordPlaceholder')}
               autoComplete="current-password"
               required
             />
           </div>
 
           <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? t('login.signingIn') : t('login.signIn')}
           </button>
 
-          <div className="demo-divider"><span>or try a demo house</span></div>
+          <div className="demo-divider"><span>{t('login.demoHouses')}</span></div>
 
           <div className="demo-house-grid">
             {demoHouses.map((h) => (

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getPendingSurveys } from '../../services/api'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 function SurveyList() {
+  const { t } = useLanguage()
   const [surveys, setSurveys] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -28,9 +30,9 @@ function SurveyList() {
     return (
       <div className="survey-list-page">
         <div className="page-header">
-          <h1>Your Surveys</h1>
+          <h1>{t('surveys.title')}</h1>
         </div>
-        <div className="loading">Loading surveys...</div>
+        <div className="loading">{t('common.loadingSurveys')}</div>
       </div>
     )
   }
@@ -38,8 +40,8 @@ function SurveyList() {
   return (
     <div className="survey-list-page">
       <div className="page-header">
-        <h1>Your Surveys</h1>
-        <p>Complete pending surveys to share your feedback</p>
+        <h1>{t('surveys.title')}</h1>
+        <p>{t('surveys.subtitle')}</p>
       </div>
 
       {error && (
@@ -49,8 +51,8 @@ function SurveyList() {
       {surveys.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">✓</div>
-          <h2>All caught up!</h2>
-          <p>You have no pending surveys at this time.</p>
+          <h2>{t('surveys.allCaughtUp')}</h2>
+          <p>{t('surveys.noPending')}</p>
         </div>
       ) : (
         <div className="survey-cards">
@@ -68,15 +70,15 @@ function SurveyList() {
                 <div className="survey-card-meta">
                   {survey.expires_at && (
                     <span className="expiry">
-                      Expires: {new Date(survey.expires_at).toLocaleDateString()}
+                      {t('surveys.expires')}: {new Date(survey.expires_at).toLocaleDateString()}
                     </span>
                   )}
                   {survey.is_dismissable && (
-                    <span className="dismissable">Optional</span>
+                    <span className="dismissable">{t('surveys.optional')}</span>
                   )}
                 </div>
                 <div className="survey-card-action">
-                  Start Survey
+                  {t('surveys.startSurvey')}
                 </div>
               </div>
             </Link>

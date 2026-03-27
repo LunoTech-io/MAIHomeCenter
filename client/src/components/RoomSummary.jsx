@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useLanguage } from '../contexts/LanguageContext'
 import { getTwinState } from '../services/api'
 
-// Returns a score 0-4: 0=great, 1=good, 2=fair, 3=poor, 4=bad
 function getSensorScore(value, key) {
   if (value == null) return null
   if (key === 'temperature') {
@@ -24,36 +24,36 @@ function getSensorScore(value, key) {
   return null
 }
 
-function getSensorNote(value, key) {
+function getSensorNoteKey(value, key) {
   if (value == null) return null
   if (key === 'temperature') {
-    if (value < 17) return 'Too cold'
-    if (value < 19) return 'A bit cool'
+    if (value < 17) return 'comfort.tooCold'
+    if (value < 19) return 'comfort.aBitCool'
     if (value <= 23) return null
-    if (value <= 26) return 'A bit warm'
-    return 'Too hot'
+    if (value <= 26) return 'comfort.aBitWarm'
+    return 'comfort.tooHot'
   }
   if (key === 'humidity') {
-    if (value < 30) return 'Very dry'
-    if (value < 40) return 'A bit dry'
+    if (value < 30) return 'comfort.veryDry'
+    if (value < 40) return 'comfort.aBitDry'
     if (value <= 60) return null
-    if (value <= 70) return 'A bit humid'
-    return 'Very humid'
+    if (value <= 70) return 'comfort.aBitHumid'
+    return 'comfort.veryHumid'
   }
   if (key === 'co2') {
     if (value <= 800) return null
-    if (value <= 1200) return 'Air could be fresher'
-    return 'Ventilate the room'
+    if (value <= 1200) return 'comfort.airFresher'
+    return 'comfort.ventilate'
   }
   return null
 }
 
 const FACES = [
-  { emoji: '\u{1F60A}', label: 'Great' },
-  { emoji: '\u{1F642}', label: 'Good' },
-  { emoji: '\u{1F610}', label: 'Fair' },
-  { emoji: '\u{1F615}', label: 'Not ideal' },
-  { emoji: '\u{1F61F}', label: 'Needs attention' },
+  { emoji: '\u{1F60A}', labelKey: 'comfort.great' },
+  { emoji: '\u{1F642}', labelKey: 'comfort.great' },
+  { emoji: '\u{1F610}', labelKey: 'comfort.great' },
+  { emoji: '\u{1F615}', labelKey: 'comfort.great' },
+  { emoji: '\u{1F61F}', labelKey: 'comfort.great' },
 ]
 
 function getRoomStatus(room) {
@@ -67,24 +67,25 @@ function getRoomStatus(room) {
     getSensorScore(co2, 'co2'),
   ].filter(s => s != null)
 
-  if (scores.length === 0) return { score: null, face: FACES[2], notes: ['No sensor data'] }
+  if (scores.length === 0) return { score: null, faceIndex: 2, noteKeys: ['comfort.noData'] }
 
   const worstScore = Math.max(...scores)
-  const face = FACES[Math.min(worstScore, 4)]
+  const faceIndex = Math.min(worstScore, 4)
 
-  const notes = [
-    getSensorNote(temp, 'temperature'),
-    getSensorNote(humidity, 'humidity'),
-    getSensorNote(co2, 'co2'),
+  const noteKeys = [
+    getSensorNoteKey(temp, 'temperature'),
+    getSensorNoteKey(humidity, 'humidity'),
+    getSensorNoteKey(co2, 'co2'),
   ].filter(Boolean)
 
-  if (notes.length === 0) notes.push('Everything looks good')
+  if (noteKeys.length === 0) noteKeys.push('comfort.great')
 
-  return { score: worstScore, face, notes }
+  return { score: worstScore, faceIndex, noteKeys }
 }
 
 function RoomSummary() {
   const { house } = useAuth()
+  const { t } = useLanguage()
   const houseId = house?.houseId
   const [twinState, setTwinState] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -117,35 +118,37 @@ function RoomSummary() {
     ? parseFloat(twinState.weather.temperature).toFixed(1)
     : null
 
+  const faces = ['\u{1F60A}', '\u{1F642}', '\u{1F610}', '\u{1F615}', '\u{1F61F}']
+
   return (
     <div className="dashboard">
       <header className="dashboard-header">
-        <h1>MAIHomeCenter</h1>
-        <p>{house?.name || 'Room Summary'}</p>
+        <h1>{t('dashboard.title')}</h1>
+        <p>{house?.name || t('summary.title')}</p>
         <div className="view-toggle-links">
-          <Link to="/" className="view-toggle-link">Charts</Link>
-          <Link to="/status" className="view-toggle-link">Gauges</Link>
+          <Link to="/" className="view-toggle-link">{t('dashboard.charts')}</Link>
+          <Link to="/status" className="view-toggle-link">{t('dashboard.gauges')}</Link>
         </div>
       </header>
 
-      {loading && <div className="loading">Loading...</div>}
-      {error && <div className="error-message" role="alert">Failed to load data: {error}</div>}
+      {loading && <div className="loading">{t('common.loading')}</div>}
+      {error && <div className="error-message" role="alert">{t('common.failedToLoad')}: {error}</div>}
 
       {!loading && !error && twinState?.rooms?.length > 0 && (
         <>
           {outsideTemp != null && (
             <div className="summary-outside">
-              Outside temperature: {outsideTemp} °C
+              {t('summary.outsideTemp')}: {outsideTemp} °C
             </div>
           )}
-          <div className="summary-table" role="table" aria-label="Room status summary">
+          <div className="summary-table" role="table" aria-label={t('summary.title')}>
             <div className="summary-header" role="row">
-              <span role="columnheader">Room</span>
-              <span role="columnheader">Status</span>
-              <span role="columnheader">Details</span>
+              <span role="columnheader">{t('summary.room')}</span>
+              <span role="columnheader">{t('summary.status')}</span>
+              <span role="columnheader">{t('summary.details')}</span>
             </div>
             {twinState.rooms.map(room => {
-              const { face, notes } = getRoomStatus(room)
+              const { faceIndex, noteKeys } = getRoomStatus(room)
               const temp = room.temperature != null ? parseFloat(room.temperature).toFixed(1) : null
               const humidity = room.humidity != null ? parseFloat(room.humidity).toFixed(0) : null
               const co2 = room.co2 != null ? parseFloat(room.co2).toFixed(0) : null
@@ -160,12 +163,12 @@ function RoomSummary() {
                       {co2 != null && <span>{co2} ppm</span>}
                     </span>
                   </div>
-                  <div className="summary-face" role="cell" aria-label={face.label}>
-                    <span className="face-emoji">{face.emoji}</span>
+                  <div className="summary-face" role="cell" aria-label={t(noteKeys[0])}>
+                    <span className="face-emoji">{faces[faceIndex]}</span>
                   </div>
                   <div className="summary-notes" role="cell">
-                    {notes.map((note, i) => (
-                      <span key={i} className="summary-note">{note}</span>
+                    {noteKeys.map((key, i) => (
+                      <span key={i} className="summary-note">{t(key)}</span>
                     ))}
                   </div>
                 </div>
@@ -176,7 +179,7 @@ function RoomSummary() {
       )}
 
       {!loading && !error && (!twinState?.rooms?.length) && (
-        <div className="empty-message">No sensor data available yet.</div>
+        <div className="empty-message">{t('summary.noData')}</div>
       )}
     </div>
   )

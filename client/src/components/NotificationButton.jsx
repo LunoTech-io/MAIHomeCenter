@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import usePushNotifications from '../hooks/usePushNotifications'
+import { useLanguage } from '../contexts/LanguageContext'
 
 function NotificationButton() {
+  const { t } = useLanguage()
   const {
     isSupported,
     permission,
@@ -10,7 +12,6 @@ function NotificationButton() {
     error,
     subscribe,
     needsInstall,
-    isiOSDevice
   } = usePushNotifications()
 
   const [status, setStatus] = useState(null)
@@ -25,58 +26,53 @@ function NotificationButton() {
     setStatus(null)
     const result = await subscribe()
     if (result.success) {
-      setStatus({ type: 'success', message: 'Notifications enabled!' })
+      setStatus({ type: 'success', message: t('notif.enabled') })
     } else {
-      setStatus({ type: 'error', message: result.error || 'Failed to enable notifications' })
+      setStatus({ type: 'error', message: result.error || t('notif.failed') })
     }
   }
 
-  // Already subscribed — nothing to show
   if (isSubscribed) return null
 
-  // iOS needs PWA installed first
   if (needsInstall) {
     return (
       <div className="notification-section">
-        <h2>Notifications</h2>
+        <h2>{t('nav.alerts')}</h2>
         <div className="notification-status ios-install">
-          <strong>To enable notifications on iOS:</strong>
+          <strong>{t('notif.iosTitle')}</strong>
           <ol>
-            <li>Tap the Share button at the bottom of Safari</li>
-            <li>Scroll down and tap "Add to Home Screen"</li>
-            <li>Open the app from your Home Screen</li>
-            <li>Then enable notifications</li>
+            <li>{t('notif.iosStep1')}</li>
+            <li>{t('notif.iosStep2')}</li>
+            <li>{t('notif.iosStep3')}</li>
+            <li>{t('notif.iosStep4')}</li>
           </ol>
         </div>
       </div>
     )
   }
 
-  // Not supported
   if (!isSupported) return null
 
-  // Permission denied
   if (permission === 'denied') {
     return (
       <div className="notification-section">
-        <h2>Notifications</h2>
+        <h2>{t('nav.alerts')}</h2>
         <div className="notification-status error">
-          Notifications are blocked. Please enable them in your browser settings.
+          {t('notif.blocked')}
         </div>
       </div>
     )
   }
 
-  // Not subscribed — show enable button
   return (
     <div className="notification-section">
-      <h2>Notifications</h2>
+      <h2>{t('nav.alerts')}</h2>
       <button
         className="notification-btn enable"
         onClick={handleEnable}
         disabled={isLoading}
       >
-        {isLoading ? 'Enabling...' : 'Enable Notifications'}
+        {isLoading ? t('notif.enabling') : t('notif.enable')}
       </button>
 
       <div aria-live="polite" role="status">
