@@ -1,27 +1,29 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getAlertRule, createAlertRule, updateAlertRule } from '../../services/api'
-
-const SENSOR_FIELDS = [
-  { value: 'temperature', label: 'Temperature' },
-  { value: 'humidity', label: 'Humidity' },
-  { value: 'co2', label: 'CO2' },
-  { value: 'tvoc', label: 'TVOC' },
-  { value: 'pressure', label: 'Pressure' },
-  { value: 'light_level', label: 'Light Level' }
-]
-
-const OPERATORS = [
-  { value: 'above', label: 'Above' },
-  { value: 'below', label: 'Below' }
-]
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const emptyCondition = { sensorField: 'temperature', operator: 'above', threshold: '' }
 
 function AlertRuleEditor() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const isNew = !id
+
+  const SENSOR_FIELDS = [
+    { value: 'temperature', label: t('sensor.temperature') },
+    { value: 'humidity', label: t('sensor.humidity') },
+    { value: 'co2', label: t('sensor.co2') },
+    { value: 'tvoc', label: t('sensor.tvoc') },
+    { value: 'pressure', label: t('sensor.pressure') },
+    { value: 'light_level', label: t('sensor.light_level') }
+  ]
+
+  const OPERATORS = [
+    { value: 'above', label: t('sensor.above') },
+    { value: 'below', label: t('sensor.below') }
+  ]
 
   const [loading, setLoading] = useState(!isNew)
   const [saving, setSaving] = useState(false)
@@ -95,12 +97,12 @@ function AlertRuleEditor() {
     e.preventDefault()
 
     if (!form.name || !form.notificationTitle || !form.notificationBody) {
-      setError('Name, notification title, and notification body are required')
+      setError(t('alertRules.validationRequired'))
       return
     }
 
     if (conditions.length === 0 || conditions.some(c => c.threshold === '')) {
-      setError('At least one condition with a threshold is required')
+      setError(t('alertRules.conditionRequired'))
       return
     }
 
@@ -136,9 +138,9 @@ function AlertRuleEditor() {
     return (
       <div className="admin">
         <div className="admin-header">
-          <h1>{isNew ? 'New Alert Rule' : 'Edit Alert Rule'}</h1>
+          <h1>{isNew ? t('alertRules.newRuleTitle') : t('alertRules.editRuleTitle')}</h1>
         </div>
-        <div className="loading">Loading...</div>
+        <div className="loading">{t('common.loading')}</div>
       </div>
     )
   }
@@ -146,8 +148,8 @@ function AlertRuleEditor() {
   return (
     <div className="admin">
       <div className="admin-header">
-        <h1>{isNew ? 'New Alert Rule' : 'Edit Alert Rule'}</h1>
-        <p>{isNew ? 'Create a new automatic alert rule' : 'Update alert rule settings'}</p>
+        <h1>{isNew ? t('alertRules.newRuleTitle') : t('alertRules.editRuleTitle')}</h1>
+        <p>{isNew ? t('alertRules.newRuleSubtitle') : t('alertRules.editRuleSubtitle')}</p>
       </div>
 
       {error && (
@@ -156,24 +158,24 @@ function AlertRuleEditor() {
 
       <form onSubmit={handleSubmit}>
         <div className="admin-section">
-          <h2>Rule Settings</h2>
+          <h2>{t('alertRules.ruleSettings')}</h2>
 
           <div className="form-group">
-            <label htmlFor="name">Name</label>
+            <label htmlFor="name">{t('alertRules.name')}</label>
             <input
               type="text"
               id="name"
               name="name"
               value={form.name}
               onChange={handleFormChange}
-              placeholder="e.g., High temperature + low humidity"
+              placeholder={t('alertRules.namePlaceholder')}
               required
             />
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="sustainedMinutes">Sustained Duration (minutes)</label>
+              <label htmlFor="sustainedMinutes">{t('alertRules.sustainedDuration')}</label>
               <input
                 type="number"
                 id="sustainedMinutes"
@@ -181,10 +183,10 @@ function AlertRuleEditor() {
                 value={form.sustainedMinutes}
                 onChange={handleFormChange}
                 min="0"
-                placeholder="0 = instant"
+                placeholder={t('alertRules.instantPlaceholder')}
               />
               <small style={{ color: '#888', marginTop: '4px', display: 'block' }}>
-                0 = trigger immediately. Sensors report every ~15 min, so use at least 30 min for sustained rules.
+                {t('alertRules.sustainedHelp')}
               </small>
             </div>
 
@@ -196,7 +198,7 @@ function AlertRuleEditor() {
                   checked={form.isActive}
                   onChange={handleFormChange}
                 />
-                Active
+                {t('alertRules.active')}
               </label>
             </div>
           </div>
@@ -204,19 +206,19 @@ function AlertRuleEditor() {
 
         <div className="admin-section">
           <div className="section-header">
-            <h2>Conditions</h2>
+            <h2>{t('alertRules.conditions')}</h2>
             <button type="button" className="send-btn" onClick={addCondition}>
-              + Add Condition
+              {t('alertRules.addCondition')}
             </button>
           </div>
           <small style={{ color: '#888', display: 'block', marginBottom: '12px' }}>
-            All conditions must be true simultaneously (AND logic)
+            {t('alertRules.andLogic')}
           </small>
 
           {conditions.map((condition, index) => (
             <div key={index} className="form-row" style={{ alignItems: 'flex-end', marginBottom: '8px' }}>
               <div className="form-group">
-                {index === 0 && <label>Sensor Field</label>}
+                {index === 0 && <label>{t('alertRules.sensorField')}</label>}
                 <select
                   value={condition.sensorField}
                   onChange={(e) => updateCondition(index, 'sensorField', e.target.value)}
@@ -228,7 +230,7 @@ function AlertRuleEditor() {
               </div>
 
               <div className="form-group">
-                {index === 0 && <label>Operator</label>}
+                {index === 0 && <label>{t('alertRules.operator')}</label>}
                 <select
                   value={condition.operator}
                   onChange={(e) => updateCondition(index, 'operator', e.target.value)}
@@ -240,12 +242,12 @@ function AlertRuleEditor() {
               </div>
 
               <div className="form-group">
-                {index === 0 && <label>Threshold</label>}
+                {index === 0 && <label>{t('alertRules.threshold')}</label>}
                 <input
                   type="number"
                   value={condition.threshold}
                   onChange={(e) => updateCondition(index, 'threshold', e.target.value)}
-                  placeholder="e.g., 28"
+                  placeholder={t('alertRules.thresholdPlaceholder')}
                   step="any"
                   required
                 />
@@ -259,7 +261,7 @@ function AlertRuleEditor() {
                   onClick={() => removeCondition(index)}
                   disabled={conditions.length === 1}
                 >
-                  Remove
+                  {t('alertRules.remove')}
                 </button>
               </div>
             </div>
@@ -267,44 +269,44 @@ function AlertRuleEditor() {
         </div>
 
         <div className="admin-section">
-          <h2>Notification</h2>
+          <h2>{t('alertRules.notification')}</h2>
 
           <div className="form-group">
-            <label htmlFor="notificationTitle">Notification Title</label>
+            <label htmlFor="notificationTitle">{t('alertRules.notificationTitle')}</label>
             <input
               type="text"
               id="notificationTitle"
               name="notificationTitle"
               value={form.notificationTitle}
               onChange={handleFormChange}
-              placeholder="e.g., Alert in {room}"
+              placeholder={t('alertRules.notificationTitlePlaceholder')}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="notificationBody">Notification Body</label>
+            <label htmlFor="notificationBody">{t('alertRules.notificationBody')}</label>
             <textarea
               id="notificationBody"
               name="notificationBody"
               value={form.notificationBody}
               onChange={handleFormChange}
-              placeholder="e.g., Conditions exceeded in {room} (current: {value})"
+              placeholder={t('alertRules.notificationBodyPlaceholder')}
               rows={3}
               required
             />
             <small style={{ color: '#888', marginTop: '4px', display: 'block' }}>
-              Use {'{room}'} for room name and {'{value}'} for the first condition's reading
+              {t('alertRules.templateHelp')}
             </small>
           </div>
         </div>
 
         <div className="form-actions">
           <button type="button" className="cancel-btn" onClick={() => navigate('/alerts')}>
-            Cancel
+            {t('common.cancel')}
           </button>
           <button type="submit" className="send-btn" disabled={saving}>
-            {saving ? 'Saving...' : (isNew ? 'Create Rule' : 'Save Changes')}
+            {saving ? t('alertRules.saving') : (isNew ? t('alertRules.createRule') : t('alertRules.saveChanges'))}
           </button>
         </div>
       </form>

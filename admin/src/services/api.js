@@ -331,6 +331,44 @@ export async function deleteAlertRule(id) {
   return response.json()
 }
 
+// Survey Triggers
+
+export async function getSurveyTrigger(questionSetId) {
+  const response = await fetch(`${API_BASE}/surveys/triggers/${questionSetId}`, {
+    headers: authHeaders()
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch survey trigger')
+  }
+  return response.json()
+}
+
+export async function saveSurveyTrigger(data) {
+  const response = await fetch(`${API_BASE}/surveys/triggers`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(data)
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to save survey trigger')
+  }
+  return response.json()
+}
+
+export async function deleteSurveyTrigger(questionSetId) {
+  const response = await fetch(`${API_BASE}/surveys/triggers/${questionSetId}`, {
+    method: 'DELETE',
+    headers: authHeaders()
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to delete survey trigger')
+  }
+  return response.json()
+}
+
 // Send Survey
 
 export async function sendSurvey(questionSetId, houseIds) {

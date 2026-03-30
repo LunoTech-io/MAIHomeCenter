@@ -1,5 +1,6 @@
 import { query } from '../db/index.js'
 import pushService from './pushService.js'
+import surveyTriggerService from './surveyTriggerService.js'
 
 const ALLOWED_SENSOR_FIELDS = ['temperature', 'humidity', 'co2', 'tvoc', 'pressure', 'light_level']
 const ALLOWED_OPERATORS = ['above', 'below']
@@ -163,6 +164,13 @@ async function evaluateRules() {
       } catch (err) {
         console.error(`[alerts] error evaluating rule "${rule.name}" (${rule.id}):`, err.message)
       }
+    }
+
+    // Also evaluate survey triggers on the same cycle
+    try {
+      await surveyTriggerService.evaluateTriggers()
+    } catch (err) {
+      console.error('[alerts] survey trigger evaluation failed:', err)
     }
 
     const elapsed = ((Date.now() - start) / 1000).toFixed(1)

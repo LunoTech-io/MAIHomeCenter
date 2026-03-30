@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { getQuestionSet, getQuestionSetResponses } from '../../services/api'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 function ResponseViewer() {
   const { id } = useParams()
+  const { t } = useLanguage()
   const [questionSet, setQuestionSet] = useState(null)
   const [responses, setResponses] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -28,6 +30,11 @@ function ResponseViewer() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const statusLabel = (status) => {
+    const key = `responses.status${status.charAt(0).toUpperCase() + status.slice(1)}`
+    return t(key)
   }
 
   // Group responses by assignment/house
@@ -62,9 +69,9 @@ function ResponseViewer() {
     return (
       <div className="admin">
         <div className="admin-header">
-          <h1>Survey Responses</h1>
+          <h1>{t('responses.title')}</h1>
         </div>
-        <div className="loading">Loading...</div>
+        <div className="loading">{t('common.loading')}</div>
       </div>
     )
   }
@@ -73,7 +80,7 @@ function ResponseViewer() {
     return (
       <div className="admin">
         <div className="admin-header">
-          <h1>Survey Responses</h1>
+          <h1>{t('responses.title')}</h1>
         </div>
         <div className="result-message error" style={{ position: 'static' }}>{error}</div>
       </div>
@@ -85,37 +92,37 @@ function ResponseViewer() {
   return (
     <div className="admin">
       <div className="admin-header">
-        <h1>Survey Responses</h1>
+        <h1>{t('responses.title')}</h1>
         <p>{questionSet?.title}</p>
       </div>
 
       <div className="admin-section">
-        <h2>Summary</h2>
+        <h2>{t('responses.summary')}</h2>
         <div className="stats-grid">
           <div className="stat-item">
             <span className="stat-value">{responses?.summary?.total_count || 0}</span>
-            <span className="stat-label">Total Assigned</span>
+            <span className="stat-label">{t('responses.totalAssigned')}</span>
           </div>
           <div className="stat-item">
             <span className="stat-value">{responses?.summary?.completed_count || 0}</span>
-            <span className="stat-label">Completed</span>
+            <span className="stat-label">{t('responses.completed')}</span>
           </div>
           <div className="stat-item">
             <span className="stat-value">{responses?.summary?.pending_count || 0}</span>
-            <span className="stat-label">Pending</span>
+            <span className="stat-label">{t('responses.pending')}</span>
           </div>
           <div className="stat-item">
             <span className="stat-value">{responses?.summary?.dismissed_count || 0}</span>
-            <span className="stat-label">Dismissed</span>
+            <span className="stat-label">{t('responses.dismissed')}</span>
           </div>
         </div>
       </div>
 
       <div className="admin-section">
-        <h2>Individual Responses</h2>
+        <h2>{t('responses.individual')}</h2>
 
         {grouped.length === 0 ? (
-          <p className="no-subscribers">No responses yet.</p>
+          <p className="no-subscribers">{t('responses.noResponses')}</p>
         ) : (
           <div className="responses-list">
             {grouped.map(assignment => (
@@ -126,7 +133,7 @@ function ResponseViewer() {
                     {assignment.houseName && <span> - {assignment.houseName}</span>}
                   </div>
                   <span className={`status-badge status-${assignment.status}`}>
-                    {assignment.status}
+                    {statusLabel(assignment.status)}
                   </span>
                 </div>
 
@@ -140,7 +147,7 @@ function ResponseViewer() {
                         <div key={q.id} className="answer-item">
                           <div className="answer-question">{q.question_text}</div>
                           <div className="answer-value">
-                            {answer?.value || <em className="no-answer">No answer</em>}
+                            {answer?.value || <em className="no-answer">{t('responses.noAnswer')}</em>}
                           </div>
                         </div>
                       )
@@ -160,7 +167,7 @@ function ResponseViewer() {
       </div>
 
       <div className="form-actions">
-        <Link to="/surveys" className="cancel-btn">Back to Surveys</Link>
+        <Link to="/surveys" className="cancel-btn">{t('responses.backToSurveys')}</Link>
       </div>
     </div>
   )

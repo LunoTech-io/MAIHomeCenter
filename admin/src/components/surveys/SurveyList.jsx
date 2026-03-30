@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getQuestionSets, deleteQuestionSet } from '../../services/api'
+import { useLanguage } from '../../contexts/LanguageContext'
 import SendSurveyModal from './SendSurveyModal'
+import SurveyTriggerModal from './SurveyTriggerModal'
 
 function SurveyList() {
+  const { t } = useLanguage()
   const [questionSets, setQuestionSets] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [sendModalOpen, setSendModalOpen] = useState(false)
+  const [triggerModalOpen, setTriggerModalOpen] = useState(false)
   const [selectedSurvey, setSelectedSurvey] = useState(null)
 
   useEffect(() => {
@@ -28,7 +32,7 @@ function SurveyList() {
   }
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this survey?')) return
+    if (!window.confirm(t('surveys.deleteConfirm'))) return
 
     try {
       await deleteQuestionSet(id)
@@ -43,13 +47,18 @@ function SurveyList() {
     setSendModalOpen(true)
   }
 
+  const handleTriggerClick = (survey) => {
+    setSelectedSurvey(survey)
+    setTriggerModalOpen(true)
+  }
+
   if (loading) {
     return (
       <div className="admin">
         <div className="admin-header">
-          <h1>Surveys</h1>
+          <h1>{t('surveys.title')}</h1>
         </div>
-        <div className="loading">Loading...</div>
+        <div className="loading">{t('common.loading')}</div>
       </div>
     )
   }
@@ -57,8 +66,8 @@ function SurveyList() {
   return (
     <div className="admin">
       <div className="admin-header">
-        <h1>Surveys</h1>
-        <p>Create and manage survey question sets</p>
+        <h1>{t('surveys.title')}</h1>
+        <p>{t('surveys.subtitle')}</p>
       </div>
 
       {error && (
@@ -67,12 +76,12 @@ function SurveyList() {
 
       <div className="admin-section">
         <div className="section-header">
-          <h2>Question Sets</h2>
-          <Link to="/surveys/new" className="send-btn">+ New Survey</Link>
+          <h2>{t('surveys.questionSets')}</h2>
+          <Link to="/surveys/new" className="send-btn">{t('surveys.newSurvey')}</Link>
         </div>
 
         {questionSets.length === 0 ? (
-          <p className="no-subscribers">No surveys yet. Create your first survey to get started.</p>
+          <p className="no-subscribers">{t('surveys.noSurveys')}</p>
         ) : (
           <div className="survey-list">
             {questionSets.map(qs => (
@@ -81,10 +90,10 @@ function SurveyList() {
                   <h3>{qs.title}</h3>
                   {qs.description && <p className="survey-description">{qs.description}</p>}
                   <div className="survey-meta">
-                    <span>{qs.question_count || 0} questions</span>
-                    <span>{qs.assignment_count || 0} assignments</span>
+                    <span>{qs.question_count || 0} {t('surveys.questions')}</span>
+                    <span>{qs.assignment_count || 0} {t('surveys.assignments')}</span>
                     <span className={qs.is_active ? 'status-active' : 'status-inactive'}>
-                      {qs.is_active ? 'Active' : 'Inactive'}
+                      {qs.is_active ? t('surveys.active') : t('surveys.inactive')}
                     </span>
                   </div>
                 </div>
@@ -93,19 +102,25 @@ function SurveyList() {
                     className="action-btn-small send"
                     onClick={() => handleSendClick(qs)}
                   >
-                    Send
+                    {t('surveys.send')}
+                  </button>
+                  <button
+                    className="action-btn-small trigger"
+                    onClick={() => handleTriggerClick(qs)}
+                  >
+                    {t('surveys.trigger')}
                   </button>
                   <Link to={`/surveys/${qs.id}/responses`} className="action-btn-small view">
-                    Responses
+                    {t('surveys.responses')}
                   </Link>
                   <Link to={`/surveys/${qs.id}`} className="action-btn-small edit">
-                    Edit
+                    {t('surveys.edit')}
                   </Link>
                   <button
                     className="action-btn-small delete"
                     onClick={() => handleDelete(qs.id)}
                   >
-                    Delete
+                    {t('surveys.delete')}
                   </button>
                 </div>
               </div>
@@ -118,6 +133,13 @@ function SurveyList() {
         <SendSurveyModal
           survey={selectedSurvey}
           onClose={() => setSendModalOpen(false)}
+        />
+      )}
+
+      {triggerModalOpen && (
+        <SurveyTriggerModal
+          survey={selectedSurvey}
+          onClose={() => setTriggerModalOpen(false)}
         />
       )}
     </div>

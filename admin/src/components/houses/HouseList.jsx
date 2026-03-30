@@ -69,7 +69,7 @@ function HouseList() {
     e.preventDefault()
 
     if (!form.houseId || !form.password) {
-      setError('House ID and password are required')
+      setError(t('houses.idAndPasswordRequired'))
       return
     }
 
@@ -89,7 +89,7 @@ function HouseList() {
   }
 
   const handleDelete = async (id, houseId) => {
-    if (!window.confirm(`Are you sure you want to delete house "${houseId}"? This will also remove all survey assignments for this house.`)) {
+    if (!window.confirm(t('houses.deleteConfirm').replace('{houseId}', houseId))) {
       return
     }
 
@@ -162,52 +162,52 @@ function HouseList() {
           <form onSubmit={handleSubmit} className="house-form">
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="houseId">House ID</label>
+                <label htmlFor="houseId">{t('houses.houseId')}</label>
                 <input
                   type="text"
                   id="houseId"
                   name="houseId"
                   value={form.houseId}
                   onChange={handleChange}
-                  placeholder="e.g., weller1"
+                  placeholder={t('houses.houseIdPlaceholder')}
                   required
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">{t('houses.password')}</label>
                 <input
                   type="password"
                   id="password"
                   name="password"
                   value={form.password}
                   onChange={handleChange}
-                  placeholder="Login password"
+                  placeholder={t('houses.passwordPlaceholder')}
                   required
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="name">Name (optional)</label>
+                <label htmlFor="name">{t('houses.name')}</label>
                 <input
                   type="text"
                   id="name"
                   name="name"
                   value={form.name}
                   onChange={handleChange}
-                  placeholder="Display name"
+                  placeholder={t('houses.namePlaceholder')}
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="organization">Organization</label>
+                <label htmlFor="organization">{t('houses.organization')}</label>
                 <input
                   type="text"
                   id="organization"
                   name="organization"
                   value={form.organization}
                   onChange={handleChange}
-                  placeholder="e.g., ou"
+                  placeholder={t('houses.organizationPlaceholder')}
                 />
               </div>
             </div>

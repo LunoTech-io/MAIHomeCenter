@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { getHouses, sendSurvey, getHousesByAlertRule } from '../../services/api'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 function SendSurveyModal({ survey, onClose }) {
+  const { t } = useLanguage()
   const [houses, setHouses] = useState([])
   const [alertRuleGroups, setAlertRuleGroups] = useState([])
   const [selectedHouses, setSelectedHouses] = useState([])
@@ -57,7 +59,7 @@ function SendSurveyModal({ survey, onClose }) {
 
   const handleSend = async () => {
     if (selectedHouses.length === 0) {
-      setError('Please select at least one house')
+      setError(t('surveys.selectAtLeastOneHouse'))
       return
     }
 
@@ -79,7 +81,7 @@ function SendSurveyModal({ survey, onClose }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Send Survey</h2>
+          <h2>{t('surveys.sendSurvey')}</h2>
           <button className="modal-close" onClick={onClose}>X</button>
         </div>
 
@@ -89,29 +91,29 @@ function SendSurveyModal({ survey, onClose }) {
           </p>
 
           {loading ? (
-            <div className="loading">Loading houses...</div>
+            <div className="loading">{t('surveys.loadingHouses')}</div>
           ) : error && !result ? (
             <div className="error-message">{error}</div>
           ) : result ? (
             <div className="send-result">
               <div className="result-success">
-                <p>Survey sent successfully!</p>
+                <p>{t('surveys.sentSuccess')}</p>
                 <ul>
-                  <li>{result.assignmentsCreated} assignment(s) created</li>
-                  <li>{result.notificationsSent} notification(s) sent</li>
+                  <li>{result.assignmentsCreated} {t('surveys.assignmentsCreated')}</li>
+                  <li>{result.notificationsSent} {t('surveys.notificationsSent')}</li>
                   {result.notificationsFailed > 0 && (
-                    <li className="text-warning">{result.notificationsFailed} notification(s) failed</li>
+                    <li className="text-warning">{result.notificationsFailed} {t('surveys.notificationsFailed')}</li>
                   )}
                 </ul>
               </div>
-              <button className="send-btn" onClick={onClose}>Close</button>
+              <button className="send-btn" onClick={onClose}>{t('surveys.close')}</button>
             </div>
           ) : (
             <>
               <div className="house-selection">
                 {alertRuleGroups.length > 0 && (
                   <div className="alert-rule-shortcuts">
-                    <label className="shortcut-label">Select by alert (last 30 days):</label>
+                    <label className="shortcut-label">{t('surveys.selectByAlert')}</label>
                     <div className="shortcut-btns">
                       {alertRuleGroups.map(group => (
                         <button
@@ -129,13 +131,13 @@ function SendSurveyModal({ survey, onClose }) {
                 )}
 
                 <div className="selection-controls">
-                  <button type="button" className="link-btn" onClick={selectAll}>Select All</button>
-                  <button type="button" className="link-btn" onClick={selectNone}>Select None</button>
-                  <span className="selection-count">{selectedHouses.length} selected</span>
+                  <button type="button" className="link-btn" onClick={selectAll}>{t('surveys.selectAll')}</button>
+                  <button type="button" className="link-btn" onClick={selectNone}>{t('surveys.selectNone')}</button>
+                  <span className="selection-count">{selectedHouses.length} {t('surveys.selected')}</span>
                 </div>
 
                 {houses.length === 0 ? (
-                  <p className="no-subscribers">No houses found. Create houses first.</p>
+                  <p className="no-subscribers">{t('surveys.noHouses')}</p>
                 ) : (
                   <div className="house-list">
                     {houses.map(house => (
@@ -155,7 +157,7 @@ function SendSurveyModal({ survey, onClose }) {
 
               <div className="modal-actions">
                 <button type="button" className="cancel-btn" onClick={onClose}>
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="button"
@@ -163,7 +165,7 @@ function SendSurveyModal({ survey, onClose }) {
                   onClick={handleSend}
                   disabled={sending || selectedHouses.length === 0}
                 >
-                  {sending ? 'Sending...' : `Send to ${selectedHouses.length} House(s)`}
+                  {sending ? t('admin.sending') : `${t('surveys.sendTo')} ${selectedHouses.length} ${t('surveys.houses')}`}
                 </button>
               </div>
             </>

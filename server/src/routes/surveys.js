@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import surveyService from '../services/surveyService.js'
+import surveyTriggerService from '../services/surveyTriggerService.js'
 import authService from '../services/authService.js'
 import pushService from '../services/pushService.js'
 import { authenticateAdmin } from '../middleware/authMiddleware.js'
@@ -258,6 +259,77 @@ router.post('/send-survey', async (req, res) => {
   } catch (error) {
     console.error('Error sending survey:', error)
     res.status(500).json({ error: 'Failed to send survey' })
+  }
+})
+
+// =====================
+// Survey Triggers
+// =====================
+
+// GET /api/surveys/triggers/:questionSetId - Get trigger for a question set
+router.get('/triggers/:questionSetId', authenticateAdmin, async (req, res) => {
+  try {
+    const trigger = await surveyTriggerService.getTriggerByQuestionSetId(req.params.questionSetId)
+    res.json(trigger || null)
+  } catch (error) {
+    console.error('Error fetching survey trigger:', error)
+    res.status(500).json({ error: 'Failed to fetch survey trigger' })
+  }
+})
+
+// POST /api/surveys/triggers - Create or update trigger for a question set
+router.post('/triggers', authenticateAdmin, async (req, res) => {
+  try {
+    const { questionSetId, conditions, sustainedMinutes, isActive } = req.body
+
+    if (!questionSetId || !conditions) {
+      return res.status(400).json({ error: 'Question set ID and conditions are required' })
+    }
+
+    // Check if trigger already exists for this question set
+    const existing = await surveyTriggerService.getTriggerByQuestionSetId(questionSetId)
+
+    let trigger
+    if (existing) {
+      trigger = await surveyTriggerService.updateTrigger(existing.id, {
+        conditions,
+        sustainedMinutes,
+        isActive
+      })
+    } else {
+      trigger = await surveyTriggerService.createTrigger({
+        questionSetId,
+        organization: req.admin.organization,
+        conditions,
+        sustainedMinutes,
+        isActive,
+        createdBy: req.admin.id
+      })
+    }
+
+    res.status(existing ? 200 : 201).json(trigger)
+  } catch (error) {
+    if (error.message.includes('Invalid') || error.message.includes('required')) {
+      return res.status(400).json({ error: error.message })
+    }
+    console.error('Error saving survey trigger:', error)
+    res.status(500).json({ error: 'Failed to save survey trigger' })
+  }
+})
+
+// DELETE /api/surveys/triggers/:questionSetId - Delete trigger for a question set
+router.delete('/triggers/:questionSetId', authenticateAdmin, async (req, res) => {
+  try {
+    const trigger = await surveyTriggerService.getTriggerByQuestionSetId(req.params.questionSetId)
+    if (!trigger) {
+      return res.status(404).json({ error: 'Trigger not found' })
+    }
+
+    await surveyTriggerService.deleteTrigger(trigger.id)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting survey trigger:', error)
+    res.status(500).json({ error: 'Failed to delete survey trigger' })
   }
 })
 

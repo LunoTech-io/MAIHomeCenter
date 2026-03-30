@@ -1,4 +1,8 @@
+import { useLanguage } from '../../contexts/LanguageContext'
+
 function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, onMoveUp, onMoveDown }) {
+  const { t } = useLanguage()
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     onChange({ [name]: type === 'checkbox' ? checked : value })
@@ -36,14 +40,14 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
   return (
     <div className="question-editor">
       <div className="question-header">
-        <span className="question-number">Question {index + 1}</span>
+        <span className="question-number">{t('questions.question')} {index + 1}</span>
         <div className="question-controls">
           <button
             type="button"
             className="control-btn"
             onClick={onMoveUp}
             disabled={index === 0}
-            title="Move up"
+            title={t('questions.moveUp')}
           >
             Up
           </button>
@@ -52,7 +56,7 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
             className="control-btn"
             onClick={onMoveDown}
             disabled={index === totalQuestions - 1}
-            title="Move down"
+            title={t('questions.moveDown')}
           >
             Down
           </button>
@@ -60,9 +64,9 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
             type="button"
             className="control-btn delete"
             onClick={onRemove}
-            title="Remove question"
+            title={t('questions.remove')}
           >
-            Remove
+            {t('questions.removeBtn')}
           </button>
         </div>
       </div>
@@ -70,22 +74,22 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
       <div className="question-body">
         <div className="form-row">
           <div className="form-group">
-            <label>Identifier</label>
+            <label>{t('questions.identifier')}</label>
             <input
               type="text"
               name="identifier"
               value={question.identifier}
               onChange={handleChange}
-              placeholder="e.g., q1, satisfaction"
+              placeholder={t('questions.identifierPlaceholder')}
             />
           </div>
 
           <div className="form-group">
-            <label>Type</label>
+            <label>{t('questions.type')}</label>
             <select name="type" value={question.type} onChange={handleTypeChange}>
-              <option value="radio">Radio Buttons</option>
-              <option value="open_text">Open Text</option>
-              <option value="display">Display Text</option>
+              <option value="radio">{t('questions.typeRadio')}</option>
+              <option value="open_text">{t('questions.typeOpenText')}</option>
+              <option value="display">{t('questions.typeDisplay')}</option>
             </select>
           </div>
 
@@ -97,40 +101,40 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
                 checked={question.isRequired}
                 onChange={handleChange}
               />
-              Required
+              {t('questions.required')}
             </label>
           </div>
         </div>
 
         <div className="form-group">
           <label>
-            {question.type === 'display' ? 'Display Text (HTML supported)' : 'Question Text'}
+            {question.type === 'display' ? t('questions.displayTextLabel') : t('questions.questionText')}
           </label>
           <textarea
             name="questionText"
             value={question.questionText}
             onChange={handleChange}
-            placeholder={question.type === 'display' ? 'Enter text or HTML to display' : 'Enter your question'}
+            placeholder={question.type === 'display' ? t('questions.displayPlaceholder') : t('questions.questionPlaceholder')}
             rows={question.type === 'display' ? 4 : 2}
           />
         </div>
 
         {question.type === 'radio' && (
           <div className="options-section">
-            <label>Options</label>
+            <label>{t('questions.options')}</label>
             {(question.options || []).map((option, optIndex) => (
               <div key={optIndex} className="option-row">
                 <input
                   type="text"
                   value={option.value}
                   onChange={(e) => updateOption(optIndex, 'value', e.target.value)}
-                  placeholder="Value"
+                  placeholder={t('questions.valuePlaceholder')}
                 />
                 <input
                   type="text"
                   value={option.label}
                   onChange={(e) => updateOption(optIndex, 'label', e.target.value)}
-                  placeholder="Label"
+                  placeholder={t('questions.labelPlaceholder')}
                 />
                 <button
                   type="button"
@@ -143,7 +147,7 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
               </div>
             ))}
             <button type="button" className="add-option-btn" onClick={addOption}>
-              + Add Option
+              {t('questions.addOption')}
             </button>
           </div>
         )}

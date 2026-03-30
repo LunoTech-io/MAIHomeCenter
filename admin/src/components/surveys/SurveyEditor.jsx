@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getQuestionSet, createQuestionSet, updateQuestionSet } from '../../services/api'
+import { useLanguage } from '../../contexts/LanguageContext'
 import QuestionEditor from './QuestionEditor'
 
 const emptyQuestion = {
@@ -14,6 +15,7 @@ const emptyQuestion = {
 function SurveyEditor() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const isNew = !id
 
   const [loading, setLoading] = useState(!isNew)
@@ -106,7 +108,7 @@ function SurveyEditor() {
     e.preventDefault()
 
     if (!form.title || !form.notificationTitle || !form.notificationBody) {
-      setError('Title, notification title, and notification body are required')
+      setError(t('surveys.validationRequired'))
       return
     }
 
@@ -140,9 +142,9 @@ function SurveyEditor() {
     return (
       <div className="admin">
         <div className="admin-header">
-          <h1>{isNew ? 'New Survey' : 'Edit Survey'}</h1>
+          <h1>{isNew ? t('surveys.newSurveyTitle') : t('surveys.editSurveyTitle')}</h1>
         </div>
-        <div className="loading">Loading...</div>
+        <div className="loading">{t('common.loading')}</div>
       </div>
     )
   }
@@ -150,8 +152,8 @@ function SurveyEditor() {
   return (
     <div className="admin">
       <div className="admin-header">
-        <h1>{isNew ? 'New Survey' : 'Edit Survey'}</h1>
-        <p>{isNew ? 'Create a new question set' : 'Update survey details and questions'}</p>
+        <h1>{isNew ? t('surveys.newSurveyTitle') : t('surveys.editSurveyTitle')}</h1>
+        <p>{isNew ? t('surveys.newSurveySubtitle') : t('surveys.editSurveySubtitle')}</p>
       </div>
 
       {error && (
@@ -160,36 +162,36 @@ function SurveyEditor() {
 
       <form onSubmit={handleSubmit}>
         <div className="admin-section">
-          <h2>Survey Details</h2>
+          <h2>{t('surveys.surveyDetails')}</h2>
 
           <div className="form-group">
-            <label htmlFor="title">Title</label>
+            <label htmlFor="title">{t('surveys.titleField')}</label>
             <input
               type="text"
               id="title"
               name="title"
               value={form.title}
               onChange={handleFormChange}
-              placeholder="Survey title"
+              placeholder={t('surveys.titlePlaceholder')}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="description">Description (optional)</label>
+            <label htmlFor="description">{t('surveys.description')}</label>
             <textarea
               id="description"
               name="description"
               value={form.description}
               onChange={handleFormChange}
-              placeholder="Brief description of this survey"
+              placeholder={t('surveys.descriptionPlaceholder')}
               rows={2}
             />
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="expiresAt">Expires At (optional)</label>
+              <label htmlFor="expiresAt">{t('surveys.expiresAt')}</label>
               <input
                 type="date"
                 id="expiresAt"
@@ -207,7 +209,7 @@ function SurveyEditor() {
                   checked={form.isDismissable}
                   onChange={handleFormChange}
                 />
-                Allow dismiss
+                {t('surveys.allowDismiss')}
               </label>
               <label>
                 <input
@@ -216,43 +218,43 @@ function SurveyEditor() {
                   checked={form.isActive}
                   onChange={handleFormChange}
                 />
-                Active
+                {t('surveys.active')}
               </label>
             </div>
           </div>
         </div>
 
         <div className="admin-section">
-          <h2>Notification Settings</h2>
+          <h2>{t('surveys.notificationSettings')}</h2>
 
           <div className="form-group">
-            <label htmlFor="notificationTitle">Notification Title</label>
+            <label htmlFor="notificationTitle">{t('surveys.notificationTitle')}</label>
             <input
               type="text"
               id="notificationTitle"
               name="notificationTitle"
               value={form.notificationTitle}
               onChange={handleFormChange}
-              placeholder="Push notification title"
+              placeholder={t('surveys.notificationTitlePlaceholder')}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="notificationBody">Notification Body</label>
+            <label htmlFor="notificationBody">{t('surveys.notificationBody')}</label>
             <textarea
               id="notificationBody"
               name="notificationBody"
               value={form.notificationBody}
               onChange={handleFormChange}
-              placeholder="Push notification message"
+              placeholder={t('surveys.notificationBodyPlaceholder')}
               rows={2}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="notificationUrl">Notification URL</label>
+            <label htmlFor="notificationUrl">{t('surveys.notificationUrl')}</label>
             <input
               type="text"
               id="notificationUrl"
@@ -266,14 +268,14 @@ function SurveyEditor() {
 
         <div className="admin-section">
           <div className="section-header">
-            <h2>Questions</h2>
+            <h2>{t('surveys.questionsSection')}</h2>
             <button type="button" className="send-btn" onClick={addQuestion}>
-              + Add Question
+              {t('surveys.addQuestion')}
             </button>
           </div>
 
           {questions.length === 0 ? (
-            <p className="no-subscribers">No questions yet. Add your first question.</p>
+            <p className="no-subscribers">{t('surveys.noQuestions')}</p>
           ) : (
             <div className="questions-list">
               {questions.map((question, index) => (
@@ -294,10 +296,10 @@ function SurveyEditor() {
 
         <div className="form-actions">
           <button type="button" className="cancel-btn" onClick={() => navigate('/surveys')}>
-            Cancel
+            {t('common.cancel')}
           </button>
           <button type="submit" className="send-btn" disabled={saving}>
-            {saving ? 'Saving...' : (isNew ? 'Create Survey' : 'Save Changes')}
+            {saving ? t('surveys.saving') : (isNew ? t('surveys.createSurvey') : t('surveys.saveChanges'))}
           </button>
         </div>
       </form>
