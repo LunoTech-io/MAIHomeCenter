@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Houses — MAIHomeCenter Admin Manual</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1a1a2e; background: #f8f9fa; }
+    .container { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+    h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; color: #1a1a2e; }
+    h2 { font-size: 22px; font-weight: 600; margin: 40px 0 12px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #1a1a2e; }
+    h3 { font-size: 17px; font-weight: 600; margin: 28px 0 8px; color: #334155; }
+    h4 { font-size: 15px; font-weight: 600; margin: 20px 0 6px; color: #475569; }
+    p { margin: 0 0 16px; color: #334155; }
+    .subtitle { font-size: 15px; color: #64748b; margin-bottom: 32px; }
+    strong { font-weight: 600; }
+    ol, ul { margin: 0 0 16px 24px; color: #334155; }
+    li { margin-bottom: 6px; }
+    hr { border: none; border-top: 2px solid #e2e8f0; margin: 40px 0; }
+    table { width: 100%; border-collapse: collapse; margin: 0 0 20px; font-size: 14px; }
+    th { text-align: left; padding: 10px 14px; background: #f1f5f9; border: 1px solid #e2e8f0; font-weight: 600; color: #1a1a2e; }
+    td { padding: 10px 14px; border: 1px solid #e2e8f0; color: #334155; }
+    tr:nth-child(even) td { background: #f8fafc; }
+    nav.breadcrumb { margin-bottom: 32px; font-size: 14px; color: #64748b; }
+    nav.breadcrumb a { color: #4f46e5; text-decoration: none; }
+    nav.breadcrumb a:hover { text-decoration: underline; }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0; }
+    .nav-links a { display: inline-block; padding: 8px 16px; background: #4f46e5; color: #fff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 500; }
+    .nav-links a:hover { background: #4338ca; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="getting-started.html">Manual</a> &rsaquo; Houses
+    </nav>
+
+    <h1>Houses</h1>
+    <p class="subtitle">Manage tenant installations, view alerts, and monitor sensor dashboards</p>
+
+    <h2>House List</h2>
+
+    <h3>Filtering</h3>
+    <p>Three filter buttons let you narrow the house list:</p>
+    <table>
+      <thead><tr><th>Filter</th><th>Shows</th></tr></thead>
+      <tbody>
+        <tr><td>Alerts today</td><td>Only houses with alerts in the last 24 hours</td></tr>
+        <tr><td>Alerts this week</td><td>Only houses with alerts in the last 7 days</td></tr>
+        <tr><td>All houses</td><td>Every house (default)</td></tr>
+      </tbody>
+    </table>
+    <p>Each filter button shows a count badge when there are matching houses.</p>
+
+    <h3>House Table</h3>
+    <table>
+      <thead><tr><th>Column</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>House ID</td><td>Unique identifier for the installation</td></tr>
+        <tr><td>Name</td><td>Display name (shows "--" if not set)</td></tr>
+        <tr><td>Alerts</td><td>Badge showing alert counts for today and this week</td></tr>
+        <tr><td>Organization</td><td>The organization the house belongs to</td></tr>
+        <tr><td>Created</td><td>Date the house was registered</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Actions</h3>
+    <ul>
+      <li><strong>Dashboard</strong> — Open the detailed sensor dashboard for this house</li>
+      <li><strong>Delete</strong> — Remove the house and all its survey assignments (asks for confirmation)</li>
+    </ul>
+
+    <hr>
+
+    <h2>Adding a House</h2>
+    <p>Click <strong>+ Add House</strong> to expand the form.</p>
+    <table>
+      <thead><tr><th>Field</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>House ID</td><td>Yes</td><td>Unique identifier (e.g., "weller1")</td></tr>
+        <tr><td>Password</td><td>Yes</td><td>Login credentials for the tenant app</td></tr>
+        <tr><td>Name</td><td>No</td><td>A friendly display name</td></tr>
+        <tr><td>Organization</td><td>No</td><td>Pre-filled with your organization</td></tr>
+      </tbody>
+    </table>
+    <p>Click <strong>Create House</strong> to add it to the system.</p>
+
+    <hr>
+
+    <h2>House Dashboard</h2>
+    <p>Click <strong>Dashboard</strong> on any house to see its detailed sensor data. The dashboard auto-refreshes every 5 minutes.</p>
+
+    <h3>Status Widgets</h3>
+    <p>A grid of key metrics at the top:</p>
+    <table>
+      <thead><tr><th>Widget</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Avg Temperature</td><td>Mean temperature across all monitored rooms</td></tr>
+        <tr><td>Outside Temp</td><td>Current exterior temperature (if weather data available)</td></tr>
+        <tr><td>Motion Detected</td><td>Number of rooms with active motion</td></tr>
+        <tr><td>Setpoint</td><td>Current thermostat target temperature</td></tr>
+        <tr><td>Rooms Monitored</td><td>Total number of rooms with sensors</td></tr>
+        <tr><td>Power Draw</td><td>Current electricity consumption in watts (if smart meter connected)</td></tr>
+        <tr><td>Gas Meter</td><td>Current gas meter reading in m&sup3; (if gas meter connected)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Charts</h3>
+    <p>All charts display the last 24 hours of data.</p>
+
+    <h4>Temperature by Room</h4>
+    <p>Line chart showing temperature readings per room. Includes:</p>
+    <ul>
+      <li>Solid lines for actual room temperatures</li>
+      <li>Dashed lines for predicted temperatures (from the ML model)</li>
+      <li>Gray dashed line for outside temperature (if available)</li>
+    </ul>
+
+    <h4>Temperature vs Setpoint</h4>
+    <p>Compares actual room temperature against the thermostat setpoint for a selected room. If multiple rooms exist, a dropdown lets you switch between them. Shows:</p>
+    <ul>
+      <li>Actual temperature (solid green line)</li>
+      <li>Setpoint (dashed orange line)</li>
+      <li>Predicted temperature (dashed green line)</li>
+    </ul>
+
+    <h4>Motion Activity</h4>
+    <p>Stacked bar chart showing motion detection events per room over time.</p>
+
+    <h4>Humidity &amp; CO2</h4>
+    <p>Dual-axis line chart (only shown if sensors are present):</p>
+    <ul>
+      <li>Left axis: Humidity (%) per room</li>
+      <li>Right axis: CO2 (ppm) per room</li>
+    </ul>
+
+    <h4>Electricity</h4>
+    <p>Line chart showing power draw and return over time (only shown if a smart meter is connected):</p>
+    <ul>
+      <li>Draw (W) — power consumed</li>
+      <li>Return (W) — power fed back to the grid</li>
+    </ul>
+
+    <h4>Gas Usage</h4>
+    <p>Line chart showing gas consumption per interval in m&sup3; (only shown if a gas meter is connected).</p>
+
+    <h4>Appliance Power</h4>
+    <p>Line chart showing individual appliance power consumption (only shown if smart plugs are configured). Each appliance gets its own colored line.</p>
+
+    <div class="nav-links">
+      <a href="getting-started.html">Getting Started</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="surveys.html">Surveys</a>
+      <a href="alert-rules.html">Alert Rules</a>
+    </div>
+  </div>
+</body>
+</html>

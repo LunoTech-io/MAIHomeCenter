@@ -50,7 +50,6 @@ export default {
   "login.passwordPlaceholder": "Voer je wachtwoord in",
   "login.signIn": "Inloggen",
   "login.signingIn": "Bezig met inloggen...",
-  "login.demoHouses": "of probeer een demowoning",
   "login.error": "Voer je woning ID en wachtwoord in",
 
   // Alerts

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surveys — MAIHomeCenter Admin Manual</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1a1a2e; background: #f8f9fa; }
+    .container { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+    h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; color: #1a1a2e; }
+    h2 { font-size: 22px; font-weight: 600; margin: 40px 0 12px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #1a1a2e; }
+    h3 { font-size: 17px; font-weight: 600; margin: 28px 0 8px; color: #334155; }
+    h4 { font-size: 15px; font-weight: 600; margin: 20px 0 6px; color: #475569; }
+    p { margin: 0 0 16px; color: #334155; }
+    .subtitle { font-size: 15px; color: #64748b; margin-bottom: 32px; }
+    strong { font-weight: 600; }
+    code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 14px; font-family: "SF Mono", Monaco, Consolas, monospace; }
+    ol, ul { margin: 0 0 16px 24px; color: #334155; }
+    li { margin-bottom: 6px; }
+    blockquote { margin: 0 0 16px; padding: 12px 16px; background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 4px; color: #1e40af; font-size: 14px; }
+    hr { border: none; border-top: 2px solid #e2e8f0; margin: 40px 0; }
+    table { width: 100%; border-collapse: collapse; margin: 0 0 20px; font-size: 14px; }
+    th { text-align: left; padding: 10px 14px; background: #f1f5f9; border: 1px solid #e2e8f0; font-weight: 600; color: #1a1a2e; }
+    td { padding: 10px 14px; border: 1px solid #e2e8f0; color: #334155; }
+    tr:nth-child(even) td { background: #f8fafc; }
+    nav.breadcrumb { margin-bottom: 32px; font-size: 14px; color: #64748b; }
+    nav.breadcrumb a { color: #4f46e5; text-decoration: none; }
+    nav.breadcrumb a:hover { text-decoration: underline; }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0; }
+    .nav-links a { display: inline-block; padding: 8px 16px; background: #4f46e5; color: #fff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 500; }
+    .nav-links a:hover { background: #4338ca; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="getting-started.html">Manual</a> &rsaquo; Surveys
+    </nav>
+
+    <h1>Surveys</h1>
+    <p class="subtitle">Create questionnaires, send them to tenants, set up triggers, and review responses</p>
+
+    <h2>Survey List</h2>
+    <p>The main Surveys page shows all your question sets. Each survey card displays:</p>
+    <ul>
+      <li><strong>Title</strong> and optional description</li>
+      <li><strong>Question count</strong> — how many questions the survey contains</li>
+      <li><strong>Assignment count</strong> — how many times the survey has been sent</li>
+      <li><strong>Status</strong> — Active or Inactive</li>
+    </ul>
+
+    <h3>Actions per Survey</h3>
+    <table>
+      <thead><tr><th>Button</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Send</strong></td><td>Manually send the survey to selected houses</td></tr>
+        <tr><td><strong>Trigger</strong></td><td>Set up automatic sending based on sensor conditions</td></tr>
+        <tr><td><strong>Responses</strong></td><td>View all answers from tenants</td></tr>
+        <tr><td><strong>Edit</strong></td><td>Modify the survey's questions and settings</td></tr>
+        <tr><td><strong>Delete</strong></td><td>Permanently remove the survey (asks for confirmation)</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Creating a Survey</h2>
+    <p>Click <strong>+ New Survey</strong> to open the survey editor.</p>
+
+    <h3>Survey Details</h3>
+    <table>
+      <thead><tr><th>Field</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Title</td><td>Yes</td><td>Name of the survey</td></tr>
+        <tr><td>Description</td><td>No</td><td>Internal notes about this survey</td></tr>
+        <tr><td>Expires At</td><td>No</td><td>Date after which the survey is no longer available</td></tr>
+        <tr><td>Allow dismiss</td><td>-</td><td>When checked, tenants can dismiss without answering</td></tr>
+        <tr><td>Active</td><td>-</td><td>Only active surveys can be sent and answered</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Notification Settings</h3>
+    <p>These control what tenants see when they receive the survey notification on their phone:</p>
+    <table>
+      <thead><tr><th>Field</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Notification Title</td><td>Yes</td><td>Push notification header</td></tr>
+        <tr><td>Notification Body</td><td>Yes</td><td>Push notification message text</td></tr>
+        <tr><td>Notification URL</td><td>No</td><td>Where tapping the notification navigates (defaults to "/surveys")</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Questions</h3>
+    <p>Click <strong>+ Add Question</strong> to add questions. Each question has:</p>
+    <table>
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Identifier</td><td>A short code for this question (e.g., "q1", "satisfaction")</td></tr>
+        <tr><td>Type</td><td>Radio Buttons, Open Text, or Display Text</td></tr>
+        <tr><td>Required</td><td>Whether the tenant must answer before submitting</td></tr>
+        <tr><td>Question Text</td><td>The actual question shown to the tenant</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Question Types</h4>
+    <ul>
+      <li><strong>Radio Buttons</strong> — Single choice from a list of options. Each option has a Value (stored internally) and a Label (shown to the tenant). You can add or remove options.</li>
+      <li><strong>Open Text</strong> — Free-form text input for the tenant's own words.</li>
+      <li><strong>Display Text</strong> — Informational content only (supports HTML). Not a question — just shows text to the tenant.</li>
+    </ul>
+
+    <h4>Reordering and Removing</h4>
+    <ul>
+      <li>Use the <strong>Up/Down</strong> buttons to reorder questions</li>
+      <li>Use the <strong>Remove</strong> button to delete a question</li>
+      <li>At least one question is recommended before sending</li>
+    </ul>
+
+    <hr>
+
+    <h2>Sending a Survey</h2>
+    <p>Click <strong>Send</strong> on any survey to open the send dialog.</p>
+
+    <h3>Selecting Houses</h3>
+    <p>You can select which houses receive the survey in several ways:</p>
+    <ol>
+      <li><strong>Alert Rule Shortcuts</strong> — If alert rules exist, buttons appear showing each rule name and the number of houses that triggered it in the last 30 days. Click to add those houses to your selection.</li>
+      <li><strong>Select All / Select None</strong> — Quick-select buttons</li>
+      <li><strong>Individual checkboxes</strong> — Check or uncheck specific houses</li>
+    </ol>
+    <p>The selected count is shown at the bottom.</p>
+
+    <h3>Sending</h3>
+    <p>Click <strong>Send to [X] House(s)</strong> to send. The result shows:</p>
+    <ul>
+      <li>How many assignments were created</li>
+      <li>How many notifications were delivered</li>
+      <li>How many notifications failed (if any)</li>
+    </ul>
+    <blockquote>A survey can only be assigned once per house. Sending the same survey to a house that already has it will not create a duplicate.</blockquote>
+
+    <hr>
+
+    <h2>Survey Triggers</h2>
+    <p>Click <strong>Trigger</strong> on a survey to set up automatic sending based on sensor conditions.</p>
+
+    <h3>How Triggers Work</h3>
+    <p>When a trigger is active, the system checks sensor data every 5 minutes. If all conditions are met for a house, the survey is automatically sent to that house with a push notification — just like a manual send.</p>
+    <p>Once the condition resolves (sensor readings return to normal), the trigger resets and can fire again if conditions are met later.</p>
+
+    <h3>Setting Up Conditions</h3>
+    <p>Each condition specifies a sensor reading to watch:</p>
+    <table>
+      <thead><tr><th>Field</th><th>Options</th></tr></thead>
+      <tbody>
+        <tr><td>Sensor</td><td>Temperature, Humidity, CO2, TVOC, Pressure, Light Level</td></tr>
+        <tr><td>Operator</td><td>Above or Below</td></tr>
+        <tr><td>Threshold</td><td>The comparison value (e.g., 28 for 28 degrees)</td></tr>
+      </tbody>
+    </table>
+    <p>You can add multiple conditions. <strong>All conditions must be true at the same time</strong> (AND logic) for the trigger to fire.</p>
+
+    <h3>Sustained Duration</h3>
+    <table>
+      <thead><tr><th>Value</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td>0 (default)</td><td>Triggers immediately when the latest reading meets all conditions</td></tr>
+        <tr><td>30+ minutes</td><td>Conditions must persist for the specified duration before triggering</td></tr>
+      </tbody>
+    </table>
+    <blockquote>Sensors report approximately every 15 minutes. For sustained triggers, use at least 30 minutes to ensure at least 2 readings confirm the condition.</blockquote>
+
+    <h3>Managing Triggers</h3>
+    <ul>
+      <li><strong>Active checkbox</strong> — Enable or disable the trigger without deleting it</li>
+      <li><strong>Remove Trigger</strong> — Permanently delete the trigger (asks for confirmation)</li>
+      <li>Each survey can have one trigger. Saving a new trigger replaces any existing one.</li>
+    </ul>
+
+    <hr>
+
+    <h2>Viewing Responses</h2>
+    <p>Click <strong>Responses</strong> on a survey to see all answers.</p>
+
+    <h3>Summary</h3>
+    <p>Four statistics at the top:</p>
+    <table>
+      <thead><tr><th>Stat</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Total Assigned</td><td>Number of houses that received the survey</td></tr>
+        <tr><td>Completed</td><td>Houses where the tenant finished the survey</td></tr>
+        <tr><td>Pending</td><td>Sent but not yet answered</td></tr>
+        <tr><td>Dismissed</td><td>Tenant dismissed without completing</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Individual Responses</h3>
+    <p>Each house's response is shown as a card with:</p>
+    <ul>
+      <li><strong>House ID and name</strong></li>
+      <li><strong>Status badge</strong> (completed, pending, or dismissed)</li>
+      <li><strong>Answers</strong> (for completed surveys) — each question with the tenant's response</li>
+      <li><strong>Completion timestamp</strong></li>
+    </ul>
+    <p>If a question was skipped, it shows "No answer" in italics.</p>
+
+    <div class="nav-links">
+      <a href="getting-started.html">Getting Started</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="alert-rules.html">Alert Rules</a>
+      <a href="houses.html">Houses</a>
+    </div>
+  </div>
+</body>
+</html>

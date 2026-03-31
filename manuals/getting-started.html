@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting Started — MAIHomeCenter Admin Manual</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1a1a2e; background: #f8f9fa; }
+    .container { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+    h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; color: #1a1a2e; }
+    h2 { font-size: 22px; font-weight: 600; margin: 40px 0 12px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #1a1a2e; }
+    h3 { font-size: 17px; font-weight: 600; margin: 28px 0 8px; color: #334155; }
+    p { margin: 0 0 16px; color: #334155; }
+    .subtitle { font-size: 15px; color: #64748b; margin-bottom: 32px; }
+    strong { font-weight: 600; }
+    code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 14px; font-family: "SF Mono", Monaco, Consolas, monospace; }
+    ol, ul { margin: 0 0 16px 24px; color: #334155; }
+    li { margin-bottom: 6px; }
+    table { width: 100%; border-collapse: collapse; margin: 0 0 20px; font-size: 14px; }
+    th { text-align: left; padding: 10px 14px; background: #f1f5f9; border: 1px solid #e2e8f0; font-weight: 600; color: #1a1a2e; }
+    td { padding: 10px 14px; border: 1px solid #e2e8f0; color: #334155; }
+    tr:nth-child(even) td { background: #f8fafc; }
+    nav.breadcrumb { margin-bottom: 32px; font-size: 14px; color: #64748b; }
+    nav.breadcrumb a { color: #4f46e5; text-decoration: none; }
+    nav.breadcrumb a:hover { text-decoration: underline; }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0; }
+    .nav-links a { display: inline-block; padding: 8px 16px; background: #4f46e5; color: #fff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 500; }
+    .nav-links a:hover { background: #4338ca; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumb">
+      <strong>MAIHomeCenter Admin Manual</strong>
+    </nav>
+
+    <h1>Getting Started</h1>
+    <p class="subtitle">Overview of the admin panel and common workflows</p>
+
+    <h2>Logging In</h2>
+    <p>Open the admin panel in your browser. You will see the login screen with the MAIHomeCenter logo.</p>
+    <ol>
+      <li>Enter your <strong>Username</strong></li>
+      <li>Enter your <strong>Password</strong></li>
+      <li>Click <strong>Sign In</strong></li>
+    </ol>
+    <p>After logging in, you will see the Notifications page.</p>
+
+    <h2>Navigation</h2>
+    <p>The navigation bar at the top contains four sections:</p>
+    <table>
+      <thead><tr><th>Section</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Notifications</td><td>Send push notifications to tenants</td></tr>
+        <tr><td>Surveys</td><td>Create, send, and review questionnaires</td></tr>
+        <tr><td>Alert Rules</td><td>Set up automatic alerts based on sensor data</td></tr>
+        <tr><td>Houses</td><td>Manage tenant installations and view dashboards</td></tr>
+      </tbody>
+    </table>
+    <p>On the right side of the navigation bar:</p>
+    <ul>
+      <li><strong>Your name and organization</strong> are displayed</li>
+      <li><strong>NL / EN</strong> — Switch between Dutch and English</li>
+      <li><strong>Sun/Moon icon</strong> — Toggle between light and dark theme</li>
+      <li><strong>Logout</strong> — Sign out of the admin panel</li>
+    </ul>
+
+    <h2>Language</h2>
+    <p>The entire admin interface is available in Dutch (NL) and English (EN). Click the language toggle in the navigation bar to switch. Your preference is saved and remembered for next time.</p>
+
+    <h2>Theme</h2>
+    <p>Click the sun/moon icon to switch between light and dark mode. Your preference is saved automatically.</p>
+
+    <h2>Typical Workflows</h2>
+
+    <h3>Monitor your houses</h3>
+    <ol>
+      <li>Go to <strong>Houses</strong></li>
+      <li>Use the alert filters to see which houses had issues today or this week</li>
+      <li>Click <strong>Dashboard</strong> on any house to see detailed sensor charts</li>
+    </ol>
+
+    <h3>Send a survey after an alert</h3>
+    <ol>
+      <li>Go to <strong>Surveys</strong> and click <strong>Send</strong> on the survey you want to use</li>
+      <li>Use the <strong>alert rule shortcuts</strong> to quickly select houses that triggered a specific alert</li>
+      <li>Click <strong>Send</strong></li>
+    </ol>
+
+    <h3>Set up automatic survey sending</h3>
+    <ol>
+      <li>Go to <strong>Surveys</strong> and click <strong>Trigger</strong> on the survey</li>
+      <li>Add sensor conditions (e.g., Temperature above 26)</li>
+      <li>Set a sustained duration if you want to avoid false positives</li>
+      <li>Enable the trigger and save</li>
+    </ol>
+
+    <h3>Create an alert rule</h3>
+    <ol>
+      <li>Go to <strong>Alert Rules</strong> and click <strong>+ New Rule</strong></li>
+      <li>Name the rule and set conditions</li>
+      <li>Configure the notification message (use <code>{room}</code> and <code>{value}</code> for dynamic content)</li>
+      <li>Save and activate</li>
+    </ol>
+
+    <div class="nav-links">
+      <a href="notifications.html">Notifications</a>
+      <a href="surveys.html">Surveys</a>
+      <a href="alert-rules.html">Alert Rules</a>
+      <a href="houses.html">Houses</a>
+    </div>
+  </div>
+</body>
+</html>

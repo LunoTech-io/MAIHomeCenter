@@ -329,7 +329,7 @@ function HouseDashboard() {
                 <LineChart data={tempByRoomData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
                   <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                  <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} domain={['dataMin - 1', 'dataMax + 1']} unit="°C" />
+                  <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} domain={[v => Math.floor(v - 1), v => Math.ceil(v + 1)]} unit="°C" allowDecimals={false} />
                   <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
                   {sensorData.rooms.map((room, i) => (
@@ -367,7 +367,7 @@ function HouseDashboard() {
                 <LineChart data={tempVsSetpointData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
                   <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                  <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} domain={['dataMin - 1', 'dataMax + 1']} unit="°C" />
+                  <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} domain={[v => Math.floor(v - 1), v => Math.ceil(v + 1)]} unit="°C" allowDecimals={false} />
                   <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
                   <Line type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} name={t('dashboard.actualC')} />
@@ -386,7 +386,7 @@ function HouseDashboard() {
                 <BarChart data={motionData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
                   <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                  <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
+                  <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} allowDecimals={false} />
                   <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
                   {sensorData.rooms.map((room, i) => (
@@ -404,8 +404,8 @@ function HouseDashboard() {
                   <LineChart data={humidityData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
                     <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                    <YAxis yAxisId="humidity" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit="%" />
-                    <YAxis yAxisId="co2" orientation="right" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" ppm" />
+                    <YAxis yAxisId="humidity" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit="%" allowDecimals={false} />
+                    <YAxis yAxisId="co2" orientation="right" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" ppm" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
                     {humidityRooms.map((room, i) => (
@@ -427,7 +427,7 @@ function HouseDashboard() {
                   <LineChart data={electricityData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
                     <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" />
+                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
                     <Line type="monotone" dataKey="draw" stroke="#f59e0b" strokeWidth={2} dot={false} name={t('dashboard.drawW')} />
@@ -445,7 +445,7 @@ function HouseDashboard() {
                   <LineChart data={gasData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
                     <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" m³" />
+                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" m³" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
                     <Line type="monotone" dataKey="gas" stroke="#8b5cf6" strokeWidth={2} dot={false} name={t('dashboard.usageM3')} />
@@ -462,7 +462,7 @@ function HouseDashboard() {
                   <LineChart data={applianceChartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
                     <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" />
+                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
                     {applianceNames.map((name, i) => (

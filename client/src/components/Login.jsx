@@ -2,15 +2,8 @@ import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 
-const demoHouses = [
-  { id: 'woning16', name: 'WONING 16' },
-  { id: 'weller1', name: 'Weller 1' },
-  { id: 'wonenzuid1', name: 'Wonen Zuid 1' },
-  { id: 'wonenlimburg1', name: 'Wonen in Limburg 1' },
-]
-
 function Login() {
-  const { login, demoLogin, error: authError } = useAuth()
+  const { login, error: authError } = useAuth()
   const { t } = useLanguage()
   const [form, setForm] = useState({ houseId: '', password: '' })
   const [loading, setLoading] = useState(false)
@@ -89,20 +82,6 @@ function Login() {
             {loading ? t('login.signingIn') : t('login.signIn')}
           </button>
 
-          <div className="demo-divider"><span>{t('login.demoHouses')}</span></div>
-
-          <div className="demo-house-grid">
-            {demoHouses.map((h) => (
-              <button
-                key={h.id}
-                type="button"
-                className="demo-house-btn"
-                onClick={() => demoLogin(h.id, h.name)}
-              >
-                <span className="demo-house-name">{h.name}</span>
-              </button>
-            ))}
-          </div>
         </form>
       </div>
     </div>

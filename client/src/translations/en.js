@@ -50,7 +50,6 @@ export default {
   "login.passwordPlaceholder": "Enter your password",
   "login.signIn": "Sign In",
   "login.signingIn": "Signing in...",
-  "login.demoHouses": "or try a demo house",
   "login.error": "Please enter your house ID and password",
 
   // Alerts
