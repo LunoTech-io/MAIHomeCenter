@@ -1,0 +1,1305 @@
+[
+
+    {
+        "id": 10290,
+        "key": "weller_1_-_badkamer",
+        "type": "Leefruimtes",
+        "name": "Weller 1 - Badkamer"
+    },
+
+    {
+        "id": 10287,
+        "key": "weller_1_-_diepvries",
+        "type": "Grootverbruikers",
+        "name": "Weller 1 - Diepvries"
+    },
+    {
+        "id": 10304,
+        "key": "weller_1_-_digitale_meter",
+        "type": "Energiemeter",
+        "name": "Weller 1 - Digitale meter"
+    },
+    {
+        "id": 10285,
+        "key": "weller_1_-_droogkast",
+        "type": "Grootverbruikers",
+        "name": "Weller 1 - Droogkast"
+    },
+    {
+        "id": 10292,
+        "key": "weller_1_-_eetkamer",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Weller 1 - Eetkamer"
+    },
+
+    {
+        "id": 10299,
+        "key": "weller_1_-_hal_beneden",
+        "type": "Leefruimtes (met deursensor)",
+        "name": "Weller 1 - Hal beneden"
+    },
+
+    {
+        "id": 10293,
+        "key": "weller_1_-_hal_boven",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Weller 1 - Hal boven"
+    },
+    {
+        "id": 10291,
+        "key": "weller_1_-_keuken",
+        "type": "Leefruimtes",
+        "name": "Weller 1 - Keuken"
+    },
+    
+    {
+        "id": 10288,
+        "key": "weller_1_-_koelkast",
+        "type": "Grootverbruikers",
+        "name": "Weller 1 - Koelkast"
+    },
+    {
+        "id": 10295,
+        "key": "weller_1_-_living",
+        "type": "Living",
+        "name": "Weller 1 - Living"
+    },
+    {
+        "id": 10296,
+        "key": "weller_1_-_slaapkamer_1",
+        "type": "Slaapkamers",
+        "name": "Weller 1 - Slaapkamer 1"
+    },
+
+
+    {
+        "id": 10297,
+        "key": "weller_1_-_slaapkamer_2",
+        "type": "Slaapkamers",
+        "name": "Weller 1 - Slaapkamer 2"
+    },
+    {
+        "id": 10298,
+        "key": "weller_1_-_slaapkamer_3",
+        "type": "Slaapkamers",
+        "name": "Weller 1 - Slaapkamer 3"
+    },
+
+    {
+        "id": 10289,
+        "key": "weller_1_-_tv",
+        "type": "Grootverbruikers",
+        "name": "Weller 1 - TV"
+    },
+    {
+        "id": 10284,
+        "key": "weller_1_-_wasmachine",
+        "type": "Grootverbruikers",
+        "name": "Weller 1 - Wasmachine"
+    },
+    {
+        "id": 10294,
+        "key": "weller_1_-_watermeter",
+        "type": "Watermeter",
+        "name": "Weller 1 - Watermeter"
+    },
+
+    {
+        "id": 10312,
+        "key": "weller_2_-_badkamer",
+        "type": "Leefruimtes",
+        "name": "Weller 2 - Badkamer"
+    },
+
+
+    {
+        "id": 10309,
+        "key": "weller_2_-_diepvries",
+        "type": "Grootverbruikers",
+        "name": "Weller 2 - Diepvries"
+    },
+    {
+        "id": 10322,
+        "key": "weller_2_-_digitale_meter",
+        "type": "Energiemeter",
+        "name": "Weller 2 - Digitale meter"
+    },
+    {
+        "id": 10308,
+        "key": "weller_2_-_droogkast",
+        "type": "Grootverbruikers",
+        "name": "Weller 2 - Droogkast"
+    },
+    {
+        "id": 10314,
+        "key": "weller_2_-_eetkamer",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Weller 2 - Eetkamer"
+    },
+
+    {
+        "id": 10321,
+        "key": "weller_2_-_hal_beneden",
+        "type": "Leefruimtes (met deursensor)",
+        "name": "Weller 2 - Hal beneden"
+    },
+
+    {
+        "id": 10315,
+        "key": "weller_2_-_hal_boven",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Weller 2 - Hal boven"
+    },
+    {
+        "id": 10313,
+        "key": "weller_2_-_keuken",
+        "type": "Leefruimtes",
+        "name": "Weller 2 - Keuken"
+    },
+
+
+    {
+        "id": 10317,
+        "key": "weller_2_-_living",
+        "type": "Living",
+        "name": "Weller 2 - Living"
+    },
+    {
+        "id": 10318,
+        "key": "weller_2_-_slaapkamer_1",
+        "type": "Slaapkamers",
+        "name": "Weller 2 - Slaapkamer 1"
+    },
+
+    {
+        "id": 10319,
+        "key": "weller_2_-_slaapkamer_2",
+        "type": "Slaapkamers",
+        "name": "Weller 2 - Slaapkamer 2"
+    },
+    {
+        "id": 10320,
+        "key": "weller_2_-_slaapkamer_3",
+        "type": "Slaapkamers",
+        "name": "Weller 2 - Slaapkamer 3"
+    },
+
+    {
+        "id": 10311,
+        "key": "weller_2_-_tv",
+        "type": "Grootverbruikers",
+        "name": "Weller 2 - TV"
+    },
+    {
+        "id": 10307,
+        "key": "weller_2_-_wasmachine",
+        "type": "Grootverbruikers",
+        "name": "Weller 2 - Wasmachine"
+    },
+    {
+        "id": 10316,
+        "key": "weller_2_-_watermeter",
+        "type": "Watermeter",
+        "name": "Weller 2 - Watermeter"
+    },
+
+ 
+
+    {
+        "id": 10350,
+        "key": "weller_4_-_badkamer",
+        "type": "Leefruimtes",
+        "name": "Weller 4 - Badkamer"
+    },
+
+    {
+        "id": 10347,
+        "key": "weller_4_-_diepvries",
+        "type": "Grootverbruikers",
+        "name": "Weller 4 - Diepvries"
+    },
+    {
+        "id": 10360,
+        "key": "weller_4_-_digitale_meter",
+        "type": "Energiemeter",
+        "name": "Weller 4 - Digitale meter"
+    },
+    {
+        "id": 10346,
+        "key": "weller_4_-_droogkast",
+        "type": "Grootverbruikers",
+        "name": "Weller 4 - Droogkast"
+    },
+    {
+        "id": 10352,
+        "key": "weller_4_-_eetkamer",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Weller 4 - Eetkamer"
+    },
+
+    {
+        "id": 10359,
+        "key": "weller_4_-_hal_beneden",
+        "type": "Leefruimtes (met deursensor)",
+        "name": "Weller 4 - Hal beneden"
+    },
+
+    {
+        "id": 10353,
+        "key": "weller_4_-_hal_boven",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Weller 4 - Hal boven"
+    },
+    {
+        "id": 10351,
+        "key": "weller_4_-_keuken",
+        "type": "Leefruimtes",
+        "name": "Weller 4 - Keuken"
+    },
+
+    {
+        "id": 10348,
+        "key": "weller_4_-_koelkast",
+        "type": "Grootverbruikers",
+        "name": "Weller 4 - Koelkast"
+    },
+    {
+        "id": 10355,
+        "key": "weller_4_-_living",
+        "type": "Living",
+        "name": "Weller 4 - Living"
+    },
+    {
+        "id": 10356,
+        "key": "weller_4_-_slaapkamer_1",
+        "type": "Slaapkamers",
+        "name": "Weller 4 - Slaapkamer 1"
+    },
+
+    {
+        "id": 10357,
+        "key": "weller_4_-_slaapkamer_2",
+        "type": "Slaapkamers",
+        "name": "Weller 4 - Slaapkamer 2"
+    },
+    {
+        "id": 10358,
+        "key": "weller_4_-_slaapkamer_3",
+        "type": "Slaapkamers",
+        "name": "Weller 4 - Slaapkamer 3"
+    },
+
+    {
+        "id": 10349,
+        "key": "weller_4_-_tv",
+        "type": "Grootverbruikers",
+        "name": "Weller 4 - TV"
+    },
+    {
+        "id": 10345,
+        "key": "weller_4_-_wasmachine",
+        "type": "Grootverbruikers",
+        "name": "Weller 4 - Wasmachine"
+    },
+    {
+        "id": 10354,
+        "key": "weller_4_-_watermeter",
+        "type": "Watermeter",
+        "name": "Weller 4 - Watermeter"
+    },
+
+
+
+    {
+        "id": 10406,
+        "key": "wonen_in_limburg_1_-_badkamer",
+        "type": "Leefruimtes",
+        "name": "Wonen in Limburg 1 - Badkamer"
+    },
+
+    {
+        "id": 10403,
+        "key": "wonen_in_limburg_1_-_diepvries",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 1 - Diepvries"
+    },
+    {
+        "id": 10416,
+        "key": "wonen_in_limburg_1_-_digitale_meter",
+        "type": "Energiemeter",
+        "name": "Wonen in Limburg 1 - Digitale meter"
+    },
+    {
+        "id": 10402,
+        "key": "wonen_in_limburg_1_-_droogkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 1 - Droogkast"
+    },
+    {
+        "id": 10408,
+        "key": "wonen_in_limburg_1_-_eetkamer",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen in Limburg 1 - Eetkamer"
+    },
+
+    {
+        "id": 10415,
+        "key": "wonen_in_limburg_1_-_hal_beneden",
+        "type": "Leefruimtes (met deursensor)",
+        "name": "Wonen in Limburg 1 - Hal beneden"
+    },
+
+    {
+        "id": 10409,
+        "key": "wonen_in_limburg_1_-_hal_boven",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen in Limburg 1 - Hal boven"
+    },
+    {
+        "id": 10407,
+        "key": "wonen_in_limburg_1_-_keuken",
+        "type": "Leefruimtes",
+        "name": "Wonen in Limburg 1 - Keuken"
+    },
+
+    {
+        "id": 10404,
+        "key": "wonen_in_limburg_1_-_koelkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 1 - Koelkast"
+    },
+    {
+        "id": 10411,
+        "key": "wonen_in_limburg_1_-_living",
+        "type": "Living",
+        "name": "Wonen in Limburg 1 - Living"
+    },
+    {
+        "id": 10412,
+        "key": "wonen_in_limburg_1_-_slaapkamer_1",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 1 - Slaapkamer 1"
+    },
+
+    {
+        "id": 10413,
+        "key": "wonen_in_limburg_1_-_slaapkamer_2",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 1 - Slaapkamer 2"
+    },
+    {
+        "id": 10414,
+        "key": "wonen_in_limburg_1_-_slaapkamer_3",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 1 - Slaapkamer 3"
+    },
+
+    {
+        "id": 10405,
+        "key": "wonen_in_limburg_1_-_tv",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 1 - TV"
+    },
+    {
+        "id": 10401,
+        "key": "wonen_in_limburg_1_-_wasmachine",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 1 - Wasmachine"
+    },
+    {
+        "id": 10410,
+        "key": "wonen_in_limburg_1_-_watermeter",
+        "type": "Watermeter",
+        "name": "Wonen in Limburg 1 - Watermeter"
+    },
+
+    {
+        "id": 10443,
+        "key": "wonen_in_limburg_2_-_badkamer",
+        "type": "Leefruimtes",
+        "name": "Wonen in Limburg 2 - Badkamer"
+    },
+
+    {
+        "id": 10440,
+        "key": "wonen_in_limburg_2_-_diepvries",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 2 - Diepvries"
+    },
+    {
+        "id": 10453,
+        "key": "wonen_in_limburg_2_-_digitale_meter",
+        "type": "Energiemeter",
+        "name": "Wonen in Limburg 2 - Digitale meter"
+    },
+    {
+        "id": 10439,
+        "key": "wonen_in_limburg_2_-_droogkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 2 - Droogkast"
+    },
+    {
+        "id": 10445,
+        "key": "wonen_in_limburg_2_-_eetkamer",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen in Limburg 2 - Eetkamer"
+    },
+
+    {
+        "id": 10452,
+        "key": "wonen_in_limburg_2_-_hal_beneden",
+        "type": "Leefruimtes (met deursensor)",
+        "name": "Wonen in Limburg 2 - Hal beneden"
+    },
+
+    {
+        "id": 10446,
+        "key": "wonen_in_limburg_2_-_hal_boven",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen in Limburg 2 - Hal boven"
+    },
+    {
+        "id": 10444,
+        "key": "wonen_in_limburg_2_-_keuken",
+        "type": "Leefruimtes",
+        "name": "Wonen in Limburg 2 - Keuken"
+    },
+
+    {
+        "id": 10441,
+        "key": "wonen_in_limburg_2_-_koelkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 2 - Koelkast"
+    },
+    {
+        "id": 10448,
+        "key": "wonen_in_limburg_2_-_living",
+        "type": "Living",
+        "name": "Wonen in Limburg 2 - Living"
+    },
+    {
+        "id": 10449,
+        "key": "wonen_in_limburg_2_-_slaapkamer_1",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 2 - Slaapkamer 1"
+    },
+
+    {
+        "id": 10450,
+        "key": "wonen_in_limburg_2_-_slaapkamer_2",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 2 - Slaapkamer 2"
+    },
+    {
+        "id": 10451,
+        "key": "wonen_in_limburg_2_-_slaapkamer_3",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 2 - Slaapkamer 3"
+    },
+
+    {
+        "id": 10442,
+        "key": "wonen_in_limburg_2_-_tv",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 2 - TV"
+    },
+    {
+        "id": 10438,
+        "key": "wonen_in_limburg_2_-_wasmachine",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 2 - Wasmachine"
+    },
+    {
+        "id": 10447,
+        "key": "wonen_in_limburg_2_-_watermeter",
+        "type": "Watermeter",
+        "name": "Wonen in Limburg 2 - Watermeter"
+    },
+
+    {
+        "id": 9847,
+        "key": "wonen_in_limburg_3_-_badkamer",
+        "type": "Leefruimtes",
+        "name": "Wonen in Limburg 3 - Badkamer"
+    },
+
+    {
+        "id": 9838,
+        "key": "wonen_in_limburg_3_-_digitale_meter",
+        "type": "Energiemeter",
+        "name": "Wonen in Limburg 3 - Digitale meter"
+    },
+    {
+        "id": 9843,
+        "key": "wonen_in_limburg_3_-_droogkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 3 - Droogkast"
+    },
+    {
+        "id": 9849,
+        "key": "wonen_in_limburg_3_-_eetkamer",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen in Limburg 3 - Eetkamer"
+    },
+
+    {
+        "id": 9855,
+        "key": "wonen_in_limburg_3_-_hal_beneden",
+        "type": "Leefruimtes (met deursensor)",
+        "name": "Wonen in Limburg 3 - Hal beneden"
+    },
+
+    {
+        "id": 9850,
+        "key": "wonen_in_limburg_3_-_hal_boven",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen in Limburg 3 - Hal boven"
+    },
+    {
+        "id": 9848,
+        "key": "wonen_in_limburg_3_-_keuken",
+        "type": "Leefruimtes",
+        "name": "Wonen in Limburg 3 - Keuken"
+    },
+
+    {
+        "id": 9845,
+        "key": "wonen_in_limburg_3_-_koelkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 3 - Koelkast/diepvries"
+    },
+    {
+        "id": 9851,
+        "key": "wonen_in_limburg_3_-_living",
+        "type": "Living",
+        "name": "Wonen in Limburg 3 - Living"
+    },
+    {
+        "id": 9852,
+        "key": "wonen_in_limburg_3_-_slaapkamer_1",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 3 - Slaapkamer 1"
+    },
+
+    {
+        "id": 9853,
+        "key": "wonen_in_limburg_3_-_slaapkamer_2",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 3 - Slaapkamer 2"
+    },
+    {
+        "id": 9854,
+        "key": "wonen_in_limburg_3_-_slaapkamer_3",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 3 - Slaapkamer 3"
+    },
+
+    {
+        "id": 9846,
+        "key": "wonen_in_limburg_3_-_tv",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 3 - TV"
+    },
+    {
+        "id": 9842,
+        "key": "wonen_in_limburg_3_-_wasmachine",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 3 - Wasmachine"
+    },
+    {
+        "id": 9840,
+        "key": "wonen_in_limburg_3_-_watermeter",
+        "type": "Watermeter",
+        "name": "Wonen in Limburg 3 - Watermeter"
+    },
+
+    {
+        "id": 9863,
+        "key": "wonen_in_limburg_4_-_badkamer",
+        "type": "Leefruimtes",
+        "name": "Wonen in Limburg 4 - Badkamer"
+    },
+
+    {
+        "id": 9860,
+        "key": "wonen_in_limburg_4_-_diepvries",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 4 - Diepvries"
+    },
+    {
+        "id": 9856,
+        "key": "wonen_in_limburg_4_-_digitale_meter",
+        "type": "Energiemeter",
+        "name": "Wonen in Limburg 4 - Digitale meter"
+    },
+    {
+        "id": 9859,
+        "key": "wonen_in_limburg_4_-_droogkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 4 - Droogkast"
+    },
+    {
+        "id": 9865,
+        "key": "wonen_in_limburg_4_-_eetkamer",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen in Limburg 4 - Eetkamer"
+    },
+
+    {
+        "id": 9878,
+        "key": "wonen_in_limburg_4_-_hal_beneden",
+        "type": "Leefruimtes (met deursensor)",
+        "name": "Wonen in Limburg 4 - Hal beneden"
+    },
+
+    {
+        "id": 9866,
+        "key": "wonen_in_limburg_4_-_hal_boven",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen in Limburg 4 - Hal boven"
+    },
+    {
+        "id": 9864,
+        "key": "wonen_in_limburg_4_-_keuken",
+        "type": "Leefruimtes",
+        "name": "Wonen in Limburg 4 - Keuken"
+    },
+
+    {
+        "id": 9861,
+        "key": "wonen_in_limburg_4_-_koelkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 4 - Koelkast"
+    },
+    {
+        "id": 9867,
+        "key": "wonen_in_limburg_4_-_living",
+        "type": "Living",
+        "name": "Wonen in Limburg 4 - Living"
+    },
+    {
+        "id": 9875,
+        "key": "wonen_in_limburg_4_-_slaapkamer_1",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 4 - Slaapkamer 1"
+    },
+    {
+        "id": 9876,
+        "key": "wonen_in_limburg_4_-_slaapkamer_2",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 4 - Slaapkamer 2"
+    },
+
+    {
+        "id": 9877,
+        "key": "wonen_in_limburg_4_-_slaapkamer_3",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 4 - Slaapkamer 3"
+    },
+    {
+        "id": 9862,
+        "key": "wonen_in_limburg_4_-_tv",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 4 - TV"
+    },
+    {
+        "id": 9858,
+        "key": "wonen_in_limburg_4_-_wasmachine",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 4 - Wasmachine"
+    },
+    {
+        "id": 11909,
+        "key": "wonen_in_limburg_4_-_watermeter",
+        "type": "Watermeter",
+        "name": "Wonen in Limburg 4 - Watermeter"
+    },
+
+    {
+        "id": 10256,
+        "key": "wonen_in_limburg_5_-_badkamer",
+        "type": "Leefruimtes",
+        "name": "Wonen in Limburg 5 - Badkamer"
+    },
+
+    {
+        "id": 10253,
+        "key": "wonen_in_limburg_5_-_diepvries",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 5 - Diepvries"
+    },
+    {
+        "id": 10303,
+        "key": "wonen_in_limburg_5_-_digitale_meter",
+        "type": "Energiemeter",
+        "name": "Wonen in Limburg 5 - Digitale meter"
+    },
+    {
+        "id": 10252,
+        "key": "wonen_in_limburg_5_-_droogkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 5 - Droogkast"
+    },
+    {
+        "id": 10258,
+        "key": "wonen_in_limburg_5_-_eetkamer",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen in Limburg 5 - Eetkamer"
+    },
+
+    {
+        "id": 10266,
+        "key": "wonen_in_limburg_5_-_hal_beneden",
+        "type": "Leefruimtes (met deursensor)",
+        "name": "Wonen in Limburg 5 - Hal beneden"
+    },
+
+    {
+        "id": 10259,
+        "key": "wonen_in_limburg_5_-_hal_boven",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen in Limburg 5 - Hal boven"
+    },
+    {
+        "id": 10257,
+        "key": "wonen_in_limburg_5_-_keuken",
+        "type": "Leefruimtes",
+        "name": "Wonen in Limburg 5 - Keuken"
+    },
+
+    {
+        "id": 10254,
+        "key": "wonen_in_limburg_5_-_koelkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 5 - Koelkast"
+    },
+    {
+        "id": 10261,
+        "key": "wonen_in_limburg_5_-_living",
+        "type": "Living",
+        "name": "Wonen in Limburg 5 - Living"
+    },
+    {
+        "id": 10262,
+        "key": "wonen_in_limburg_5_-_slaapkamer_1",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 5 - Slaapkamer 1"
+    },
+
+    {
+        "id": 10263,
+        "key": "wonen_in_limburg_5_-_slaapkamer_2",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 5 - Slaapkamer 2"
+    },
+    {
+        "id": 10264,
+        "key": "wonen_in_limburg_5_-_slaapkamer_3",
+        "type": "Slaapkamers",
+        "name": "Wonen in Limburg 5 - Slaapkamer 3"
+    },
+
+    {
+        "id": 10255,
+        "key": "wonen_in_limburg_5_-_tv",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 5 - TV"
+    },
+    {
+        "id": 10251,
+        "key": "wonen_in_limburg_5_-_wasmachine",
+        "type": "Grootverbruikers",
+        "name": "Wonen in Limburg 5 - Wasmachine"
+    },
+    {
+        "id": 10260,
+        "key": "wonen_in_limburg_5_-_watermeter",
+        "type": "Watermeter",
+        "name": "Wonen in Limburg 5 - Watermeter"
+    },
+
+    {
+        "id": 9821,
+        "key": "woning_1_-_badkamer",
+        "type": "Leefruimtes",
+        "name": "Wonen Zuid 1 - Badkamer"
+    },
+
+    {
+        "id": 9813,
+        "key": "woning_1_-_diepvries",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 1 - Diepvries"
+    },
+    {
+        "id": 9349,
+        "key": "woning_1_-_digitale_meter",
+        "type": "Energiemeter",
+        "name": "Wonen Zuid 1 - Digitale meter"
+    },
+    {
+        "id": 9814,
+        "key": "woning_1_-_droogkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 1 - Droogkast"
+    },
+    {
+        "id": 9837,
+        "key": "woning_1_-_eetkamer",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen Zuid 1 - Eetkamer"
+    },
+
+    {
+        "id": 9835,
+        "key": "woning_1_-_hal_beneden",
+        "type": "Leefruimtes (met deursensor)",
+        "name": "Wonen Zuid 1 - Hal beneden"
+    },
+    {
+        "id": 9836,
+        "key": "woning_1_-_hal_boven",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen Zuid 1 - Hal boven"
+    },
+    {
+        "id": 9822,
+        "key": "woning_1_-_keuken",
+        "type": "Leefruimtes",
+        "name": "Wonen Zuid 1 - Keuken"
+    },
+    {
+        "id": 9811,
+        "key": "woning_1_-_koelkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 1 - Koelkast"
+    },
+    {
+        "id": 9815,
+        "key": "woning_1_-_living",
+        "type": "Living",
+        "name": "Wonen Zuid 1 - Living"
+    },
+    {
+        "id": 9816,
+        "key": "woning_1_-_slaapkamer_1",
+        "type": "Slaapkamers",
+        "name": "Wonen Zuid 1 - slaapkamer 1"
+    },
+
+
+    {
+        "id": 9817,
+        "key": "woning_1_-_slaapkamer_2",
+        "type": "Slaapkamers",
+        "name": "Wonen zuid 1 - slaapkamer 2"
+    },
+    {
+        "id": 9818,
+        "key": "woning_1_-_slaapkamer_3",
+        "type": "Slaapkamers",
+        "name": "Wonen Zuid 1 - slaapkamer 3"
+    },
+
+    {
+        "id": 9812,
+        "key": "woning_1_-_tv",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 1 - TV"
+    },
+    {
+        "id": 9351,
+        "key": "woning_1_-_wasmachine",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 1 - Wasmachine"
+    },
+    {
+        "id": 9819,
+        "key": "woning_1_-_watermeter",
+        "type": "Watermeter",
+        "name": "Wonen Zuid 1 - Watermeter"
+    },
+
+
+    {
+        "id": 9883,
+        "key": "wonen_zuid_2_-_badkamer",
+        "type": "Leefruimtes",
+        "name": "Wonen Zuid 2 - Badkamer"
+    },
+    {
+        "id": 9880,
+        "key": "wonen_zuid_2_-_diepvries",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 2 - Diepvries"
+    },
+    {
+        "id": 10301,
+        "key": "wonen_zuid_2_-_digitale_meter",
+        "type": "Energiemeter",
+        "name": "Wonen Zuid 2 - Digitale meter"
+    },
+    {
+        "id": 9885,
+        "key": "wonen_zuid_2_-_eetkamer",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen Zuid 2 - Eetkamer"
+    },
+
+    {
+        "id": 9891,
+        "key": "wonen_zuid_2_-_hal_beneden",
+        "type": "Leefruimtes (met deursensor)",
+        "name": "Wonen Zuid 2 - Hal beneden"
+    },
+    {
+        "id": 9886,
+        "key": "wonen_zuid_2_-_hal_boven",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen Zuid 2 - Hal boven"
+    },
+    {
+        "id": 9884,
+        "key": "wonen_zuid_2_-_keuken",
+        "type": "Leefruimtes",
+        "name": "Wonen Zuid 2 - Keuken"
+    },
+
+
+    {
+        "id": 9881,
+        "key": "wonen_zuid_2_-_koelkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 2 - Koelkast"
+    },
+    {
+        "id": 9888,
+        "key": "wonen_zuid_2-__living",
+        "type": "Living",
+        "name": "Wonen Zuid 2-  Living"
+    },
+    {
+        "id": 9889,
+        "key": "wonen_zuid_2-__slaapkamer_1",
+        "type": "Slaapkamers",
+        "name": "Wonen Zuid 2-  Slaapkamer 1"
+    },
+
+    {
+        "id": 9890,
+        "key": "wonen_zuid_2_-_slaapkamer_2",
+        "type": "Slaapkamers",
+        "name": "Wonen Zuid 2 - Slaapkamer 2"
+    },
+    {
+        "id": 9882,
+        "key": "wonen_zuid_2_-_tv",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 2 - TV"
+    },
+    {
+        "id": 9879,
+        "key": "wonen_zuid_2_-_wasmachine",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 2 - Wasmachine"
+    },
+    {
+        "id": 9887,
+        "key": "wonen_zuid_2_-_watermeter",
+        "type": "Watermeter",
+        "name": "Wonen Zuid 2 - Watermeter"
+    },
+
+    {
+        "id": 9896,
+        "key": "wonen_zuid_3_-_badkamer",
+        "type": "Leefruimtes",
+        "name": "Wonen Zuid 3 - Badkamer"
+    },
+
+
+    {
+        "id": 10302,
+        "key": "wonen_zuid_3_-_digitale_meter",
+        "type": "Energiemeter",
+        "name": "Wonen Zuid 3 - Digitale meter"
+    },
+    {
+        "id": 9893,
+        "key": "wonen_zuid_3_-_droogkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 3 - Droogkast"
+    },
+    {
+        "id": 9898,
+        "key": "wonen_zuid_3_-_eetkamer",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen Zuid 3 - Eetkamer"
+    },
+
+    {
+        "id": 9905,
+        "key": "wonen_zuid_3-__hal_beneden",
+        "type": "Leefruimtes (met deursensor)",
+        "name": "Wonen Zuid 3 - Hal beneden"
+    },
+
+    {
+        "id": 9899,
+        "key": "wonen_zuid_3_-__hal_boven",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen Zuid 3 - Hal boven"
+    },
+    {
+        "id": 9897,
+        "key": "wonen_zuid_3_-_keuken__",
+        "type": "Leefruimtes",
+        "name": "Wonen Zuid 3 - Keuken  "
+    },
+    {
+        "id": 9894,
+        "key": "wonen_zuid_3_-_koelkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 3 - Koelkast"
+    },
+    {
+        "id": 9901,
+        "key": "wonen_zuid_3_-__living",
+        "type": "Living",
+        "name": "Wonen Zuid 3 - Living"
+    },
+    {
+        "id": 9902,
+        "key": "wonen_zuid_3_-_slaapkamer_1",
+        "type": "Slaapkamers",
+        "name": "Wonen Zuid 3 - Slaapkamer 1"
+    },
+
+    {
+        "id": 9903,
+        "key": "wonen_zuid_3_-_slaapkamer_2",
+        "type": "Slaapkamers",
+        "name": "Wonen Zuid 3 - Slaapkamer 2"
+    },
+    {
+        "id": 9904,
+        "key": "wonen_zuid_3_-_slaapkamer_3",
+        "type": "Slaapkamers",
+        "name": "Wonen Zuid 3 - Slaapkamer 3"
+    },
+
+    {
+        "id": 9895,
+        "key": "wonen_zuid_3_-_tv",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 3 - TV"
+    },
+    {
+        "id": 9892,
+        "key": "wonen_zuid_3_-_wasmachine",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 3 - Wasmachine"
+    },
+    {
+        "id": 9900,
+        "key": "wonen_zuid_3_-_watermeter",
+        "type": "Watermeter",
+        "name": "Wonen Zuid 3 - Watermeter"
+    },
+
+    
+    {
+        "id": 10273,
+        "key": "wonen_zuid_4_-_badkamer",
+        "type": "Leefruimtes",
+        "name": "Wonen Zuid 5 - Badkamer"
+    },
+
+
+    {
+        "id": 10270,
+        "key": "wonen_zuid_4_-_diepvries",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 5 - Diepvries"
+    },
+    {
+        "id": 10300,
+        "key": "wonen_zuid_4_-_digitale_meter",
+        "type": "Energiemeter",
+        "name": "Wonen Zuid 5 - Digitale meter"
+    },
+    {
+        "id": 10269,
+        "key": "wonen_zuid_4_-_droogkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 5 - Droogkast"
+    },
+    {
+        "id": 10275,
+        "key": "wonen_zuid_4_-_eetkamer",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen Zuid 5 - Eetkamer"
+    },
+
+
+    {
+        "id": 10282,
+        "key": "wonen_zuid_4_-_hal_beneden",
+        "type": "Leefruimtes (met deursensor)",
+        "name": "Wonen Zuid 5 - Hal beneden"
+    },
+    {
+        "id": 10276,
+        "key": "wonen_zuid_4_-_hal_boven",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "Wonen Zuid 5 - Hal boven"
+    },
+    {
+        "id": 10274,
+        "key": "wonen_zuid_4_-_keuken",
+        "type": "Leefruimtes",
+        "name": "Wonen Zuid 5 - Keuken"
+    },
+
+    {
+        "id": 10271,
+        "key": "wonen_zuid_4_-_koelkast",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 5 - Koelkast"
+    },
+    {
+        "id": 10278,
+        "key": "wonen_zuid_4_-_living",
+        "type": "Living",
+        "name": "Wonen Zuid 5 - Living"
+    },
+    {
+        "id": 10279,
+        "key": "wonen_zuid_4_-_slaapkamer_1",
+        "type": "Slaapkamers",
+        "name": "Wonen Zuid 5 - Slaapkamer 1"
+    },
+
+    {
+        "id": 10280,
+        "key": "wonen_zuid_4_-_slaapkamer_2",
+        "type": "Slaapkamers",
+        "name": "Wonen Zuid 5 - Slaapkamer 2"
+    },
+    {
+        "id": 10281,
+        "key": "wonen_zuid_4_-_slaapkamer_3",
+        "type": "Slaapkamers",
+        "name": "Wonen Zuid 5 - Slaapkamer 3"
+    },
+
+    {
+        "id": 10272,
+        "key": "wonen_zuid_4_-_tv",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 5 - TV"
+    },
+    {
+        "id": 10268,
+        "key": "wonen_zuid_4_-_wasmachine",
+        "type": "Grootverbruikers",
+        "name": "Wonen Zuid 5 - Wasmachine"
+    },
+    {
+        "id": 10277,
+        "key": "wonen_zuid_4_-_watermeter",
+        "type": "Watermeter",
+        "name": "Wonen Zuid 5 - Watermeter"
+    },
+
+    {
+        "id": 9274,
+        "key": "woning_16__-_digitale_meter",
+        "type": "Energiemeter",
+        "name": "WONING 16  - digitale meter"
+    },
+    {
+        "id": 9825,
+        "key": "woning_16_-_badkamer",
+        "type": "Leefruimtes",
+        "name": "WONING 16 - Badkamer"
+    },
+
+    {
+        "id": 9834,
+        "key": "woning_16_-_eetkamer",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "WONING 16 - Eetkamer"
+    },
+
+    {
+        "id": 9832,
+        "key": "woning_16_-_hal_beneden",
+        "type": "Leefruimtes (met deursensor)",
+        "name": "WONING 16 - Hal beneden"
+    },
+
+    {
+        "id": 15481,
+        "key": "woning_16_-_hal_boven_1",
+        "type": "Leefruimtes (met enkel pir sensor)",
+        "name": "WONING 16 - Hal boven"
+    },
+    {
+        "id": 9826,
+        "key": "woning_16_-_keuken",
+        "type": "Leefruimtes",
+        "name": "WONING 16 - Keuken"
+    },
+
+    {
+        "id": 9267,
+        "key": "woning_16_-_koelkast",
+        "type": "Grootverbruikers",
+        "name": "WONING 16 - Koelkast"
+    },
+    {
+        "id": 9272,
+        "key": "woning_16_-_living",
+        "type": "Living",
+        "name": "WONING 16 - Living"
+    },
+    {
+        "id": 9269,
+        "key": "woning_16_-_slaapkamer_1",
+        "type": "Slaapkamers",
+        "name": "WONING 16 - slaapkamer 1"
+    },
+
+    {
+        "id": 9270,
+        "key": "woning_16_-_slaapkamer_2",
+        "type": "Slaapkamers",
+        "name": "WONING 16 - slaapkamer 2"
+    },
+    {
+        "id": 9271,
+        "key": "woning_16_-_slaapkamer_3",
+        "type": "Slaapkamers",
+        "name": "WONING 16 - slaapkamer 3"
+    },
+
+    {
+        "id": 9268,
+        "key": "woning_16_-_tv",
+        "type": "Grootverbruikers",
+        "name": "WONING 16 - TV"
+    },
+    {
+        "id": 9266,
+        "key": "woning_16_-_wasmachine",
+        "type": "Grootverbruikers",
+        "name": "WONING 16 - Wasmachine"
+    },
+    {
+        "id": 9273,
+        "key": "woning_16_-_watermeter",
+        "type": "Watermeter",
+        "name": "WONING 16 - watermeter"
+    }
+]
