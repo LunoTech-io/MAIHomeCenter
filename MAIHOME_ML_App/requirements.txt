@@ -4,15 +4,10 @@ numpy
 
 # Deep Learning
 torch
-torchvision
-torchaudio
 
 # API & Networking
 requests
 pytz
 
-# Visualization (if you are using the plotting code we discussed)
+# Visualization
 matplotlib
-
-# Utilities
-tqdm
