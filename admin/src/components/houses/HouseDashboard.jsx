@@ -260,8 +260,8 @@ function HouseDashboard() {
     if (!applianceData?.data?.length) return { applianceChartData: [], applianceNames: [] }
     return {
       applianceChartData: applianceData.data.map(d => ({
-        time: formatTime(d.time),
         ...d,
+        time: formatTime(d.time),
       })),
       applianceNames: applianceData.appliances || [],
     }

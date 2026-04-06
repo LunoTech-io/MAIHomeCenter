@@ -40,35 +40,37 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
   return (
     <div className="question-editor">
       <div className="question-header">
-        <span className="question-number">{t('questions.question')} {index + 1}</span>
-        <div className="question-controls">
-          <button
-            type="button"
-            className="control-btn"
-            onClick={onMoveUp}
-            disabled={index === 0}
-            title={t('questions.moveUp')}
-          >
-            Up
-          </button>
-          <button
-            type="button"
-            className="control-btn"
-            onClick={onMoveDown}
-            disabled={index === totalQuestions - 1}
-            title={t('questions.moveDown')}
-          >
-            Down
-          </button>
-          <button
-            type="button"
-            className="control-btn delete"
-            onClick={onRemove}
-            title={t('questions.remove')}
-          >
-            {t('questions.removeBtn')}
-          </button>
+        <div className="question-header-left">
+          <div className="question-reorder">
+            <button
+              type="button"
+              className="reorder-btn"
+              onClick={onMoveUp}
+              disabled={index === 0}
+              title={t('questions.moveUp')}
+            >
+              &#9650;
+            </button>
+            <button
+              type="button"
+              className="reorder-btn"
+              onClick={onMoveDown}
+              disabled={index === totalQuestions - 1}
+              title={t('questions.moveDown')}
+            >
+              &#9660;
+            </button>
+          </div>
+          <span className="question-number">{t('questions.question')} {index + 1}</span>
         </div>
+        <button
+          type="button"
+          className="question-remove-btn"
+          onClick={onRemove}
+          title={t('questions.remove')}
+        >
+          &#10005;
+        </button>
       </div>
 
       <div className="question-body">
@@ -142,7 +144,7 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
                   onClick={() => removeOption(optIndex)}
                   disabled={(question.options || []).length <= 1}
                 >
-                  X
+                  &#10005;
                 </button>
               </div>
             ))}

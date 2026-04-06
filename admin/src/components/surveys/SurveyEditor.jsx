@@ -157,7 +157,7 @@ function SurveyEditor() {
       </div>
 
       {error && (
-        <div className="result-message error" style={{ position: 'static', marginBottom: '16px' }}>{error}</div>
+        <div className="survey-error">{error}</div>
       )}
 
       <form onSubmit={handleSubmit}>
@@ -269,13 +269,13 @@ function SurveyEditor() {
         <div className="admin-section">
           <div className="section-header">
             <h2>{t('surveys.questionsSection')}</h2>
-            <button type="button" className="send-btn" onClick={addQuestion}>
-              {t('surveys.addQuestion')}
+            <button type="button" className="add-question-btn" onClick={addQuestion}>
+              + {t('surveys.addQuestion')}
             </button>
           </div>
 
           {questions.length === 0 ? (
-            <p className="no-subscribers">{t('surveys.noQuestions')}</p>
+            <p className="empty-questions">{t('surveys.noQuestions')}</p>
           ) : (
             <div className="questions-list">
               {questions.map((question, index) => (
