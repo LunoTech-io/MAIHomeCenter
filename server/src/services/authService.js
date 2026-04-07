@@ -184,10 +184,27 @@ class AuthService {
 
   async getAdminById(id) {
     const result = await query(
-      'SELECT id, username, organization, name, created_at FROM admins WHERE id = $1',
+      'SELECT id, username, organization, name, comfort_thresholds, created_at FROM admins WHERE id = $1',
       [id]
     )
     return result.rows[0] || null
+  }
+
+  async updateComfortThresholds(adminId, thresholds) {
+    const result = await query(
+      `UPDATE admins SET comfort_thresholds = $2 WHERE id = $1
+       RETURNING id, username, organization, name, comfort_thresholds`,
+      [adminId, thresholds ? JSON.stringify(thresholds) : null]
+    )
+    return result.rows[0] || null
+  }
+
+  async getComfortThresholdsByOrganization(org) {
+    const result = await query(
+      'SELECT comfort_thresholds FROM admins WHERE organization = $1 AND comfort_thresholds IS NOT NULL LIMIT 1',
+      [org]
+    )
+    return result.rows[0]?.comfort_thresholds || null
   }
 
   async createAdmin(username, password, organization = 'ou', name = null) {

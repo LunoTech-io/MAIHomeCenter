@@ -70,4 +70,39 @@ router.get('/admin/me', authenticateAdmin, async (req, res) => {
   }
 })
 
+// GET /api/auth/admin/comfort-thresholds - Get comfort thresholds for current admin
+router.get('/admin/comfort-thresholds', authenticateAdmin, async (req, res) => {
+  try {
+    const admin = await authService.getAdminById(req.admin.id)
+    res.json(admin?.comfort_thresholds || null)
+  } catch (error) {
+    console.error('Get comfort thresholds error:', error)
+    res.status(500).json({ error: 'Failed to get comfort thresholds' })
+  }
+})
+
+// PUT /api/auth/admin/comfort-thresholds - Update comfort thresholds
+router.put('/admin/comfort-thresholds', authenticateAdmin, async (req, res) => {
+  try {
+    const admin = await authService.updateComfortThresholds(req.admin.id, req.body)
+    res.json(admin?.comfort_thresholds || null)
+  } catch (error) {
+    console.error('Update comfort thresholds error:', error)
+    res.status(500).json({ error: 'Failed to update comfort thresholds' })
+  }
+})
+
+// GET /api/auth/comfort-thresholds - Get comfort thresholds for the current house's org (tenant-facing)
+router.get('/comfort-thresholds', authenticateToken, async (req, res) => {
+  try {
+    const house = await authService.getHouseById(req.house.id)
+    if (!house) return res.status(404).json({ error: 'House not found' })
+    const thresholds = await authService.getComfortThresholdsByOrganization(house.organization)
+    res.json(thresholds)
+  } catch (error) {
+    console.error('Get comfort thresholds error:', error)
+    res.status(500).json({ error: 'Failed to get comfort thresholds' })
+  }
+})
+
 export default router

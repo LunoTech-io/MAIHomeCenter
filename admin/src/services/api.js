@@ -35,6 +35,32 @@ export async function getAdminMe() {
   return response.json()
 }
 
+// Comfort Thresholds API
+
+export async function getComfortThresholds() {
+  const response = await fetch(`${API_BASE}/auth/admin/comfort-thresholds`, {
+    headers: authHeaders()
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to get comfort thresholds')
+  }
+  return response.json()
+}
+
+export async function updateComfortThresholds(thresholds) {
+  const response = await fetch(`${API_BASE}/auth/admin/comfort-thresholds`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(thresholds)
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to update comfort thresholds')
+  }
+  return response.json()
+}
+
 // Notifications API
 
 export async function getNotificationStats() {

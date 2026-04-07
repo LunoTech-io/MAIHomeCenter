@@ -11,6 +11,7 @@ import AlertRuleList from './components/alerts/AlertRuleList'
 import AlertRuleEditor from './components/alerts/AlertRuleEditor'
 import HouseList from './components/houses/HouseList'
 import HouseDashboard from './components/houses/HouseDashboard'
+import ComfortSettings from './components/settings/ComfortSettings'
 
 function Navigation() {
   const { admin, logout } = useAdminAuth()
@@ -31,6 +32,9 @@ function Navigation() {
       </NavLink>
       <NavLink to="/houses" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
         {t('nav.houses')}
+      </NavLink>
+      <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+        {t('nav.settings')}
       </NavLink>
       <div className="nav-spacer" />
       <div className="nav-admin-info">
@@ -103,6 +107,7 @@ function AuthenticatedApp() {
           <Route path="/alerts/:id" element={<AlertRuleEditor />} />
           <Route path="/houses" element={<HouseList />} />
           <Route path="/houses/:houseId" element={<HouseDashboard />} />
+          <Route path="/settings" element={<ComfortSettings />} />
         </Routes>
       </div>
     </BrowserRouter>

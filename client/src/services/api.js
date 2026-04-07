@@ -122,6 +122,14 @@ export async function login(houseId, password) {
   return response.json()
 }
 
+export async function getComfortThresholds() {
+  const response = await fetch(`${API_BASE}/auth/comfort-thresholds`, {
+    headers: authHeaders()
+  })
+  if (!response.ok) return null
+  return response.json()
+}
+
 export async function getCurrentHouse() {
   const response = await fetch(`${API_BASE}/auth/me`, {
     headers: authHeaders()

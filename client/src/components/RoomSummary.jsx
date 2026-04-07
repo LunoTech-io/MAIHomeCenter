@@ -2,69 +2,67 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
-import { getTwinState } from '../services/api'
+import { getTwinState, getComfortThresholds } from '../services/api'
 
-function getSensorScore(value, key) {
+const DEFAULTS = {
+  temperature: { tooCold: 17, cool: 19, warm: 23, tooHot: 26 },
+  humidity: { veryDry: 30, dry: 40, humid: 60, veryHumid: 70 },
+  co2: { fair: 800, poor: 1200 },
+}
+
+function getSensorScore(value, key, th) {
   if (value == null) return null
   if (key === 'temperature') {
-    if (value >= 19 && value <= 23) return 0
-    if (value >= 17 && value <= 26) return 2
+    if (value >= th.temperature.cool && value <= th.temperature.warm) return 0
+    if (value >= th.temperature.tooCold && value <= th.temperature.tooHot) return 2
     return 4
   }
   if (key === 'humidity') {
-    if (value >= 40 && value <= 60) return 0
-    if (value >= 30 && value <= 70) return 2
+    if (value >= th.humidity.dry && value <= th.humidity.humid) return 0
+    if (value >= th.humidity.veryDry && value <= th.humidity.veryHumid) return 2
     return 4
   }
   if (key === 'co2') {
-    if (value <= 800) return 0
-    if (value <= 1200) return 2
+    if (value <= th.co2.fair) return 0
+    if (value <= th.co2.poor) return 2
     return 4
   }
   return null
 }
 
-function getSensorNoteKey(value, key) {
+function getSensorNoteKey(value, key, th) {
   if (value == null) return null
   if (key === 'temperature') {
-    if (value < 17) return 'comfort.tooCold'
-    if (value < 19) return 'comfort.aBitCool'
-    if (value <= 23) return null
-    if (value <= 26) return 'comfort.aBitWarm'
+    if (value < th.temperature.tooCold) return 'comfort.tooCold'
+    if (value < th.temperature.cool) return 'comfort.aBitCool'
+    if (value <= th.temperature.warm) return null
+    if (value <= th.temperature.tooHot) return 'comfort.aBitWarm'
     return 'comfort.tooHot'
   }
   if (key === 'humidity') {
-    if (value < 30) return 'comfort.veryDry'
-    if (value < 40) return 'comfort.aBitDry'
-    if (value <= 60) return null
-    if (value <= 70) return 'comfort.aBitHumid'
+    if (value < th.humidity.veryDry) return 'comfort.veryDry'
+    if (value < th.humidity.dry) return 'comfort.aBitDry'
+    if (value <= th.humidity.humid) return null
+    if (value <= th.humidity.veryHumid) return 'comfort.aBitHumid'
     return 'comfort.veryHumid'
   }
   if (key === 'co2') {
-    if (value <= 800) return null
-    if (value <= 1200) return 'comfort.airFresher'
+    if (value <= th.co2.fair) return null
+    if (value <= th.co2.poor) return 'comfort.airFresher'
     return 'comfort.ventilate'
   }
   return null
 }
 
-const FACES = [
-  { emoji: '\u{1F60A}', labelKey: 'comfort.great' },
-  { emoji: '\u{1F642}', labelKey: 'comfort.great' },
-  { emoji: '\u{1F610}', labelKey: 'comfort.great' },
-  { emoji: '\u{1F615}', labelKey: 'comfort.great' },
-  { emoji: '\u{1F61F}', labelKey: 'comfort.great' },
-]
-
-function getRoomStatus(room) {
+function getRoomStatus(room, th) {
   const temp = room.temperature != null ? parseFloat(room.temperature) : null
   const humidity = room.humidity != null ? parseFloat(room.humidity) : null
   const co2 = room.co2 != null ? parseFloat(room.co2) : null
 
   const scores = [
-    getSensorScore(temp, 'temperature'),
-    getSensorScore(humidity, 'humidity'),
-    getSensorScore(co2, 'co2'),
+    getSensorScore(temp, 'temperature', th),
+    getSensorScore(humidity, 'humidity', th),
+    getSensorScore(co2, 'co2', th),
   ].filter(s => s != null)
 
   if (scores.length === 0) return { score: null, faceIndex: 2, noteKeys: ['comfort.noData'] }
@@ -73,9 +71,9 @@ function getRoomStatus(room) {
   const faceIndex = Math.min(worstScore, 4)
 
   const noteKeys = [
-    getSensorNoteKey(temp, 'temperature'),
-    getSensorNoteKey(humidity, 'humidity'),
-    getSensorNoteKey(co2, 'co2'),
+    getSensorNoteKey(temp, 'temperature', th),
+    getSensorNoteKey(humidity, 'humidity', th),
+    getSensorNoteKey(co2, 'co2', th),
   ].filter(Boolean)
 
   if (noteKeys.length === 0) noteKeys.push('comfort.great')
@@ -88,6 +86,7 @@ function RoomSummary() {
   const { t } = useLanguage()
   const houseId = house?.houseId
   const [twinState, setTwinState] = useState(null)
+  const [thresholds, setThresholds] = useState(DEFAULTS)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -97,9 +96,19 @@ function RoomSummary() {
 
     async function fetchData() {
       try {
-        const state = await getTwinState(houseId)
+        const [state, th] = await Promise.all([
+          getTwinState(houseId),
+          getComfortThresholds().catch(() => null),
+        ])
         if (!cancelled) {
           setTwinState(state)
+          if (th) {
+            setThresholds({
+              temperature: { ...DEFAULTS.temperature, ...th.temperature },
+              humidity: { ...DEFAULTS.humidity, ...th.humidity },
+              co2: { ...DEFAULTS.co2, ...th.co2 },
+            })
+          }
           setError(null)
         }
       } catch (err) {
@@ -147,7 +156,7 @@ function RoomSummary() {
               <span role="columnheader">{t('summary.details')}</span>
             </div>
             {twinState.rooms.map(room => {
-              const { faceIndex, noteKeys } = getRoomStatus(room)
+              const { faceIndex, noteKeys } = getRoomStatus(room, thresholds)
               const temp = room.temperature != null ? parseFloat(room.temperature).toFixed(1) : null
               const humidity = room.humidity != null ? parseFloat(room.humidity).toFixed(0) : null
               const co2 = room.co2 != null ? parseFloat(room.co2).toFixed(0) : null

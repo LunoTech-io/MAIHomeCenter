@@ -4,6 +4,7 @@ export default {
   "nav.surveys": "Surveys",
   "nav.alerts": "Alert Rules",
   "nav.houses": "Houses",
+  "nav.settings": "Settings",
   "nav.logout": "Logout",
 
   // Login
@@ -309,4 +310,29 @@ export default {
   "common.back": "Back",
   "common.save": "Save",
   "common.cancel": "Cancel",
+
+  // Settings
+  "settings.comfortTitle": "Comfort Thresholds",
+  "settings.comfortSubtitle": "Define the temperature, humidity and CO2 ranges that determine the smiley faces tenants see",
+  "settings.temperature": "Temperature",
+  "settings.temperatureHint": "The comfortable range is between the cool and warm thresholds",
+  "settings.humidity": "Humidity",
+  "settings.humidityHint": "The comfortable range is between the dry and humid thresholds",
+  "settings.co2": "CO2",
+  "settings.co2Hint": "Below the first threshold is good, above the second requires ventilation",
+  "settings.tooCold": "Too cold",
+  "settings.cool": "A bit cool",
+  "settings.comfortable": "Comfortable",
+  "settings.warm": "A bit warm",
+  "settings.tooHot": "Too hot",
+  "settings.veryDry": "Very dry",
+  "settings.dry": "A bit dry",
+  "settings.humid": "A bit humid",
+  "settings.veryHumid": "Very humid",
+  "settings.airFresher": "Air could be fresher",
+  "settings.ventilate": "Ventilate",
+  "settings.resetDefaults": "Reset to defaults",
+  "settings.save": "Save thresholds",
+  "settings.saving": "Saving...",
+  "settings.saved": "Thresholds saved successfully",
 }

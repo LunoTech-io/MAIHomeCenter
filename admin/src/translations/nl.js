@@ -4,6 +4,7 @@ export default {
   "nav.surveys": "Enquêtes",
   "nav.alerts": "Waarschuwingsregels",
   "nav.houses": "Woningen",
+  "nav.settings": "Instellingen",
   "nav.logout": "Uitloggen",
 
   // Login
@@ -309,4 +310,29 @@ export default {
   "common.back": "Terug",
   "common.save": "Opslaan",
   "common.cancel": "Annuleren",
+
+  // Settings
+  "settings.comfortTitle": "Comfortdrempels",
+  "settings.comfortSubtitle": "Definieer de temperatuur-, vochtigheids- en CO2-bereiken die bepalen welke smileys huurders zien",
+  "settings.temperature": "Temperatuur",
+  "settings.temperatureHint": "Het comfortabele bereik ligt tussen de koele en warme drempels",
+  "settings.humidity": "Vochtigheid",
+  "settings.humidityHint": "Het comfortabele bereik ligt tussen de droge en vochtige drempels",
+  "settings.co2": "CO2",
+  "settings.co2Hint": "Onder de eerste drempel is goed, boven de tweede vereist ventilatie",
+  "settings.tooCold": "Te koud",
+  "settings.cool": "Beetje fris",
+  "settings.comfortable": "Comfortabel",
+  "settings.warm": "Beetje warm",
+  "settings.tooHot": "Te warm",
+  "settings.veryDry": "Erg droog",
+  "settings.dry": "Beetje droog",
+  "settings.humid": "Beetje vochtig",
+  "settings.veryHumid": "Erg vochtig",
+  "settings.airFresher": "Lucht mag frisser",
+  "settings.ventilate": "Ventileren",
+  "settings.resetDefaults": "Standaardwaarden herstellen",
+  "settings.save": "Drempels opslaan",
+  "settings.saving": "Opslaan...",
+  "settings.saved": "Drempels succesvol opgeslagen",
 }
