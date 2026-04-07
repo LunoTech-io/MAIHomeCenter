@@ -73,6 +73,18 @@ export default {
   "houses.passwordPlaceholder": "Inlogwachtwoord",
   "houses.namePlaceholder": "Weergavenaam",
   "houses.organizationPlaceholder": "bijv. ou",
+  "houses.tariffHighStart": "Elektriciteitstarief hoog (starttijd)",
+  "houses.tariffLowStart": "Elektriciteitstarief laag (starttijd)",
+  "houses.edit": "Bewerken",
+  "houses.editHouse": "Woning bewerken",
+  "houses.saveChanges": "Wijzigingen opslaan",
+  "houses.saving": "Opslaan...",
+  "houses.location": "Locatie",
+  "houses.latitude": "Breedtegraad",
+  "houses.longitude": "Lengtegraad",
+  "houses.clearCoordinates": "Wissen",
+  "houses.tariffTimes": "Elektriciteitstarief tijden",
+  "houses.tariffHint": "Laat leeg om de tarieftijd te wissen.",
   "houses.idAndPasswordRequired": "Woning ID en wachtwoord zijn verplicht",
 
   // Surveys

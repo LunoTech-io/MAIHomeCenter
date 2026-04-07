@@ -58,7 +58,7 @@ body {
 /* Admin Page */
 .admin {
   padding: 16px 24px;
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
@@ -762,6 +762,51 @@ body {
   padding: 12px;
   background: var(--overlay-subtle);
   border-radius: 8px;
+}
+
+/* House Edit Modal */
+.house-edit-modal {
+  max-width: 600px;
+  max-height: 90vh;
+}
+
+.map-container {
+  height: 250px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.form-section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin: 16px 0 8px;
+}
+
+.form-hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.clear-coords-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-coords-btn:hover {
+  border-color: var(--accent-red);
+  color: var(--accent-red);
 }
 
 /* Alert Rule Shortcuts */

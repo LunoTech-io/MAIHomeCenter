@@ -175,14 +175,14 @@ router.get('/houses', authenticateAdmin, async (req, res) => {
 // POST /api/surveys/houses - Create house
 router.post('/houses', authenticateAdmin, async (req, res) => {
   try {
-    const { houseId, password, name, organization } = req.body
+    const { houseId, password, name, organization, tariffHighStart, tariffLowStart } = req.body
 
     if (!houseId || !password) {
       return res.status(400).json({ error: 'House ID and password are required' })
     }
 
     const org = organization || req.admin.organization
-    const house = await authService.createHouse(houseId, password, name, org)
+    const house = await authService.createHouse(houseId, password, name, org, tariffHighStart, tariffLowStart)
     res.status(201).json(house)
   } catch (error) {
     console.error('Error creating house:', error)
@@ -192,6 +192,22 @@ router.post('/houses', authenticateAdmin, async (req, res) => {
     }
 
     res.status(500).json({ error: 'Failed to create house' })
+  }
+})
+
+// PUT /api/surveys/houses/:id - Update house
+router.put('/houses/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const house = await authService.updateHouse(req.params.id, req.body)
+
+    if (!house) {
+      return res.status(404).json({ error: 'House not found' })
+    }
+
+    res.json(house)
+  } catch (error) {
+    console.error('Error updating house:', error)
+    res.status(500).json({ error: 'Failed to update house' })
   }
 })
 

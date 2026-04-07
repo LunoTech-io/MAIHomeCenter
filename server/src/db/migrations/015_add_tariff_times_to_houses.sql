@@ -1,0 +1,2 @@
+ALTER TABLE houses ADD COLUMN IF NOT EXISTS tariff_high_start TIME;
+ALTER TABLE houses ADD COLUMN IF NOT EXISTS tariff_low_start TIME;

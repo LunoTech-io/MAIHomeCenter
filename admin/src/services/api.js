@@ -233,6 +233,19 @@ export async function createHouse(data) {
   return response.json()
 }
 
+export async function updateHouse(id, data) {
+  const response = await fetch(`${API_BASE}/surveys/houses/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(data)
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to update house')
+  }
+  return response.json()
+}
+
 export async function deleteHouse(id) {
   const response = await fetch(`${API_BASE}/surveys/houses/${id}`, {
     method: 'DELETE',

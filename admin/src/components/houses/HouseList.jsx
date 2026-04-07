@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { getHouses, createHouse, deleteHouse, getHouseAlertSummary } from '../../services/api'
 import { useAdminAuth } from '../../contexts/AdminAuthContext'
 import { useLanguage } from '../../contexts/LanguageContext'
+import HouseEditModal from './HouseEditModal'
 
 function HouseList() {
   const { admin } = useAdminAuth()
@@ -18,9 +19,12 @@ function HouseList() {
     houseId: '',
     password: '',
     name: '',
-    organization: admin?.organization || 'ou'
+    organization: admin?.organization || 'ou',
+    tariffHighStart: '',
+    tariffLowStart: ''
   })
   const [saving, setSaving] = useState(false)
+  const [editingHouse, setEditingHouse] = useState(null)
 
   useEffect(() => {
     loadData()
@@ -79,7 +83,7 @@ function HouseList() {
     try {
       const newHouse = await createHouse(form)
       setHouses(prev => [newHouse, ...prev])
-      setForm({ houseId: '', password: '', name: '', organization: admin?.organization || 'ou' })
+      setForm({ houseId: '', password: '', name: '', organization: admin?.organization || 'ou', tariffHighStart: '', tariffLowStart: '' })
       setShowForm(false)
     } catch (err) {
       setError(err.message)
@@ -212,6 +216,30 @@ function HouseList() {
               </div>
             </div>
 
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="tariffHighStart">{t('houses.tariffHighStart')}</label>
+                <input
+                  type="time"
+                  id="tariffHighStart"
+                  name="tariffHighStart"
+                  value={form.tariffHighStart}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="tariffLowStart">{t('houses.tariffLowStart')}</label>
+                <input
+                  type="time"
+                  id="tariffLowStart"
+                  name="tariffLowStart"
+                  value={form.tariffLowStart}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
             <button type="submit" className="send-btn" disabled={saving}>
               {saving ? t('houses.creating') : t('houses.create')}
             </button>
@@ -266,6 +294,12 @@ function HouseList() {
                           {t('houses.dashboard')}
                         </button>
                         <button
+                          className="action-btn-small edit"
+                          onClick={() => setEditingHouse(house)}
+                        >
+                          {t('houses.edit')}
+                        </button>
+                        <button
                           className="action-btn-small delete"
                           onClick={() => handleDelete(house.id, house.house_id)}
                         >
@@ -280,6 +314,16 @@ function HouseList() {
           </div>
         )}
       </div>
+
+      {editingHouse && (
+        <HouseEditModal
+          house={editingHouse}
+          onClose={() => setEditingHouse(null)}
+          onUpdated={(updated) => {
+            setHouses(prev => prev.map(h => h.id === updated.id ? updated : h))
+          }}
+        />
+      )}
     </div>
   )
 }

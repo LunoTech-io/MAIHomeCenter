@@ -73,6 +73,18 @@ export default {
   "houses.passwordPlaceholder": "Login password",
   "houses.namePlaceholder": "Display name",
   "houses.organizationPlaceholder": "e.g., ou",
+  "houses.tariffHighStart": "Electricity Tariff High (start time)",
+  "houses.tariffLowStart": "Electricity Tariff Low (start time)",
+  "houses.edit": "Edit",
+  "houses.editHouse": "Edit House",
+  "houses.saveChanges": "Save Changes",
+  "houses.saving": "Saving...",
+  "houses.location": "Location",
+  "houses.latitude": "Latitude",
+  "houses.longitude": "Longitude",
+  "houses.clearCoordinates": "Clear",
+  "houses.tariffTimes": "Electricity Tariff Times",
+  "houses.tariffHint": "Leave empty to clear the tariff time.",
   "houses.idAndPasswordRequired": "House ID and password are required",
 
   // Surveys

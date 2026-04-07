@@ -68,14 +68,14 @@ class AuthService {
     }
   }
 
-  async createHouse(houseId, password, name = null, organization = 'ou') {
+  async createHouse(houseId, password, name = null, organization = 'ou', tariffHighStart = null, tariffLowStart = null) {
     const passwordHash = await this.hashPassword(password)
 
     const result = await query(
-      `INSERT INTO houses (house_id, password_hash, name, organization)
-       VALUES ($1, $2, $3, $4)
-       RETURNING id, house_id, name, organization, created_at`,
-      [houseId, passwordHash, name, organization]
+      `INSERT INTO houses (house_id, password_hash, name, organization, tariff_high_start, tariff_low_start)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id, house_id, name, organization, tariff_high_start, tariff_low_start, created_at`,
+      [houseId, passwordHash, name, organization, tariffHighStart || null, tariffLowStart || null]
     )
 
     return result.rows[0]
@@ -92,7 +92,7 @@ class AuthService {
 
   async getHouses() {
     const result = await query(
-      'SELECT id, house_id, name, organization, created_at FROM houses ORDER BY created_at DESC'
+      'SELECT id, house_id, name, organization, latitude, longitude, city, tariff_high_start, tariff_low_start, created_at FROM houses ORDER BY created_at DESC'
     )
     return result.rows
   }
@@ -102,7 +102,7 @@ class AuthService {
       return this.getHouses()
     }
     const result = await query(
-      'SELECT id, house_id, name, organization, created_at FROM houses WHERE organization = $1 ORDER BY created_at DESC',
+      'SELECT id, house_id, name, organization, latitude, longitude, city, tariff_high_start, tariff_low_start, created_at FROM houses WHERE organization = $1 ORDER BY created_at DESC',
       [org]
     )
     return result.rows
@@ -110,8 +110,25 @@ class AuthService {
 
   async getHouseById(id) {
     const result = await query(
-      'SELECT id, house_id, name, organization, created_at FROM houses WHERE id = $1',
+      'SELECT id, house_id, name, organization, latitude, longitude, city, tariff_high_start, tariff_low_start, created_at FROM houses WHERE id = $1',
       [id]
+    )
+    return result.rows[0] || null
+  }
+
+  async updateHouse(id, fields) {
+    const { name, latitude, longitude, city, tariffHighStart, tariffLowStart } = fields
+    const result = await query(
+      `UPDATE houses
+       SET name = $2,
+           latitude = $3,
+           longitude = $4,
+           city = $5,
+           tariff_high_start = $6,
+           tariff_low_start = $7
+       WHERE id = $1
+       RETURNING id, house_id, name, organization, latitude, longitude, city, tariff_high_start, tariff_low_start, created_at`,
+      [id, name || null, latitude || null, longitude || null, city || null, tariffHighStart || null, tariffLowStart || null]
     )
     return result.rows[0] || null
   }
