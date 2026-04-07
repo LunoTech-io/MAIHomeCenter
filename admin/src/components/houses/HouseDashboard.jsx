@@ -248,9 +248,22 @@ function HouseDashboard() {
     }))
   }, [meterData])
 
-  // Tariff marker times (formatted as HH:MM to match chart x-axis)
-  const tariffHighTime = houseDetails?.tariff_high_start ? houseDetails.tariff_high_start.slice(0, 5) : null
-  const tariffLowTime = houseDetails?.tariff_low_start ? houseDetails.tariff_low_start.slice(0, 5) : null
+  // Find the nearest data point time to a target HH:MM string
+  const findNearestTime = (data, target) => {
+    if (!target || !data.length) return null
+    const [th, tm] = target.split(':').map(Number)
+    const targetMin = th * 60 + tm
+    let best = null, bestDist = Infinity
+    for (const d of data) {
+      const [dh, dm] = d.time.split(':').map(Number)
+      const dist = Math.abs(dh * 60 + dm - targetMin)
+      if (dist < bestDist) { bestDist = dist; best = d.time }
+    }
+    return bestDist <= 15 ? best : null
+  }
+
+  const tariffHighX = findNearestTime(electricityData, houseDetails?.tariff_high_start?.slice(0, 5))
+  const tariffLowX = findNearestTime(electricityData, houseDetails?.tariff_low_start?.slice(0, 5))
 
   // Gas chart data (consumption per interval, not cumulative)
   const gasData = useMemo(() => {
@@ -437,11 +450,11 @@ function HouseDashboard() {
                     <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
-                    {tariffHighTime && electricityData.some(d => d.time === tariffHighTime) && (
-                      <ReferenceLine x={tariffHighTime} stroke="var(--accent-red)" strokeDasharray="6 3" strokeWidth={1.5} label={{ value: t('dashboard.tariffHigh'), fill: 'var(--accent-red)', fontSize: 11, position: 'top' }} />
+                    {tariffHighX && (
+                      <ReferenceLine x={tariffHighX} stroke="var(--accent-red)" strokeDasharray="6 3" strokeWidth={1.5} label={{ value: t('dashboard.tariffHigh'), fill: 'var(--accent-red)', fontSize: 11, position: 'insideTopRight', offset: 4 }} />
                     )}
-                    {tariffLowTime && electricityData.some(d => d.time === tariffLowTime) && (
-                      <ReferenceLine x={tariffLowTime} stroke="var(--accent-green)" strokeDasharray="6 3" strokeWidth={1.5} label={{ value: t('dashboard.tariffLow'), fill: 'var(--accent-green)', fontSize: 11, position: 'top' }} />
+                    {tariffLowX && (
+                      <ReferenceLine x={tariffLowX} stroke="var(--accent-green)" strokeDasharray="6 3" strokeWidth={1.5} label={{ value: t('dashboard.tariffLow'), fill: 'var(--accent-green)', fontSize: 11, position: 'insideTopRight', offset: 4 }} />
                     )}
                     <Line type="monotone" dataKey="draw" stroke="#f59e0b" strokeWidth={2} dot={false} name={t('dashboard.drawW')} />
                     <Line type="monotone" dataKey="return" stroke="#10b981" strokeWidth={2} dot={false} name={t('dashboard.returnW')} />
