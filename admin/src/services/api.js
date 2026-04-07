@@ -239,10 +239,27 @@ export async function getHouseAnalysis(houseId) {
   const response = await fetch(`${API_BASE}/twin/analysis/${houseId}`, {
     headers: authHeaders()
   })
+  if (!response.ok) return null
+  return response.json()
+}
+
+export async function generateHouseAnalysis(houseId) {
+  const response = await fetch(`${API_BASE}/twin/analysis/${houseId}`, {
+    method: 'POST',
+    headers: authHeaders()
+  })
   if (!response.ok) {
     const error = await response.json()
     throw new Error(error.error || 'Failed to generate analysis')
   }
+  return response.json()
+}
+
+export async function getAnalysisHistory(houseId) {
+  const response = await fetch(`${API_BASE}/twin/analysis/${houseId}/history`, {
+    headers: authHeaders()
+  })
+  if (!response.ok) return []
   return response.json()
 }
 

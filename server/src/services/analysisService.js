@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
+import { query } from '../db/index.js'
 import twinService from './twinService.js'
 import weatherService from './weatherService.js'
 
@@ -24,7 +25,23 @@ Focus on what is actionable — insulation issues, heating system problems, tena
 If data is missing for some rooms/metrics, note it as a monitoring gap.
 Write in English.`
 
-export async function generateHouseAnalysis(houseId) {
+export async function getAnalysisHistory(houseId, limit = 10) {
+  const result = await query(
+    'SELECT id, house_id, analysis, generated_by, created_at FROM house_analyses WHERE house_id = $1 ORDER BY created_at DESC LIMIT $2',
+    [houseId, limit]
+  )
+  return result.rows
+}
+
+export async function getLatestAnalysis(houseId) {
+  const result = await query(
+    'SELECT id, house_id, analysis, generated_by, created_at FROM house_analyses WHERE house_id = $1 ORDER BY created_at DESC LIMIT 1',
+    [houseId]
+  )
+  return result.rows[0] || null
+}
+
+export async function generateHouseAnalysis(houseId, generatedBy = null) {
   // Gather all data in parallel
   const [sensorData, twinState, meterData, applianceData, weatherData] = await Promise.all([
     twinService.getSensorHistory(houseId, 24).catch(() => null),
@@ -55,7 +72,15 @@ export async function generateHouseAnalysis(houseId) {
     ],
   })
 
-  return message.content[0].text
+  const analysisText = message.content[0].text
+
+  // Save to database
+  await query(
+    'INSERT INTO house_analyses (house_id, analysis, generated_by) VALUES ($1, $2, $3)',
+    [houseId, analysisText, generatedBy || null]
+  )
+
+  return analysisText
 }
 
 function summarizeSensorData(data) {

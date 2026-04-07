@@ -4,7 +4,7 @@ import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine
 } from 'recharts'
-import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getLatestPrediction, getWeatherHistory, getHouses, getHouseAnalysis } from '../../services/api'
+import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getLatestPrediction, getWeatherHistory, getHouses, getHouseAnalysis, generateHouseAnalysis } from '../../services/api'
 import { useLanguage } from '../../contexts/LanguageContext'
 
 const chartTooltipStyle = {
@@ -93,7 +93,7 @@ function HouseDashboard() {
       setLoading(true)
       setError(null)
       try {
-        const [history, state, meterHist, applianceHist, prediction, weatherHist, houses] = await Promise.all([
+        const [history, state, meterHist, applianceHist, prediction, weatherHist, houses, savedAnalysis] = await Promise.all([
           getSensorHistory(houseId, 24),
           getTwinState(houseId),
           getMeterHistory(houseId, 24).catch(() => null),
@@ -101,6 +101,7 @@ function HouseDashboard() {
           getLatestPrediction(houseId).catch(() => null),
           getWeatherHistory(houseId, 24).catch(() => null),
           getHouses().catch(() => []),
+          getHouseAnalysis(houseId).catch(() => null),
         ])
         if (!cancelled) {
           setSensorData(history)
@@ -110,6 +111,7 @@ function HouseDashboard() {
           setPredictionData(prediction)
           setWeatherData(weatherHist)
           setHouseDetails(houses.find(h => h.house_id === houseId) || null)
+          if (savedAnalysis) setAnalysis(savedAnalysis)
           if (history.rooms?.length > 0 && !selectedRoom) {
             setSelectedRoom(history.rooms[0])
           }
@@ -554,9 +556,10 @@ function HouseDashboard() {
                 disabled={analysisLoading}
                 onClick={async () => {
                   if (analysis) { setAnalysisOpen(!analysisOpen); return }
+                  setAnalysisOpen(true)
                   setAnalysisLoading(true)
                   try {
-                    const result = await getHouseAnalysis(houseId)
+                    const result = await generateHouseAnalysis(houseId)
                     setAnalysis(result)
                   } catch (err) {
                     setAnalysis({ error: err.message })
@@ -577,6 +580,7 @@ function HouseDashboard() {
                     <div className="analysis-markdown" dangerouslySetInnerHTML={{ __html: markdownToHtml(analysis.analysis) }} />
                     <div className="analysis-meta">
                       {t('dashboard.generatedAt')}: {new Date(analysis.generatedAt).toLocaleString()}
+                      {analysis.generatedBy && ` — ${analysis.generatedBy}`}
                     </div>
                     <button
                       className="cancel-btn"
@@ -585,7 +589,7 @@ function HouseDashboard() {
                       onClick={async () => {
                         setAnalysisLoading(true)
                         try {
-                          const result = await getHouseAnalysis(houseId)
+                          const result = await generateHouseAnalysis(houseId)
                           setAnalysis(result)
                         } catch (err) {
                           setAnalysis({ error: err.message })

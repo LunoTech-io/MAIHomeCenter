@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import twinService from '../services/twinService.js'
 import weatherService from '../services/weatherService.js'
-import { generateHouseAnalysis } from '../services/analysisService.js'
+import { generateHouseAnalysis, getLatestAnalysis, getAnalysisHistory } from '../services/analysisService.js'
+import { authenticateAdmin } from '../middleware/authMiddleware.js'
 
 const router = Router()
 
@@ -155,14 +156,37 @@ router.get('/weather-history/:houseId', async (req, res) => {
   }
 })
 
-// GET /api/twin/analysis/:houseId — Generate AI analysis for a house
-router.get('/analysis/:houseId', async (req, res) => {
+// GET /api/twin/analysis/:houseId — Get latest saved analysis
+router.get('/analysis/:houseId', authenticateAdmin, async (req, res) => {
   try {
-    const analysis = await generateHouseAnalysis(req.params.houseId)
-    res.json({ houseId: req.params.houseId, analysis, generatedAt: new Date().toISOString() })
+    const latest = await getLatestAnalysis(req.params.houseId)
+    if (!latest) return res.json(null)
+    res.json({ houseId: req.params.houseId, analysis: latest.analysis, generatedBy: latest.generated_by, generatedAt: latest.created_at })
+  } catch (error) {
+    console.error('Error fetching analysis:', error)
+    res.status(500).json({ error: 'Failed to fetch analysis' })
+  }
+})
+
+// POST /api/twin/analysis/:houseId — Generate new AI analysis
+router.post('/analysis/:houseId', authenticateAdmin, async (req, res) => {
+  try {
+    const analysis = await generateHouseAnalysis(req.params.houseId, req.admin.username)
+    res.json({ houseId: req.params.houseId, analysis, generatedBy: req.admin.username, generatedAt: new Date().toISOString() })
   } catch (error) {
     console.error('Error generating analysis:', error)
     res.status(500).json({ error: 'Failed to generate analysis' })
+  }
+})
+
+// GET /api/twin/analysis/:houseId/history — Get analysis history
+router.get('/analysis/:houseId/history', authenticateAdmin, async (req, res) => {
+  try {
+    const history = await getAnalysisHistory(req.params.houseId)
+    res.json(history)
+  } catch (error) {
+    console.error('Error fetching analysis history:', error)
+    res.status(500).json({ error: 'Failed to fetch analysis history' })
   }
 })
 
