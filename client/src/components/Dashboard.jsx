@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import {
   LineChart, Line, BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine
 } from 'recharts'
 import NotificationButton from './NotificationButton'
 import { useAuth } from '../contexts/AuthContext'
@@ -254,6 +254,10 @@ function Dashboard() {
     }))
   }, [meterData])
 
+  // Tariff marker times (formatted as HH:MM to match chart x-axis)
+  const tariffHighTime = house?.tariff_high_start ? house.tariff_high_start.slice(0, 5) : null
+  const tariffLowTime = house?.tariff_low_start ? house.tariff_low_start.slice(0, 5) : null
+
   // Gas chart data (consumption per interval, not cumulative)
   const gasData = useMemo(() => {
     if (!meterData?.data?.length) return []
@@ -438,6 +442,12 @@ function Dashboard() {
                     <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
+                    {tariffHighTime && electricityData.some(d => d.time === tariffHighTime) && (
+                      <ReferenceLine x={tariffHighTime} stroke="var(--accent-red)" strokeDasharray="6 3" strokeWidth={1.5} label={{ value: t('chart.tariffHigh'), fill: 'var(--accent-red)', fontSize: 11, position: 'top' }} />
+                    )}
+                    {tariffLowTime && electricityData.some(d => d.time === tariffLowTime) && (
+                      <ReferenceLine x={tariffLowTime} stroke="var(--accent-green)" strokeDasharray="6 3" strokeWidth={1.5} label={{ value: t('chart.tariffLow'), fill: 'var(--accent-green)', fontSize: 11, position: 'top' }} />
+                    )}
                     <Line type="monotone" dataKey="draw" stroke="#f59e0b" strokeWidth={2} dot={false} name={t('chart.draw')} />
                     <Line type="monotone" dataKey="return" stroke="#10b981" strokeWidth={2} dot={false} name={t('chart.return')} />
                   </LineChart>

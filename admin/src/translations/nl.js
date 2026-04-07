@@ -290,6 +290,8 @@ export default {
   "dashboard.appliancePower": "Apparaatvermogen (24u)",
   "dashboard.outside": "Buiten",
   "dashboard.pred": "(voorsp.)",
+  "dashboard.tariffHigh": "Hoog tarief",
+  "dashboard.tariffLow": "Laag tarief",
 
   // Common
   "common.loading": "Laden...",

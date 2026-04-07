@@ -290,6 +290,8 @@ export default {
   "dashboard.appliancePower": "Appliance Power (24h)",
   "dashboard.outside": "Outside",
   "dashboard.pred": "(pred)",
+  "dashboard.tariffHigh": "High tariff",
+  "dashboard.tariffLow": "Low tariff",
 
   // Common
   "common.loading": "Loading...",

@@ -2,9 +2,9 @@ import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   LineChart, Line, BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine
 } from 'recharts'
-import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getLatestPrediction, getWeatherHistory } from '../../services/api'
+import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getLatestPrediction, getWeatherHistory, getHouses } from '../../services/api'
 import { useLanguage } from '../../contexts/LanguageContext'
 
 const chartTooltipStyle = {
@@ -42,6 +42,7 @@ function HouseDashboard() {
   const [applianceData, setApplianceData] = useState(null)
   const [predictionData, setPredictionData] = useState(null)
   const [weatherData, setWeatherData] = useState(null)
+  const [houseDetails, setHouseDetails] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedRoom, setSelectedRoom] = useState(null)
@@ -55,13 +56,14 @@ function HouseDashboard() {
       setLoading(true)
       setError(null)
       try {
-        const [history, state, meterHist, applianceHist, prediction, weatherHist] = await Promise.all([
+        const [history, state, meterHist, applianceHist, prediction, weatherHist, houses] = await Promise.all([
           getSensorHistory(houseId, 24),
           getTwinState(houseId),
           getMeterHistory(houseId, 24).catch(() => null),
           getApplianceHistory(houseId, 24).catch(() => null),
           getLatestPrediction(houseId).catch(() => null),
           getWeatherHistory(houseId, 24).catch(() => null),
+          getHouses().catch(() => []),
         ])
         if (!cancelled) {
           setSensorData(history)
@@ -70,6 +72,7 @@ function HouseDashboard() {
           setApplianceData(applianceHist)
           setPredictionData(prediction)
           setWeatherData(weatherHist)
+          setHouseDetails(houses.find(h => h.house_id === houseId) || null)
           if (history.rooms?.length > 0 && !selectedRoom) {
             setSelectedRoom(history.rooms[0])
           }
@@ -244,6 +247,10 @@ function HouseDashboard() {
       return: d.negative_active_power,
     }))
   }, [meterData])
+
+  // Tariff marker times (formatted as HH:MM to match chart x-axis)
+  const tariffHighTime = houseDetails?.tariff_high_start ? houseDetails.tariff_high_start.slice(0, 5) : null
+  const tariffLowTime = houseDetails?.tariff_low_start ? houseDetails.tariff_low_start.slice(0, 5) : null
 
   // Gas chart data (consumption per interval, not cumulative)
   const gasData = useMemo(() => {
@@ -430,6 +437,12 @@ function HouseDashboard() {
                     <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
+                    {tariffHighTime && electricityData.some(d => d.time === tariffHighTime) && (
+                      <ReferenceLine x={tariffHighTime} stroke="var(--accent-red)" strokeDasharray="6 3" strokeWidth={1.5} label={{ value: t('dashboard.tariffHigh'), fill: 'var(--accent-red)', fontSize: 11, position: 'top' }} />
+                    )}
+                    {tariffLowTime && electricityData.some(d => d.time === tariffLowTime) && (
+                      <ReferenceLine x={tariffLowTime} stroke="var(--accent-green)" strokeDasharray="6 3" strokeWidth={1.5} label={{ value: t('dashboard.tariffLow'), fill: 'var(--accent-green)', fontSize: 11, position: 'top' }} />
+                    )}
                     <Line type="monotone" dataKey="draw" stroke="#f59e0b" strokeWidth={2} dot={false} name={t('dashboard.drawW')} />
                     <Line type="monotone" dataKey="return" stroke="#10b981" strokeWidth={2} dot={false} name={t('dashboard.returnW')} />
                   </LineChart>

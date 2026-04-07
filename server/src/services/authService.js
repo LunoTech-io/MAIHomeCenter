@@ -37,7 +37,7 @@ class AuthService {
 
   async login(houseId, password) {
     const result = await query(
-      'SELECT id, house_id, password_hash, name FROM houses WHERE house_id = $1',
+      'SELECT id, house_id, password_hash, name, tariff_high_start, tariff_low_start FROM houses WHERE house_id = $1',
       [houseId]
     )
 
@@ -63,7 +63,9 @@ class AuthService {
       house: {
         id: house.id,
         houseId: house.house_id,
-        name: house.name
+        name: house.name,
+        tariff_high_start: house.tariff_high_start,
+        tariff_low_start: house.tariff_low_start
       }
     }
   }

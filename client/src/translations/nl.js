@@ -40,6 +40,8 @@ export default {
   "chart.return": "Teruglevering (W)",
   "chart.gasUsage": "Verbruik (m³)",
   "chart.pred": "voorspeld",
+  "chart.tariffHigh": "Hoog tarief",
+  "chart.tariffLow": "Laag tarief",
 
   // Login
   "login.title": "MAIHomeCenter",

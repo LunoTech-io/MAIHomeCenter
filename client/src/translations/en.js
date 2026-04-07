@@ -40,6 +40,8 @@ export default {
   "chart.return": "Return (W)",
   "chart.gasUsage": "Usage (m³)",
   "chart.pred": "pred",
+  "chart.tariffHigh": "High tariff",
+  "chart.tariffLow": "Low tariff",
 
   // Login
   "login.title": "MAIHomeCenter",
