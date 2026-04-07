@@ -4,7 +4,7 @@ import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine
 } from 'recharts'
-import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getLatestPrediction, getWeatherHistory, getHouses } from '../../services/api'
+import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getLatestPrediction, getWeatherHistory, getHouses, getHouseAnalysis } from '../../services/api'
 import { useLanguage } from '../../contexts/LanguageContext'
 
 const chartTooltipStyle = {
@@ -80,6 +80,9 @@ function HouseDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedRoom, setSelectedRoom] = useState(null)
+  const [analysis, setAnalysis] = useState(null)
+  const [analysisLoading, setAnalysisLoading] = useState(false)
+  const [analysisOpen, setAnalysisOpen] = useState(false)
 
   useEffect(() => {
     if (!houseId) return
@@ -541,10 +544,82 @@ function HouseDashboard() {
               </div>
             )}
           </div>
+
+          {/* AI Analysis */}
+          <div className="admin-section analysis-section">
+            <div className="section-header">
+              <h2>{t('dashboard.aiAnalysis')}</h2>
+              <button
+                className="send-btn"
+                disabled={analysisLoading}
+                onClick={async () => {
+                  if (analysis) { setAnalysisOpen(!analysisOpen); return }
+                  setAnalysisLoading(true)
+                  try {
+                    const result = await getHouseAnalysis(houseId)
+                    setAnalysis(result)
+                  } catch (err) {
+                    setAnalysis({ error: err.message })
+                  } finally {
+                    setAnalysisLoading(false)
+                  }
+                }}
+              >
+                {analysisLoading ? t('dashboard.analyzing') : analysis ? (analysisOpen ? t('dashboard.hideAnalysis') : t('dashboard.showAnalysis')) : t('dashboard.generateAnalysis')}
+              </button>
+            </div>
+            {analysisOpen && (
+              <div className="analysis-content">
+                {analysisLoading && <div className="loading">{t('dashboard.analyzingHouse')}</div>}
+                {analysis?.error && <div className="survey-error">{analysis.error}</div>}
+                {analysis?.analysis && (
+                  <>
+                    <div className="analysis-markdown" dangerouslySetInnerHTML={{ __html: markdownToHtml(analysis.analysis) }} />
+                    <div className="analysis-meta">
+                      {t('dashboard.generatedAt')}: {new Date(analysis.generatedAt).toLocaleString()}
+                    </div>
+                    <button
+                      className="cancel-btn"
+                      style={{ marginTop: 12 }}
+                      disabled={analysisLoading}
+                      onClick={async () => {
+                        setAnalysisLoading(true)
+                        try {
+                          const result = await getHouseAnalysis(houseId)
+                          setAnalysis(result)
+                        } catch (err) {
+                          setAnalysis({ error: err.message })
+                        } finally {
+                          setAnalysisLoading(false)
+                        }
+                      }}
+                    >
+                      {t('dashboard.regenerate')}
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>
   )
+}
+
+// Simple markdown to HTML (headings, bold, bullets, paragraphs)
+function markdownToHtml(md) {
+  return md
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/^### (.+)$/gm, '<h4>$1</h4>')
+    .replace(/^## (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^# (.+)$/gm, '<h2>$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^\- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[hul])/gm, (m) => m ? `<p>${m}` : '')
+    .replace(/<p><\/p>/g, '')
 }
 
 export default HouseDashboard

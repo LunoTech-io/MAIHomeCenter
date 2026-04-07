@@ -304,6 +304,14 @@ export default {
   "dashboard.pred": "(pred)",
   "dashboard.tariffHigh": "High tariff",
   "dashboard.tariffLow": "Low tariff",
+  "dashboard.aiAnalysis": "AI Analysis",
+  "dashboard.generateAnalysis": "Generate Analysis",
+  "dashboard.showAnalysis": "Show Analysis",
+  "dashboard.hideAnalysis": "Hide Analysis",
+  "dashboard.analyzing": "Analyzing...",
+  "dashboard.analyzingHouse": "Analyzing house data, this may take a moment...",
+  "dashboard.generatedAt": "Generated at",
+  "dashboard.regenerate": "Regenerate",
 
   // Common
   "common.loading": "Loading...",

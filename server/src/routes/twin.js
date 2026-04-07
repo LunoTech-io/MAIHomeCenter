@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import twinService from '../services/twinService.js'
 import weatherService from '../services/weatherService.js'
+import { generateHouseAnalysis } from '../services/analysisService.js'
 
 const router = Router()
 
@@ -151,6 +152,17 @@ router.get('/weather-history/:houseId', async (req, res) => {
   } catch (error) {
     console.error('Error fetching weather history:', error)
     res.status(500).json({ error: 'Failed to fetch weather history' })
+  }
+})
+
+// GET /api/twin/analysis/:houseId — Generate AI analysis for a house
+router.get('/analysis/:houseId', async (req, res) => {
+  try {
+    const analysis = await generateHouseAnalysis(req.params.houseId)
+    res.json({ houseId: req.params.houseId, analysis, generatedAt: new Date().toISOString() })
+  } catch (error) {
+    console.error('Error generating analysis:', error)
+    res.status(500).json({ error: 'Failed to generate analysis' })
   }
 })
 

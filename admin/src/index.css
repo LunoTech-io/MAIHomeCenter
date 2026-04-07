@@ -1688,6 +1688,58 @@ body {
   font-family: monospace;
 }
 
+/* AI Analysis */
+.analysis-section {
+  margin-top: 24px;
+}
+
+.analysis-content {
+  margin-top: 12px;
+}
+
+.analysis-markdown {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.analysis-markdown h2,
+.analysis-markdown h3,
+.analysis-markdown h4 {
+  margin-top: 20px;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.analysis-markdown h2 { font-size: 18px; }
+.analysis-markdown h3 { font-size: 16px; }
+.analysis-markdown h4 { font-size: 15px; }
+
+.analysis-markdown ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.analysis-markdown li {
+  margin-bottom: 4px;
+}
+
+.analysis-markdown strong {
+  color: var(--text-primary);
+}
+
+.analysis-markdown p {
+  margin: 8px 0;
+}
+
+.analysis-meta {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
 .survey-success {
   background: rgba(16, 185, 129, 0.1);
   color: var(--accent-green);

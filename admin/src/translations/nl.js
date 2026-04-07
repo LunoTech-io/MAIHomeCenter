@@ -304,6 +304,14 @@ export default {
   "dashboard.pred": "(voorsp.)",
   "dashboard.tariffHigh": "Hoog tarief",
   "dashboard.tariffLow": "Laag tarief",
+  "dashboard.aiAnalysis": "AI Analyse",
+  "dashboard.generateAnalysis": "Analyse genereren",
+  "dashboard.showAnalysis": "Analyse tonen",
+  "dashboard.hideAnalysis": "Analyse verbergen",
+  "dashboard.analyzing": "Analyseren...",
+  "dashboard.analyzingHouse": "Woninggegevens worden geanalyseerd, even geduld...",
+  "dashboard.generatedAt": "Gegenereerd op",
+  "dashboard.regenerate": "Opnieuw genereren",
 
   // Common
   "common.loading": "Laden...",

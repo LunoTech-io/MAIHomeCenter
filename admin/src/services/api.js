@@ -233,6 +233,19 @@ export async function getWeatherHistory(houseId, hours = 24) {
   return response.json()
 }
 
+// House Analysis API
+
+export async function getHouseAnalysis(houseId) {
+  const response = await fetch(`${API_BASE}/twin/analysis/${houseId}`, {
+    headers: authHeaders()
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to generate analysis')
+  }
+  return response.json()
+}
+
 // Houses API
 
 export async function getHouses() {
