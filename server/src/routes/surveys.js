@@ -175,14 +175,14 @@ router.get('/houses', authenticateAdmin, async (req, res) => {
 // POST /api/surveys/houses - Create house
 router.post('/houses', authenticateAdmin, async (req, res) => {
   try {
-    const { houseId, password, name, organization, tariffHighStart, tariffLowStart } = req.body
+    const { houseId, password, name, organization } = req.body
 
     if (!houseId || !password) {
       return res.status(400).json({ error: 'House ID and password are required' })
     }
 
     const org = organization || req.admin.organization
-    const house = await authService.createHouse(houseId, password, name, org, tariffHighStart, tariffLowStart)
+    const house = await authService.createHouse(houseId, password, name, org)
     res.status(201).json(house)
   } catch (error) {
     console.error('Error creating house:', error)

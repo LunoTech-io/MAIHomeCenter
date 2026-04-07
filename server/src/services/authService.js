@@ -37,7 +37,7 @@ class AuthService {
 
   async login(houseId, password) {
     const result = await query(
-      'SELECT id, house_id, password_hash, name, tariff_high_start, tariff_low_start FROM houses WHERE house_id = $1',
+      'SELECT id, house_id, password_hash, name, tariff_schedule FROM houses WHERE house_id = $1',
       [houseId]
     )
 
@@ -64,20 +64,19 @@ class AuthService {
         id: house.id,
         houseId: house.house_id,
         name: house.name,
-        tariff_high_start: house.tariff_high_start,
-        tariff_low_start: house.tariff_low_start
+        tariff_schedule: house.tariff_schedule
       }
     }
   }
 
-  async createHouse(houseId, password, name = null, organization = 'ou', tariffHighStart = null, tariffLowStart = null) {
+  async createHouse(houseId, password, name = null, organization = 'ou') {
     const passwordHash = await this.hashPassword(password)
 
     const result = await query(
-      `INSERT INTO houses (house_id, password_hash, name, organization, tariff_high_start, tariff_low_start)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, house_id, name, organization, tariff_high_start, tariff_low_start, created_at`,
-      [houseId, passwordHash, name, organization, tariffHighStart || null, tariffLowStart || null]
+      `INSERT INTO houses (house_id, password_hash, name, organization)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, house_id, name, organization, tariff_schedule, created_at`,
+      [houseId, passwordHash, name, organization]
     )
 
     return result.rows[0]
@@ -94,7 +93,7 @@ class AuthService {
 
   async getHouses() {
     const result = await query(
-      'SELECT id, house_id, name, organization, latitude, longitude, city, tariff_high_start, tariff_low_start, created_at FROM houses ORDER BY created_at DESC'
+      'SELECT id, house_id, name, organization, latitude, longitude, city, tariff_schedule, created_at FROM houses ORDER BY created_at DESC'
     )
     return result.rows
   }
@@ -104,7 +103,7 @@ class AuthService {
       return this.getHouses()
     }
     const result = await query(
-      'SELECT id, house_id, name, organization, latitude, longitude, city, tariff_high_start, tariff_low_start, created_at FROM houses WHERE organization = $1 ORDER BY created_at DESC',
+      'SELECT id, house_id, name, organization, latitude, longitude, city, tariff_schedule, created_at FROM houses WHERE organization = $1 ORDER BY created_at DESC',
       [org]
     )
     return result.rows
@@ -112,25 +111,24 @@ class AuthService {
 
   async getHouseById(id) {
     const result = await query(
-      'SELECT id, house_id, name, organization, latitude, longitude, city, tariff_high_start, tariff_low_start, created_at FROM houses WHERE id = $1',
+      'SELECT id, house_id, name, organization, latitude, longitude, city, tariff_schedule, created_at FROM houses WHERE id = $1',
       [id]
     )
     return result.rows[0] || null
   }
 
   async updateHouse(id, fields) {
-    const { name, latitude, longitude, city, tariffHighStart, tariffLowStart } = fields
+    const { name, latitude, longitude, city, tariffSchedule } = fields
     const result = await query(
       `UPDATE houses
        SET name = $2,
            latitude = $3,
            longitude = $4,
            city = $5,
-           tariff_high_start = $6,
-           tariff_low_start = $7
+           tariff_schedule = $6
        WHERE id = $1
-       RETURNING id, house_id, name, organization, latitude, longitude, city, tariff_high_start, tariff_low_start, created_at`,
-      [id, name || null, latitude || null, longitude || null, city || null, tariffHighStart || null, tariffLowStart || null]
+       RETURNING id, house_id, name, organization, latitude, longitude, city, tariff_schedule, created_at`,
+      [id, name || null, latitude || null, longitude || null, city || null, tariffSchedule ? JSON.stringify(tariffSchedule) : null]
     )
     return result.rows[0] || null
   }

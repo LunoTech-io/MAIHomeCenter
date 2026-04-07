@@ -770,6 +770,112 @@ body {
   max-height: 90vh;
 }
 
+.house-edit-modal form {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+.house-edit-modal .modal-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.house-edit-modal .modal-actions {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 0;
+}
+
+@media (max-width: 640px) {
+  .house-edit-modal {
+    max-height: 100vh;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .modal-overlay:has(.house-edit-modal) {
+    padding: 0;
+  }
+
+  .map-container {
+    height: 200px;
+  }
+}
+
+.tariff-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  padding-top: 24px;
+}
+
+.tariff-schedule-header {
+  display: grid;
+  grid-template-columns: 56px 1fr 1fr;
+  gap: 8px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.tariff-col-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.tariff-day-row {
+  display: grid;
+  grid-template-columns: 56px 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.tariff-day-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.tariff-day-row input[type="time"] {
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-family: inherit;
+}
+
+.tariff-day-row input[type="time"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.copy-all-btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.copy-all-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
 .map-container {
   height: 250px;
   border-radius: 12px;

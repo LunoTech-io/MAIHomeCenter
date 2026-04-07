@@ -4,7 +4,6 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-// Fix default marker icon (leaflet assets aren't bundled by vite automatically)
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -12,10 +11,31 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 })
 
-function formatTime(val) {
-  if (!val) return ''
-  // PostgreSQL TIME comes as "HH:MM:SS" or "HH:MM"
-  return val.slice(0, 5)
+const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+
+function initSchedule(schedule) {
+  const s = schedule || {}
+  const result = {}
+  for (const day of DAYS) {
+    result[day] = {
+      high: s[day]?.high || '',
+      low: s[day]?.low || '',
+    }
+  }
+  return result
+}
+
+function scheduleToPayload(schedule) {
+  const hasAny = DAYS.some(d => schedule[d].high || schedule[d].low)
+  if (!hasAny) return null
+  const result = {}
+  for (const day of DAYS) {
+    result[day] = {
+      high: schedule[day].high || null,
+      low: schedule[day].low || null,
+    }
+  }
+  return result
 }
 
 function HouseEditModal({ house, onClose, onUpdated }) {
@@ -29,15 +49,36 @@ function HouseEditModal({ house, onClose, onUpdated }) {
     latitude: house.latitude || '',
     longitude: house.longitude || '',
     city: house.city || '',
-    tariffHighStart: formatTime(house.tariff_high_start),
-    tariffLowStart: formatTime(house.tariff_low_start),
   })
+  const [schedule, setSchedule] = useState(() => initSchedule(house.tariff_schedule))
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
 
   const handleChange = (e) => {
     const { name, value } = e.target
     setForm(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleScheduleChange = (day, field, value) => {
+    setSchedule(prev => ({
+      ...prev,
+      [day]: { ...prev[day], [field]: value }
+    }))
+  }
+
+  const copyToAll = (sourceDay) => {
+    setSchedule(prev => {
+      const source = prev[sourceDay]
+      const next = {}
+      for (const day of DAYS) {
+        next[day] = { ...source }
+      }
+      return next
+    })
+  }
+
+  const clearAllTariffs = () => {
+    setSchedule(initSchedule(null))
   }
 
   // Initialize leaflet map
@@ -74,7 +115,6 @@ function HouseEditModal({ house, onClose, onUpdated }) {
       }
     })
 
-    // Fix map rendering in modal (tiles may not load without this)
     setTimeout(() => map.invalidateSize(), 100)
 
     return () => {
@@ -84,7 +124,6 @@ function HouseEditModal({ house, onClose, onUpdated }) {
     }
   }, [])
 
-  // Sync marker when lat/lng inputs change manually
   useEffect(() => {
     const map = mapInstanceRef.current
     if (!map) return
@@ -115,7 +154,10 @@ function HouseEditModal({ house, onClose, onUpdated }) {
     setError(null)
 
     try {
-      const updated = await updateHouse(house.id, form)
+      const updated = await updateHouse(house.id, {
+        ...form,
+        tariffSchedule: scheduleToPayload(schedule),
+      })
       onUpdated(updated)
       onClose()
     } catch (err) {
@@ -185,28 +227,40 @@ function HouseEditModal({ house, onClose, onUpdated }) {
               )}
             </div>
 
-            <div className="form-section-label">{t('houses.tariffTimes')}</div>
+            <div className="form-section-label">
+              {t('houses.tariffTimes')}
+              <button type="button" className="clear-coords-btn" style={{ marginLeft: 12, fontSize: 12 }} onClick={clearAllTariffs}>
+                {t('houses.clearAll')}
+              </button>
+            </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="edit-tariffHighStart">{t('houses.tariffHighStart')}</label>
-                <input
-                  type="time"
-                  id="edit-tariffHighStart"
-                  name="tariffHighStart"
-                  value={form.tariffHighStart}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="edit-tariffLowStart">{t('houses.tariffLowStart')}</label>
-                <input
-                  type="time"
-                  id="edit-tariffLowStart"
-                  name="tariffLowStart"
-                  value={form.tariffLowStart}
-                  onChange={handleChange}
-                />
+            <div className="tariff-schedule">
+              {DAYS.map((day, i) => (
+                <div key={day} className="tariff-day-row">
+                  <span className="tariff-day-label">{t(`houses.day.${day}`)}</span>
+                  <input
+                    type="time"
+                    value={schedule[day].high}
+                    onChange={(e) => handleScheduleChange(day, 'high', e.target.value)}
+                    title={t('houses.tariffHighStart')}
+                  />
+                  <input
+                    type="time"
+                    value={schedule[day].low}
+                    onChange={(e) => handleScheduleChange(day, 'low', e.target.value)}
+                    title={t('houses.tariffLowStart')}
+                  />
+                  {i === 0 && (
+                    <button type="button" className="copy-all-btn" onClick={() => copyToAll(day)}>
+                      {t('houses.copyToAll')}
+                    </button>
+                  )}
+                </div>
+              ))}
+              <div className="tariff-schedule-header">
+                <span></span>
+                <span className="tariff-col-label">{t('houses.highStart')}</span>
+                <span className="tariff-col-label">{t('houses.lowStart')}</span>
               </div>
             </div>
 

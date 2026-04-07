@@ -34,6 +34,38 @@ function formatTime(isoString) {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
+function getHalfHourTicks(data) {
+  if (!data?.length) return { ticks: [], format: v => v }
+  const timeSet = new Set()
+  const entries = []
+  for (const d of data) {
+    if (timeSet.has(d.time)) continue
+    timeSet.add(d.time)
+    const [h, m] = d.time.split(':').map(Number)
+    entries.push({ time: d.time, min: h * 60 + m })
+  }
+  const ticks = []
+  const labels = {}
+  const used = new Set()
+  for (let target = 0; target < 1440; target += 30) {
+    let best = null, bestDist = Infinity
+    for (const d of entries) {
+      let dist = Math.abs(d.min - target)
+      if (dist > 720) dist = 1440 - dist
+      if (dist < bestDist) { bestDist = dist; best = d.time }
+    }
+    if (best && bestDist <= 15 && !used.has(best)) {
+      used.add(best)
+      labels[best] = `${String(Math.floor(target / 60)).padStart(2, '0')}:${target % 60 === 0 ? '00' : '30'}`
+      ticks.push(best)
+    }
+  }
+  const orderMap = {}
+  data.forEach((d, i) => { if (!(d.time in orderMap)) orderMap[d.time] = i })
+  ticks.sort((a, b) => orderMap[a] - orderMap[b])
+  return { ticks, format: v => labels[v] || v }
+}
+
 function Dashboard() {
   const { house } = useAuth()
   const { t } = useLanguage()
@@ -268,8 +300,16 @@ function Dashboard() {
     return bestDist <= 15 ? best : null // only snap if within 15 minutes
   }
 
-  const tariffHighX = findNearestTime(electricityData, house?.tariff_high_start?.slice(0, 5))
-  const tariffLowX = findNearestTime(electricityData, house?.tariff_low_start?.slice(0, 5))
+  // Get today's tariff from schedule
+  const todayTariff = useMemo(() => {
+    const sched = house?.tariff_schedule
+    if (!sched) return null
+    const dayKey = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][new Date().getDay()]
+    return sched[dayKey] || null
+  }, [house?.tariff_schedule])
+
+  const tariffHighX = findNearestTime(electricityData, todayTariff?.high || null)
+  const tariffLowX = findNearestTime(electricityData, todayTariff?.low || null)
 
   // Gas chart data (consumption per interval, not cumulative)
   const gasData = useMemo(() => {
@@ -352,7 +392,7 @@ function Dashboard() {
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={tempByRoomData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
-                  <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                  <XAxis dataKey="time" ticks={getHalfHourTicks(tempByRoomData).ticks} tickFormatter={getHalfHourTicks(tempByRoomData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
                   <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} domain={[v => Math.floor(v - 1), v => Math.ceil(v + 1)]} unit="°C" allowDecimals={false} />
                   <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
@@ -391,7 +431,7 @@ function Dashboard() {
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={tempVsSetpointData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
-                  <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                  <XAxis dataKey="time" ticks={getHalfHourTicks(tempVsSetpointData).ticks} tickFormatter={getHalfHourTicks(tempVsSetpointData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
                   <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} domain={[v => Math.floor(v - 1), v => Math.ceil(v + 1)]} unit="°C" allowDecimals={false} />
                   <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
@@ -410,7 +450,7 @@ function Dashboard() {
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={motionData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
-                  <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                  <XAxis dataKey="time" ticks={getHalfHourTicks(motionData).ticks} tickFormatter={getHalfHourTicks(motionData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
                   <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} allowDecimals={false} />
                   <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
@@ -428,7 +468,7 @@ function Dashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={humidityData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
-                    <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                    <XAxis dataKey="time" ticks={getHalfHourTicks(humidityData).ticks} tickFormatter={getHalfHourTicks(humidityData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
                     <YAxis yAxisId="humidity" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit="%" allowDecimals={false} />
                     <YAxis yAxisId="co2" orientation="right" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" ppm" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
@@ -451,8 +491,8 @@ function Dashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={electricityData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
-                    <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" allowDecimals={false} />
+                    <XAxis dataKey="time" ticks={getHalfHourTicks(electricityData).ticks} tickFormatter={getHalfHourTicks(electricityData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
+                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" kW" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
                     {tariffHighX && (
@@ -475,7 +515,7 @@ function Dashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={gasData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
-                    <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
+                    <XAxis dataKey="time" ticks={getHalfHourTicks(gasData).ticks} tickFormatter={getHalfHourTicks(gasData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
                     <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" m³" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
@@ -492,8 +532,8 @@ function Dashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={applianceChartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
-                    <XAxis dataKey="time" tick={{ fill: 'var(--text-secondary)', fontSize: 10, angle: -90, textAnchor: 'end' }} interval="preserveStartEnd" height={50} />
-                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" allowDecimals={false} />
+                    <XAxis dataKey="time" ticks={getHalfHourTicks(applianceChartData).ticks} tickFormatter={getHalfHourTicks(applianceChartData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
+                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" kW" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
                     {applianceNames.map((name, i) => (

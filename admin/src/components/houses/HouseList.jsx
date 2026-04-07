@@ -19,9 +19,7 @@ function HouseList() {
     houseId: '',
     password: '',
     name: '',
-    organization: admin?.organization || 'ou',
-    tariffHighStart: '',
-    tariffLowStart: ''
+    organization: admin?.organization || 'ou'
   })
   const [saving, setSaving] = useState(false)
   const [editingHouse, setEditingHouse] = useState(null)
@@ -83,7 +81,7 @@ function HouseList() {
     try {
       const newHouse = await createHouse(form)
       setHouses(prev => [newHouse, ...prev])
-      setForm({ houseId: '', password: '', name: '', organization: admin?.organization || 'ou', tariffHighStart: '', tariffLowStart: '' })
+      setForm({ houseId: '', password: '', name: '', organization: admin?.organization || 'ou' })
       setShowForm(false)
     } catch (err) {
       setError(err.message)
@@ -212,30 +210,6 @@ function HouseList() {
                   value={form.organization}
                   onChange={handleChange}
                   placeholder={t('houses.organizationPlaceholder')}
-                />
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="tariffHighStart">{t('houses.tariffHighStart')}</label>
-                <input
-                  type="time"
-                  id="tariffHighStart"
-                  name="tariffHighStart"
-                  value={form.tariffHighStart}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="tariffLowStart">{t('houses.tariffLowStart')}</label>
-                <input
-                  type="time"
-                  id="tariffLowStart"
-                  name="tariffLowStart"
-                  value={form.tariffLowStart}
-                  onChange={handleChange}
                 />
               </div>
             </div>
