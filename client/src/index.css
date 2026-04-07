@@ -1196,14 +1196,20 @@ button.alert-card-interactive.survey-card {
 }
 
 /* Room Summary Table */
+.dashboard:has(.summary-table) {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 .summary-outside {
   background: var(--bg-card);
   border-radius: 12px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
+  padding: 10px 16px;
+  margin-bottom: 12px;
   font-size: 14px;
   color: var(--text-secondary);
   box-shadow: var(--card-shadow);
+  text-align: center;
 }
 
 .summary-table {
@@ -1242,9 +1248,9 @@ button.alert-card-interactive.survey-card {
 .summary-row {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
-  padding: 16px 20px;
+  padding: 12px 16px;
   border-top: 1px solid var(--overlay-subtle);
 }
 

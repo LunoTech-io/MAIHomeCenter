@@ -535,7 +535,7 @@ function HouseDashboard() {
                   <LineChart data={applianceChartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-stroke)" />
                     <XAxis dataKey="time" ticks={getHalfHourTicks(applianceChartData).ticks} tickFormatter={getHalfHourTicks(applianceChartData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
-                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" kW" allowDecimals={false} />
+                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
                     {applianceNames.map((name, i) => (
