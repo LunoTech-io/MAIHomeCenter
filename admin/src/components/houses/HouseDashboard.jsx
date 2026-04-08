@@ -479,7 +479,7 @@ function HouseDashboard() {
                       <Line key={`${room}-h`} yAxisId="humidity" type="monotone" dataKey={`${room} humidity`} stroke={ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} />
                     ))}
                     {humidityRooms.map((room, i) => (
-                      <Line key={`${room}-c`} yAxisId="co2" type="monotone" dataKey={`${room} CO2`} stroke={ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={1} dot={false} strokeDasharray="5 5" />
+                      <Line key={`${room}-c`} yAxisId="co2" type="monotone" dataKey={`${room} CO2`} stroke={ROOM_COLORS[(i + 5) % ROOM_COLORS.length]} strokeWidth={1.5} dot={false} strokeDasharray="5 5" />
                     ))}
                   </LineChart>
                 </ResponsiveContainer>
