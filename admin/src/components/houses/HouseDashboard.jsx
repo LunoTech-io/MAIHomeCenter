@@ -83,6 +83,7 @@ function HouseDashboard() {
   const [analysis, setAnalysis] = useState(null)
   const [analysisLoading, setAnalysisLoading] = useState(false)
   const [analysisOpen, setAnalysisOpen] = useState(false)
+  const [analysisLang, setAnalysisLang] = useState('en')
 
   useEffect(() => {
     if (!houseId) return
@@ -551,25 +552,35 @@ function HouseDashboard() {
           <div className="admin-section analysis-section">
             <div className="section-header">
               <h2>{t('dashboard.aiAnalysis')}</h2>
-              <button
-                className="send-btn"
-                disabled={analysisLoading}
-                onClick={async () => {
-                  if (analysis) { setAnalysisOpen(!analysisOpen); return }
-                  setAnalysisOpen(true)
-                  setAnalysisLoading(true)
-                  try {
-                    const result = await generateHouseAnalysis(houseId)
-                    setAnalysis(result)
-                  } catch (err) {
-                    setAnalysis({ error: err.message })
-                  } finally {
-                    setAnalysisLoading(false)
-                  }
-                }}
-              >
-                {analysisLoading ? t('dashboard.analyzing') : analysis ? (analysisOpen ? t('dashboard.hideAnalysis') : t('dashboard.showAnalysis')) : t('dashboard.generateAnalysis')}
-              </button>
+              <div className="analysis-controls">
+                <select
+                  className="analysis-lang-select"
+                  value={analysisLang}
+                  onChange={(e) => setAnalysisLang(e.target.value)}
+                >
+                  <option value="en">English</option>
+                  <option value="nl">Nederlands</option>
+                </select>
+                <button
+                  className="send-btn"
+                  disabled={analysisLoading}
+                  onClick={async () => {
+                    if (analysis) { setAnalysisOpen(!analysisOpen); return }
+                    setAnalysisOpen(true)
+                    setAnalysisLoading(true)
+                    try {
+                      const result = await generateHouseAnalysis(houseId, analysisLang)
+                      setAnalysis(result)
+                    } catch (err) {
+                      setAnalysis({ error: err.message })
+                    } finally {
+                      setAnalysisLoading(false)
+                    }
+                  }}
+                >
+                  {analysisLoading ? t('dashboard.analyzing') : analysis ? (analysisOpen ? t('dashboard.hideAnalysis') : t('dashboard.showAnalysis')) : t('dashboard.generateAnalysis')}
+                </button>
+              </div>
             </div>
             {analysisOpen && (
               <div className="analysis-content">
@@ -589,7 +600,7 @@ function HouseDashboard() {
                       onClick={async () => {
                         setAnalysisLoading(true)
                         try {
-                          const result = await generateHouseAnalysis(houseId)
+                          const result = await generateHouseAnalysis(houseId, analysisLang)
                           setAnalysis(result)
                         } catch (err) {
                           setAnalysis({ error: err.message })

@@ -171,7 +171,8 @@ router.get('/analysis/:houseId', authenticateAdmin, async (req, res) => {
 // POST /api/twin/analysis/:houseId — Generate new AI analysis
 router.post('/analysis/:houseId', authenticateAdmin, async (req, res) => {
   try {
-    const analysis = await generateHouseAnalysis(req.params.houseId, req.admin.username)
+    const language = req.query.lang || 'en'
+    const analysis = await generateHouseAnalysis(req.params.houseId, req.admin.username, language)
     res.json({ houseId: req.params.houseId, analysis, generatedBy: req.admin.username, generatedAt: new Date().toISOString() })
   } catch (error) {
     console.error('Error generating analysis:', error)

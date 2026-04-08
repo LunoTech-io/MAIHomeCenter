@@ -5,7 +5,9 @@ import weatherService from './weatherService.js'
 
 const client = new Anthropic()
 
-const SYSTEM_PROMPT = `You are an expert housing analyst for a social housing corporation in the Netherlands. You analyze sensor data from tenant homes and provide actionable recommendations.
+function getSystemPrompt(language = 'en') {
+  const langInstruction = language === 'nl' ? 'Schrijf in het Nederlands.' : 'Write in English.'
+  return `You are an expert housing analyst for a social housing corporation in the Netherlands. You analyze sensor data from tenant homes and provide actionable recommendations.
 
 You receive JSON data containing:
 - Room temperatures, humidity, CO2 levels, motion detection, and thermostat setpoints
@@ -23,7 +25,8 @@ Provide a concise analysis in markdown format with these sections:
 Keep the tone professional but accessible. Use bullet points. Be specific about numbers.
 Focus on what is actionable — insulation issues, heating system problems, tenant support needs, mold risks, etc.
 If data is missing for some rooms/metrics, note it as a monitoring gap.
-Write in English.`
+${langInstruction}`
+}
 
 export async function getAnalysisHistory(houseId, limit = 10) {
   const result = await query(
@@ -41,7 +44,7 @@ export async function getLatestAnalysis(houseId) {
   return result.rows[0] || null
 }
 
-export async function generateHouseAnalysis(houseId, generatedBy = null) {
+export async function generateHouseAnalysis(houseId, generatedBy = null, language = 'en') {
   // Gather all data in parallel
   const [sensorData, twinState, meterData, applianceData, weatherData] = await Promise.all([
     twinService.getSensorHistory(houseId, 24).catch(() => null),
@@ -63,7 +66,7 @@ export async function generateHouseAnalysis(houseId, generatedBy = null) {
   const message = await client.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 2000,
-    system: SYSTEM_PROMPT,
+    system: getSystemPrompt(language),
     messages: [
       {
         role: 'user',

@@ -243,8 +243,8 @@ export async function getHouseAnalysis(houseId) {
   return response.json()
 }
 
-export async function generateHouseAnalysis(houseId) {
-  const response = await fetch(`${API_BASE}/twin/analysis/${houseId}`, {
+export async function generateHouseAnalysis(houseId, lang = 'en') {
+  const response = await fetch(`${API_BASE}/twin/analysis/${houseId}?lang=${lang}`, {
     method: 'POST',
     headers: authHeaders()
   })

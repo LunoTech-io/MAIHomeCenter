@@ -122,16 +122,26 @@ function ComfortSettings() {
               </div>
             </div>
           </div>
-          <div className="threshold-scale">
-            <span className="scale-bad">{t('settings.tooCold')}</span>
-            <span className="scale-warn">{t('settings.cool')}</span>
-            <span className="scale-good">{t('settings.comfortable')}</span>
-            <span className="scale-warn">{t('settings.warm')}</span>
-            <span className="scale-bad">{t('settings.tooHot')}</span>
-          </div>
-          <div className="threshold-range-label">
-            &lt;{thresholds.temperature.tooCold} | {thresholds.temperature.tooCold}–{thresholds.temperature.cool} | {thresholds.temperature.cool}–{thresholds.temperature.warm} | {thresholds.temperature.warm}–{thresholds.temperature.tooHot} | &gt;{thresholds.temperature.tooHot}
-          </div>
+          <table className="threshold-range-table">
+            <thead>
+              <tr>
+                <th className="scale-bad">{t('settings.tooCold')}</th>
+                <th className="scale-warn">{t('settings.cool')}</th>
+                <th className="scale-good">{t('settings.comfortable')}</th>
+                <th className="scale-warn">{t('settings.warm')}</th>
+                <th className="scale-bad">{t('settings.tooHot')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>&lt; {thresholds.temperature.tooCold}°C</td>
+                <td>{thresholds.temperature.tooCold}–{thresholds.temperature.cool}°C</td>
+                <td>{thresholds.temperature.cool}–{thresholds.temperature.warm}°C</td>
+                <td>{thresholds.temperature.warm}–{thresholds.temperature.tooHot}°C</td>
+                <td>&gt; {thresholds.temperature.tooHot}°C</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <div className="admin-section">

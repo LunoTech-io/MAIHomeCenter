@@ -1660,13 +1660,28 @@ body {
   min-width: 30px;
 }
 
-.threshold-scale {
-  display: flex;
-  gap: 4px;
+.threshold-range-table {
+  width: 100%;
+  border-collapse: collapse;
   margin-top: 16px;
-  font-size: 11px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.threshold-range-table th {
+  padding: 6px 8px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.3px;
+  font-size: 11px;
+}
+
+.threshold-range-table td {
+  padding: 6px 8px;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-subtle);
+  font-family: monospace;
+  font-size: 12px;
 }
 
 .scale-bad {
@@ -1681,16 +1696,30 @@ body {
   color: var(--accent-green);
 }
 
-.threshold-range-label {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-top: 4px;
-  font-family: monospace;
-}
-
 /* AI Analysis */
 .analysis-section {
   margin-top: 24px;
+}
+
+.analysis-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.analysis-lang-select {
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.analysis-lang-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
 }
 
 .analysis-content {
