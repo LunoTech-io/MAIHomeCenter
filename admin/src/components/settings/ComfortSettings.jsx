@@ -102,6 +102,7 @@ function ComfortSettings() {
             <div className="threshold-row">
               <label>{t('settings.cool')}</label>
               <div className="threshold-input-wrap">
+                <span className="threshold-prefix"></span>
                 <input type="number" step="0.5" value={thresholds.temperature.cool} onChange={(e) => handleChange('temperature', 'cool', e.target.value)} />
                 <span className="threshold-unit">°C</span>
               </div>
@@ -109,6 +110,7 @@ function ComfortSettings() {
             <div className="threshold-row">
               <label>{t('settings.warm')}</label>
               <div className="threshold-input-wrap">
+                <span className="threshold-prefix"></span>
                 <input type="number" step="0.5" value={thresholds.temperature.warm} onChange={(e) => handleChange('temperature', 'warm', e.target.value)} />
                 <span className="threshold-unit">°C</span>
               </div>
@@ -159,6 +161,7 @@ function ComfortSettings() {
             <div className="threshold-row">
               <label>{t('settings.dry')}</label>
               <div className="threshold-input-wrap">
+                <span className="threshold-prefix"></span>
                 <input type="number" step="1" value={thresholds.humidity.dry} onChange={(e) => handleChange('humidity', 'dry', e.target.value)} />
                 <span className="threshold-unit">%</span>
               </div>
@@ -166,6 +169,7 @@ function ComfortSettings() {
             <div className="threshold-row">
               <label>{t('settings.humid')}</label>
               <div className="threshold-input-wrap">
+                <span className="threshold-prefix"></span>
                 <input type="number" step="1" value={thresholds.humidity.humid} onChange={(e) => handleChange('humidity', 'humid', e.target.value)} />
                 <span className="threshold-unit">%</span>
               </div>
