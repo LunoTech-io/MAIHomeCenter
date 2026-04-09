@@ -47,16 +47,16 @@ function getHalfHourTicks(data) {
   const ticks = []
   const labels = {}
   const used = new Set()
-  for (let target = 0; target < 1440; target += 30) {
+  for (let target = 0; target < 1440; target += 60) {
     let best = null, bestDist = Infinity
     for (const d of entries) {
       let dist = Math.abs(d.min - target)
       if (dist > 720) dist = 1440 - dist
       if (dist < bestDist) { bestDist = dist; best = d.time }
     }
-    if (best && bestDist <= 15 && !used.has(best)) {
+    if (best && bestDist <= 30 && !used.has(best)) {
       used.add(best)
-      labels[best] = `${String(Math.floor(target / 60)).padStart(2, '0')}:${target % 60 === 0 ? '00' : '30'}`
+      labels[best] = `${String(Math.floor(target / 60) % 24).padStart(2, '0')}:00`
       ticks.push(best)
     }
   }
