@@ -100,7 +100,12 @@ async function evaluateTriggers() {
   )
   const triggers = triggersResult.rows
 
-  if (triggers.length === 0) return
+  if (triggers.length === 0) {
+    console.log('[survey-triggers] no active triggers found')
+    return
+  }
+
+  console.log(`[survey-triggers] evaluating ${triggers.length} active trigger(s)`)
 
   for (const trigger of triggers) {
     try {
@@ -120,12 +125,18 @@ async function evaluateTrigger(trigger) {
 
   if (houses.length === 0) return
 
-  const conditions = trigger.conditions
+  let conditions = trigger.conditions
+  if (typeof conditions === 'string') {
+    try { conditions = JSON.parse(conditions) } catch { return }
+  }
   if (!Array.isArray(conditions) || conditions.length === 0) return
 
   for (const c of conditions) {
     if (!ALLOWED_SENSOR_FIELDS.includes(c.sensorField)) return
   }
+
+  // Store parsed conditions back on trigger for downstream use
+  trigger.conditions = conditions
 
   for (const house of houses) {
     try {
@@ -138,7 +149,10 @@ async function evaluateTrigger(trigger) {
 
 async function evaluateTriggerForHouse(trigger, house) {
   const windowMinutes = trigger.sustained_minutes || 1
-  const conditions = trigger.conditions
+  let conditions = trigger.conditions
+  if (typeof conditions === 'string') {
+    try { conditions = JSON.parse(conditions) } catch { return }
+  }
 
   const sensorFields = [...new Set(conditions.map(c => c.sensorField))]
   const fieldSelects = sensorFields.join(', ')
@@ -207,14 +221,17 @@ async function evaluateTriggerForHouse(trigger, house) {
         [trigger.id, house.house_id, roomName]
       )
 
+      // Get question set for notification content
+      const questionSet = await surveyService.getQuestionSetById(trigger.question_set_id)
+      if (!questionSet) {
+        console.error(`[survey-triggers] question set ${trigger.question_set_id} not found, skipping`)
+        continue
+      }
+
       // Create survey assignment for this house
       const assignments = await surveyService.createBulkAssignments(trigger.question_set_id, [house.id])
 
       if (assignments.length > 0) {
-        // Get question set for notification content
-        const questionSet = await surveyService.getQuestionSetById(trigger.question_set_id)
-
-        if (questionSet) {
           const notificationResults = await pushService.sendToHouses([house.id], {
             title: questionSet.notification_title,
             body: questionSet.notification_body,
@@ -227,7 +244,6 @@ async function evaluateTriggerForHouse(trigger, house) {
               await surveyService.markNotificationSent(assignment.id)
             }
           }
-        }
       }
 
       console.log(`[survey-triggers] TRIGGERED survey for question_set=${trigger.question_set_id} — house=${house.house_id} room="${roomName}"`)
