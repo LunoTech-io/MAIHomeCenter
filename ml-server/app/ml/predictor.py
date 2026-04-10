@@ -64,6 +64,13 @@ class Seq2SeqDigitalTwin(nn.Module):
 # Compatibility alias so torch.load can resolve either name
 DigitalTwinModel = Seq2SeqDigitalTwin
 
+# Register in __main__ so torch.load can unpickle models saved from scripts
+import sys
+_main = sys.modules.get("__main__")
+if _main is not None:
+    _main.Seq2SeqDigitalTwin = Seq2SeqDigitalTwin
+    _main.DigitalTwinModel = DigitalTwinModel
+
 
 # ── Column normalization (Dutch asset names → standard English) ──
 
