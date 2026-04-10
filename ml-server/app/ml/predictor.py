@@ -120,8 +120,12 @@ def _process_to_model_format(sensor_df: pd.DataFrame) -> pd.DataFrame | None:
     return df.reindex(columns=ORDERED_COLS)
 
 
-def _clean_and_resample(df: pd.DataFrame) -> pd.DataFrame:
-    """Resample to 10-min, handle gas differencing, fill NaNs, add time features."""
+def _clean_and_resample(df: pd.DataFrame) -> tuple[pd.DataFrame, set[str]]:
+    """Resample to 10-min, handle gas differencing, fill NaNs, add time features.
+
+    Returns the cleaned DataFrame and a set of offline target room columns
+    (those that were entirely NaN before filling).
+    """
     df = df.copy()
     df.index = pd.to_datetime(df.index, utc=True)
     tz = ZoneInfo("Europe/Amsterdam")
@@ -131,6 +135,12 @@ def _clean_and_resample(df: pd.DataFrame) -> pd.DataFrame:
         {c: ("max" if "pir" in c.lower() else "mean") for c in df.columns}
     )
     df_res = df_res.interpolate(method="linear").ffill().bfill()
+
+    # Detect offline rooms before filling NaN columns with defaults
+    offline = set()
+    for room in TARGET_ROOMS:
+        if room in df_res.columns and df_res[room].isna().all():
+            offline.add(room)
 
     for c in df_res.columns:
         if df_res[c].isna().all():
@@ -144,16 +154,7 @@ def _clean_and_resample(df: pd.DataFrame) -> pd.DataFrame:
     df_res["day_sin"] = np.sin(2 * np.pi * df_res.index.dayofweek / 7)
     df_res["day_cos"] = np.cos(2 * np.pi * df_res.index.dayofweek / 7)
 
-    return df_res
-
-
-def _detect_offline_rooms(df: pd.DataFrame) -> set[str]:
-    """Detect rooms where all temperature values are the default fill (20.0)."""
-    offline = set()
-    for room in TARGET_ROOMS:
-        if room in df.columns and (df[room] == 20.0).all():
-            offline.add(room)
-    return offline
+    return df_res, offline
 
 
 # ── Module-level state ──
@@ -205,12 +206,10 @@ def predict(house_id: str, sensor_df: pd.DataFrame) -> dict | None:
         logger.warning("No data after column normalization for %s", house_id)
         return None
 
-    # 2. Clean, resample, add time features
-    df_clean = _clean_and_resample(df_model)
+    # 2. Clean, resample, add time features + detect offline sensors
+    df_clean, offline_rooms = _clean_and_resample(df_model)
     logger.info("Preprocessed %s: %s", house_id, df_clean.shape)
 
-    # 3. Detect offline sensors
-    offline_rooms = _detect_offline_rooms(df_clean)
     if offline_rooms:
         logger.info("Offline sensors for %s: %s", house_id, offline_rooms)
 

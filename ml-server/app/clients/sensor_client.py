@@ -420,6 +420,10 @@ async def fetch_sensor_data(house_id: str | None = None, hours: int | None = Non
 
     if not df.empty:
         df = df.sort_values("Timestamp").reset_index(drop=True)
+        # Coerce non-Timestamp columns to numeric (API may return strings)
+        for col in df.columns:
+            if col != "Timestamp":
+                df[col] = pd.to_numeric(df[col], errors="coerce")
         df = df.interpolate(method="linear").ffill().bfill()
         logger.info("Sensor data for %s merged: %s", house_id, df.shape)
     else:
