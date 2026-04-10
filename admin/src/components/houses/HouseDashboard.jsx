@@ -76,7 +76,6 @@ function HouseDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedRoom, setSelectedRoom] = useState(null)
-  const nowTime = formatTime(new Date().toISOString())
   const [analysis, setAnalysis] = useState(null)
   const [analysisLoading, setAnalysisLoading] = useState(false)
   const [analysisOpen, setAnalysisOpen] = useState(false)
@@ -197,6 +196,13 @@ function HouseDashboard() {
       .map(d => ({ time: new Date(d.recorded_at).getTime(), temp: parseFloat(d.temperature) }))
       .sort((a, b) => a.time - b.time)
   }, [weatherData])
+
+  // Current time marker: use the last actual sensor reading as "now"
+  const nowTime = useMemo(() => {
+    if (!sensorData?.data?.length) return null
+    const last = sensorData.data[sensorData.data.length - 1]
+    return formatTime(last.time)
+  }, [sensorData])
 
   const tempByRoomData = useMemo(() => {
     if (!sensorData?.data?.length) return []

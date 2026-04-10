@@ -77,7 +77,6 @@ function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedRoom, setSelectedRoom] = useState(null)
-  const nowTime = formatTime(new Date().toISOString())
 
   useEffect(() => {
     if (!houseId) return
@@ -192,6 +191,13 @@ function Dashboard() {
       .map(d => ({ time: new Date(d.recorded_at).getTime(), temp: parseFloat(d.temperature) }))
       .sort((a, b) => a.time - b.time)
   }, [weatherData])
+
+  // Current time marker: use the last actual sensor reading as "now"
+  const nowTime = useMemo(() => {
+    if (!sensorData?.data?.length) return null
+    const last = sensorData.data[sensorData.data.length - 1]
+    return formatTime(last.time)
+  }, [sensorData])
 
   // Chart data: temperature by room (with prediction dashed lines + outside temp)
   const tempByRoomData = useMemo(() => {
