@@ -170,12 +170,14 @@ function HouseDashboard() {
     const rooms = predictionData.prediction.rooms
     const roomMap = {}
     for (const key of Object.keys(rooms)) {
+      if (typeof rooms[key] === 'string') continue // skip offline sensors
       const afterHouse = key.split('__')[1] || key
       const displayName = afterHouse.replace(/_temperature$/, '').replace(/_/g, ' ')
       roomMap[displayName] = key
     }
     const offsets = new Set()
     for (const points of Object.values(rooms)) {
+      if (!Array.isArray(points)) continue
       for (const p of points) offsets.add(p.offset_min)
     }
     const sortedOffsets = [...offsets].sort((a, b) => a - b)

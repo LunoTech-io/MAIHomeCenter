@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting ML server...")
-    predictor.init(settings.MODEL_PATH)
+    predictor.init(settings.MODEL_DIR)
     start_scheduler()
     yield
     logger.info("Shutting down ML server...")

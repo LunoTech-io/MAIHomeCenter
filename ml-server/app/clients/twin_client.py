@@ -79,10 +79,28 @@ def _clean_prefix(asset_name: str) -> str:
     return re.sub(r"[^\w\s]", "", asset_name).strip().replace(" ", "_")
 
 
+# Dutch room name → standardized English name
+_ROOM_NAME_MAP = {
+    "living": "LivingRoom",
+    "keuken": "Kitchen",
+    "badkamer": "Bathroom",
+    "hal beneden": "DownstairsHall",
+    "hal boven": "UpstairsHall",
+    "eetkamer": "DiningRoom",
+    "slaapkamer 1": "Bedroom1",
+    "slaapkamer 2": "Bedroom2",
+    "slaapkamer 3": "Bedroom3",
+    "bedroom 1": "Bedroom1",
+    "bedroom 2": "Bedroom2",
+    "bedroom 3": "Bedroom3",
+}
+
+
 def _extract_room_name(asset_name: str) -> str:
-    """Extract the room/device name from 'HOUSE PREFIX - Room Name'."""
+    """Extract the room/device name from 'HOUSE PREFIX - Room Name' and normalize to English."""
     parts = asset_name.split(" - ", 1)
-    return parts[1].strip() if len(parts) > 1 else parts[0].strip()
+    raw = parts[1].strip() if len(parts) > 1 else parts[0].strip()
+    return _ROOM_NAME_MAP.get(raw.lower(), raw)
 
 
 def _classify_asset(asset_name: str) -> str:

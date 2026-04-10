@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
@@ -7,164 +8,271 @@ import pandas as pd
 import torch
 import torch.nn as nn
 
+from app.config import HOUSE_MODEL_MAP
+
 logger = logging.getLogger(__name__)
 
+# ── Constants ──
 
-class DigitalTwinModel(nn.Module):
-    def __init__(self, lookback_steps=144, forecast_steps=18):
+LOOKBACK_STEPS = 144   # 24 hours at 10-min intervals
+FORECAST_STEPS = 36    # 6 hours at 10-min intervals
+TEMP_MIN = 10
+TEMP_RANGE = 35
+GLOBAL_GAS_MAX = 0.2
+
+ORDERED_COLS = [
+    "SmartMeter_gascube", "LivingRoom_pirstatus", "LivingRoom_temperature",
+    "DiningRoom_pirstatus", "Kitchen_pirstatus", "Kitchen_temperature", "Kitchen_temperatureset",
+    "Bathroom_pirstatus", "Bathroom_temperature", "Bathroom_temperatureset",
+    "UpstairsHall_pirstatus", "DownstairsHall_temperature", "DownstairsHall_temperatureset",
+    "Bedroom1_temperature", "Bedroom1_temperatureset", "Bedroom2_temperature", "Bedroom2_temperatureset",
+    "Bedroom3_temperature", "Bedroom3_temperatureset",
+]
+
+TARGET_ROOMS = [
+    "LivingRoom_temperature", "Kitchen_temperature", "Bathroom_temperature",
+    "DownstairsHall_temperature", "Bedroom1_temperature", "Bedroom2_temperature",
+    "Bedroom3_temperature",
+]
+
+
+# ── Model definition (must match saved model class name) ──
+
+class Seq2SeqDigitalTwin(nn.Module):
+    def __init__(self, input_dim, target_dim=7, hidden_dim=128, forecast_steps=36):
         super().__init__()
-        self.lookback_steps = lookback_steps
-        self.forecast_steps = forecast_steps  # 18 steps * 10 min = 3 hours
-        self.tz = ZoneInfo("Europe/Amsterdam")
+        self.target_dim = target_dim
+        self.forecast_steps = forecast_steps
+        self.encoder = nn.LSTM(input_dim, hidden_dim, num_layers=2, batch_first=True, dropout=0.2)
+        self.decoder_lstm = nn.LSTM(target_dim, hidden_dim, num_layers=2, batch_first=True, dropout=0.2)
+        self.decoder_fc = nn.Linear(hidden_dim, target_dim)
 
-        self.input_dim = None
-        self.target_rooms = []
-        self.net = None
-
-    def prepare_clean_df(self, df_merged: pd.DataFrame) -> pd.DataFrame:
-        df = df_merged.copy()
-        if "Timestamp" in df.columns:
-            df["Timestamp"] = pd.to_datetime(df["Timestamp"], utc=True)
-            df.set_index("Timestamp", inplace=True)
-        df = df.tz_convert(self.tz)
-
-        # Filter out watermeter-related columns
-        df = df[[c for c in df.columns if "watermeter" not in c.lower()]]
-
-        # Identify target rooms (columns ending in 'temperature')
-        self.target_rooms = [c for c in df.columns if c.lower().endswith("temperature")]
-
-        # Keep only temperature, setpoint, and PIR features
-        keywords = ["temperature", "set", "pir"]
-        feature_cols = [c for c in df.columns if any(k in c.lower() for k in keywords)]
-        df = df[feature_cols]
-
-        # Resample to 10-min intervals
-        df_resampled = df.resample("10min").agg(
-            {c: ("max" if "pir" in c.lower() else "mean") for c in df.columns}
-        )
-        df_resampled = df_resampled.interpolate(method="linear").ffill().bfill()
-
-        # Cyclical time encoding
-        df_resampled["hour_sin"] = np.sin(2 * np.pi * df_resampled.index.hour / 24)
-        df_resampled["hour_cos"] = np.cos(2 * np.pi * df_resampled.index.hour / 24)
-        df_resampled["day_sin"] = np.sin(2 * np.pi * df_resampled.index.dayofweek / 7)
-        df_resampled["day_cos"] = np.cos(2 * np.pi * df_resampled.index.dayofweek / 7)
-
-        return df_resampled
-
-    def dataframe_to_tensor(self, df_processed: pd.DataFrame) -> torch.Tensor:
-        df = df_processed.copy()
-
-        # Normalize temperatures: T_norm = (T_actual - 10) / 35
-        temp_related = [c for c in df.columns if "temperature" in c.lower()]
-        for col in temp_related:
-            df[col] = (df[col] - 10) / 35
-
-        pir_cols = [c for c in df.columns if "pir" in c.lower()]
-        for col in pir_cols:
-            df[col] = df[col].clip(0, 1)
-
-        # Shift cyclical features to [0, 1]
-        for col in ["hour_sin", "hour_cos", "day_sin", "day_cos"]:
-            df[col] = (df[col] + 1) / 2
-
-        df = df.clip(0, 1)
-
-        if len(df) > self.lookback_steps:
-            df = df.iloc[-self.lookback_steps :]
-
-        self.input_dim = df.shape[1]
-        return torch.tensor(df.values, dtype=torch.float32)
-
-    def init_network(self, model_path=None):
-        num_targets = len(self.target_rooms)
-        output_dim = num_targets * self.forecast_steps
-
-        self.net = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(self.lookback_steps * self.input_dim, 1024),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(1024, 512),
-            nn.ReLU(),
-            nn.Linear(512, output_dim),
-        )
-
-        if model_path:
-            self.load_state_dict(torch.load(model_path, map_location="cpu", weights_only=True))
-            self.eval()
-            logger.info("Model weights loaded for %d rooms from %s", num_targets, model_path)
-        else:
-            logger.warning("No model path — using random weights for %d rooms", num_targets)
-
-    def forward(self, x):
-        return self.net(x)
-
-    def predict_future(self, input_tensor: torch.Tensor) -> dict:
-        if input_tensor.dim() == 2:
-            x = input_tensor.unsqueeze(0)
-        else:
-            x = input_tensor
-
-        with torch.no_grad():
-            raw_out = self.forward(x)
-            room_forecasts = raw_out.view(len(self.target_rooms), self.forecast_steps)
-
-        result = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "meta": {
-                "type": "Multi-Room Temperature Prediction",
-                "horizon": "3 Hours",
-                "resolution": "10 min",
-                "model_version": "woning16-v1",
-            },
-            "rooms": {},
-        }
-
-        # Denormalize: T_actual = T_norm * 35 + 10
-        for i, room_name in enumerate(self.target_rooms):
-            room_data = room_forecasts[i].tolist()
-            actual_temps = [round(t * 35 + 10, 2) for t in room_data]
-            result["rooms"][room_name] = [
-                {"offset_min": (j + 1) * 10, "temp": t}
-                for j, t in enumerate(actual_temps)
-            ]
-
-        return result
+    def forward(self, x, last_known_temps):
+        _, (hidden, cell) = self.encoder(x)
+        current_temp = last_known_temps.unsqueeze(1)
+        decoder_input = current_temp
+        outputs = []
+        for _ in range(self.forecast_steps):
+            out, (hidden, cell) = self.decoder_lstm(decoder_input, (hidden, cell))
+            step_delta = self.decoder_fc(out)
+            current_temp = current_temp + step_delta
+            outputs.append(current_temp)
+            decoder_input = current_temp
+        return torch.cat(outputs, dim=1)
 
 
-# ── Module-level predictor state ──
-
-_model: DigitalTwinModel | None = None
-_model_path: str | None = None
-_network_initialized: bool = False
+# Compatibility alias so torch.load can resolve either name
+DigitalTwinModel = Seq2SeqDigitalTwin
 
 
-def init(model_path: str):
-    """Initialize the predictor. Call once at startup."""
-    global _model, _model_path, _network_initialized
-    _model = DigitalTwinModel(lookback_steps=144, forecast_steps=18)
-    _model_path = model_path
-    _network_initialized = False
-    logger.info("Predictor initialized (model will load on first prediction)")
+# ── Column normalization (Dutch asset names → standard English) ──
+
+def _normalize_col(col: str) -> str:
+    c = col.lower()
+    room = ""
+    if "digitale_meter" in c:
+        room = "SmartMeter"
+    elif "living" in c:
+        room = "LivingRoom"
+    elif "keuken" in c:
+        room = "Kitchen"
+    elif "badkamer" in c:
+        room = "Bathroom"
+    elif "hal_boven" in c:
+        room = "UpstairsHall"
+    elif "hal_beneden" in c:
+        room = "DownstairsHall"
+    elif "eetkamer" in c:
+        room = "DiningRoom"
+    elif "slaapkamer_1" in c or "bedroom_1" in c:
+        room = "Bedroom1"
+    elif "slaapkamer_2" in c or "bedroom_2" in c:
+        room = "Bedroom2"
+    elif "slaapkamer_3" in c or "bedroom_3" in c:
+        room = "Bedroom3"
+
+    param = ""
+    if "gas.kuub" in c or "gaskuub" in c:
+        param = "gascube"
+    elif "pir_status" in c:
+        param = "pirstatus"
+    elif "temperature.set" in c or "temperatureset" in c:
+        param = "temperatureset"
+    elif "temperature" in c:
+        param = "temperature"
+
+    return f"{room}_{param}" if room and param else col
 
 
-def predict(sensor_df: pd.DataFrame) -> dict:
-    """Run the full prediction pipeline: preprocess → tensor → model → forecast."""
-    global _network_initialized
+# ── Preprocessing pipeline ──
 
-    if _model is None:
+def _process_to_model_format(sensor_df: pd.DataFrame) -> pd.DataFrame | None:
+    """Normalize column names and select the ordered feature set."""
+    if sensor_df is None or sensor_df.empty:
+        return None
+
+    df = sensor_df.copy()
+    if "Timestamp" in df.columns:
+        df["Timestamp"] = pd.to_datetime(df["Timestamp"], utc=True)
+        df.set_index("Timestamp", inplace=True)
+
+    df = df.rename(columns=_normalize_col)
+    return df.reindex(columns=ORDERED_COLS)
+
+
+def _clean_and_resample(df: pd.DataFrame) -> pd.DataFrame:
+    """Resample to 10-min, handle gas differencing, fill NaNs, add time features."""
+    df = df.copy()
+    df.index = pd.to_datetime(df.index, utc=True)
+    tz = ZoneInfo("Europe/Amsterdam")
+    df = df.tz_convert(tz)
+
+    df_res = df.resample("10min").agg(
+        {c: ("max" if "pir" in c.lower() else "mean") for c in df.columns}
+    )
+    df_res = df_res.interpolate(method="linear").ffill().bfill()
+
+    for c in df_res.columns:
+        if df_res[c].isna().all():
+            df_res[c] = 20.0 if ("temperature" in c.lower() or "set" in c.lower()) else 0.0
+        if "gascube" in c.lower():
+            diff = df_res[c].diff().mask(lambda x: (x < 0) | (x > 2.0)).interpolate()
+            df_res[c] = diff.bfill().fillna(0.0)
+
+    df_res["hour_sin"] = np.sin(2 * np.pi * df_res.index.hour / 24)
+    df_res["hour_cos"] = np.cos(2 * np.pi * df_res.index.hour / 24)
+    df_res["day_sin"] = np.sin(2 * np.pi * df_res.index.dayofweek / 7)
+    df_res["day_cos"] = np.cos(2 * np.pi * df_res.index.dayofweek / 7)
+
+    return df_res
+
+
+def _detect_offline_rooms(df: pd.DataFrame) -> set[str]:
+    """Detect rooms where all temperature values are the default fill (20.0)."""
+    offline = set()
+    for room in TARGET_ROOMS:
+        if room in df.columns and (df[room] == 20.0).all():
+            offline.add(room)
+    return offline
+
+
+# ── Module-level state ──
+
+_model_dir: str | None = None
+_models: dict[str, nn.Module] = {}
+
+
+def init(model_dir: str):
+    """Initialize the predictor with the model directory. Models are lazy-loaded."""
+    global _model_dir
+    _model_dir = model_dir
+    logger.info("Predictor initialized with model_dir=%s (lazy loading)", model_dir)
+
+
+def _load_model(house_id: str) -> nn.Module | None:
+    """Load and cache a house-specific model."""
+    if house_id in _models:
+        return _models[house_id]
+
+    model_file = HOUSE_MODEL_MAP.get(house_id)
+    if not model_file:
+        return None
+
+    model_path = os.path.join(_model_dir, model_file)
+    if not os.path.exists(model_path):
+        logger.error("Model file not found: %s", model_path)
+        return None
+
+    logger.info("Loading model for %s from %s", house_id, model_path)
+    model = torch.load(model_path, map_location="cpu", weights_only=False)
+    model.eval()
+    _models[house_id] = model
+    return model
+
+
+def predict(house_id: str, sensor_df: pd.DataFrame) -> dict | None:
+    """Run the full prediction pipeline for a house."""
+    if _model_dir is None:
         raise RuntimeError("Predictor not initialized — call init() first")
 
-    clean_df = _model.prepare_clean_df(sensor_df)
-    logger.info("Preprocessed data: %s, target rooms: %d", clean_df.shape, len(_model.target_rooms))
+    if house_id not in HOUSE_MODEL_MAP:
+        logger.debug("No model available for %s — skipping prediction", house_id)
+        return None
 
-    input_tensor = _model.dataframe_to_tensor(clean_df)
-    logger.info("Input tensor: %s", input_tensor.shape)
+    # 1. Normalize columns to standard names
+    df_model = _process_to_model_format(sensor_df)
+    if df_model is None:
+        logger.warning("No data after column normalization for %s", house_id)
+        return None
 
-    if not _network_initialized:
-        _model.init_network(model_path=_model_path)
-        _network_initialized = True
+    # 2. Clean, resample, add time features
+    df_clean = _clean_and_resample(df_model)
+    logger.info("Preprocessed %s: %s", house_id, df_clean.shape)
 
-    return _model.predict_future(input_tensor)
+    # 3. Detect offline sensors
+    offline_rooms = _detect_offline_rooms(df_clean)
+    if offline_rooms:
+        logger.info("Offline sensors for %s: %s", house_id, offline_rooms)
+
+    # 4. Pad if not enough data
+    if len(df_clean) < LOOKBACK_STEPS:
+        pad_count = LOOKBACK_STEPS - len(df_clean)
+        pad = pd.DataFrame(
+            [df_clean.iloc[0]] * pad_count,
+            index=[df_clean.index[0] - pd.Timedelta(minutes=10 * i) for i in range(pad_count, 0, -1)],
+        )
+        df_clean = pd.concat([pad, df_clean])
+
+    df_input = df_clean.iloc[-LOOKBACK_STEPS:]
+
+    # 5. Normalize values
+    df_norm = df_input.copy()
+    for c in df_norm.columns:
+        if "temperature" in c.lower() or "set" in c.lower():
+            df_norm[c] = (df_norm[c] - TEMP_MIN) / TEMP_RANGE
+        elif "hour" in c.lower() or "day" in c.lower():
+            df_norm[c] = (df_norm[c] + 1) / 2
+        elif "gascube" in c.lower():
+            df_norm[c] = df_norm[c] / GLOBAL_GAS_MAX
+    df_norm = df_norm.fillna(0).clip(0, 1)
+
+    # 6. Build tensors
+    input_tensor = torch.tensor(df_norm.values, dtype=torch.float32).unsqueeze(0)
+    target_idx = [df_norm.columns.get_loc(r) for r in TARGET_ROOMS]
+    last_temps = torch.tensor(
+        df_norm.iloc[-1, target_idx].values.astype(np.float32)
+    ).unsqueeze(0)
+
+    # 7. Load model and run inference
+    model = _load_model(house_id)
+    if model is None:
+        return None
+
+    with torch.no_grad():
+        raw_output = model(input_tensor, last_temps)
+        pred_norm = raw_output.squeeze(0).numpy()
+
+    # 8. Build result
+    result = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "meta": {
+            "type": "Multi-Room Temperature Prediction",
+            "horizon": "6 Hours",
+            "resolution": "10 min",
+            "model_version": "seq2seq-lstm-v1",
+            "house_id": house_id,
+        },
+        "rooms": {},
+    }
+
+    for i, room in enumerate(TARGET_ROOMS):
+        if room in offline_rooms:
+            result["rooms"][room] = "Sensor Offline"
+        else:
+            result["rooms"][room] = [
+                {"offset_min": (s + 1) * 10, "temp": round(float(pred_norm[s, i] * TEMP_RANGE + TEMP_MIN), 2)}
+                for s in range(FORECAST_STEPS)
+            ]
+
+    logger.info("Prediction complete for %s: %d rooms (%d offline)", house_id, len(TARGET_ROOMS), len(offline_rooms))
+    return result
