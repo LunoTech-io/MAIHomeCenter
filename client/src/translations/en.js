@@ -42,6 +42,7 @@ export default {
   "chart.pred": "pred",
   "chart.tariffHigh": "High tariff",
   "chart.tariffLow": "Low tariff",
+  "chart.now": "Now",
 
   // Login
   "login.title": "MAIHomeCenter",

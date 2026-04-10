@@ -304,6 +304,7 @@ export default {
   "dashboard.pred": "(pred)",
   "dashboard.tariffHigh": "High tariff",
   "dashboard.tariffLow": "Low tariff",
+  "dashboard.now": "Now",
   "dashboard.aiAnalysis": "AI Analysis",
   "dashboard.generateAnalysis": "Generate Analysis",
   "dashboard.showAnalysis": "Show Analysis",

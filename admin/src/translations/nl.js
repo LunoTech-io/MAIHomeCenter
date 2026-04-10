@@ -304,6 +304,7 @@ export default {
   "dashboard.pred": "(voorsp.)",
   "dashboard.tariffHigh": "Hoog tarief",
   "dashboard.tariffLow": "Laag tarief",
+  "dashboard.now": "Nu",
   "dashboard.aiAnalysis": "AI Analyse",
   "dashboard.generateAnalysis": "Analyse genereren",
   "dashboard.showAnalysis": "Analyse tonen",

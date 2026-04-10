@@ -34,35 +34,31 @@ function formatTime(isoString) {
 
 function getHalfHourTicks(data) {
   if (!data?.length) return { ticks: [], format: v => v }
-  const timeSet = new Set()
-  const entries = []
+  // Build ordered list of unique time values preserving data order
+  const seen = new Set()
+  const ordered = []
   for (const d of data) {
-    if (timeSet.has(d.time)) continue
-    timeSet.add(d.time)
-    const [h, m] = d.time.split(':').map(Number)
-    entries.push({ time: d.time, min: h * 60 + m })
+    if (!seen.has(d.time)) {
+      seen.add(d.time)
+      ordered.push(d.time)
+    }
   }
-  // Collect all unique half-hour slots that have a nearby data point
+  // Pick ticks near each hour boundary, walking the ordered list
   const ticks = []
   const labels = {}
-  const used = new Set()
-  for (let target = 0; target < 1440; target += 60) {
-    let best = null, bestDist = Infinity
-    for (const d of entries) {
-      let dist = Math.abs(d.min - target)
-      if (dist > 720) dist = 1440 - dist
-      if (dist < bestDist) { bestDist = dist; best = d.time }
-    }
-    if (best && bestDist <= 30 && !used.has(best)) {
-      used.add(best)
-      labels[best] = `${String(Math.floor(target / 60) % 24).padStart(2, '0')}:00`
-      ticks.push(best)
+  let lastTickIdx = -Infinity
+  for (let i = 0; i < ordered.length; i++) {
+    const [h, m] = ordered[i].split(':').map(Number)
+    if (m <= 30 || m >= 50) {
+      // Close to an hour boundary — use it if far enough from last tick
+      if (i - lastTickIdx >= 3) {
+        const label = m >= 50 ? `${String((h + 1) % 24).padStart(2, '0')}:00` : `${String(h).padStart(2, '0')}:00`
+        ticks.push(ordered[i])
+        labels[ordered[i]] = label
+        lastTickIdx = i
+      }
     }
   }
-  // Sort ticks in the order they appear in the data
-  const orderMap = {}
-  data.forEach((d, i) => { if (!(d.time in orderMap)) orderMap[d.time] = i })
-  ticks.sort((a, b) => orderMap[a] - orderMap[b])
   return { ticks, format: v => labels[v] || v }
 }
 
@@ -80,6 +76,7 @@ function HouseDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedRoom, setSelectedRoom] = useState(null)
+  const nowTime = formatTime(new Date().toISOString())
   const [analysis, setAnalysis] = useState(null)
   const [analysisLoading, setAnalysisLoading] = useState(false)
   const [analysisOpen, setAnalysisOpen] = useState(false)
@@ -402,6 +399,7 @@ function HouseDashboard() {
                   <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} domain={[v => Math.floor(v - 1), v => Math.ceil(v + 1)]} unit="°C" allowDecimals={false} />
                   <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
+                  <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} label={{ value: t('dashboard.now'), fill: 'var(--text-secondary)', fontSize: 10, position: 'top' }} />
                   {sensorData.rooms.map((room, i) => (
                     <Line key={room} type="monotone" dataKey={room} stroke={ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} name={room} />
                   ))}
@@ -440,6 +438,7 @@ function HouseDashboard() {
                   <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} domain={[v => Math.floor(v - 1), v => Math.ceil(v + 1)]} unit="°C" allowDecimals={false} />
                   <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
+                  <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                   <Line type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} name={t('dashboard.actualC')} />
                   <Line type="monotone" dataKey="setpoint" stroke="#f59e0b" strokeWidth={2} dot={false} strokeDasharray="5 5" name={t('dashboard.setpointC')} />
                   {predictionPoints.rooms.includes(selectedRoom) && (
@@ -459,6 +458,7 @@ function HouseDashboard() {
                   <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} allowDecimals={false} />
                   <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
+                  <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                   {sensorData.rooms.map((room, i) => (
                     <Bar key={room} dataKey={room} fill={ROOM_COLORS[i % ROOM_COLORS.length]} opacity={0.7} name={room} stackId="pir" />
                   ))}
@@ -478,6 +478,7 @@ function HouseDashboard() {
                     <YAxis yAxisId="co2" orientation="right" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" ppm" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
+                    <ReferenceLine x={nowTime} yAxisId="humidity" stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                     {humidityRooms.map((room, i) => (
                       <Line key={`${room}-h`} yAxisId="humidity" type="monotone" dataKey={`${room} humidity`} stroke={ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} />
                     ))}
@@ -500,6 +501,7 @@ function HouseDashboard() {
                     <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" kW" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
+                    <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                     {tariffHighX && (
                       <ReferenceLine x={tariffHighX} stroke="var(--accent-red)" strokeDasharray="6 3" strokeWidth={1.5} label={{ value: t('dashboard.tariffHigh'), fill: 'var(--accent-red)', fontSize: 11, position: 'insideTopRight', offset: 4 }} />
                     )}
@@ -524,6 +526,7 @@ function HouseDashboard() {
                     <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" m³" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
+                    <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                     <Line type="monotone" dataKey="gas" stroke="#8b5cf6" strokeWidth={2} dot={false} name={t('dashboard.usageM3')} />
                   </LineChart>
                 </ResponsiveContainer>
@@ -541,6 +544,7 @@ function HouseDashboard() {
                     <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend />
+                    <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                     {applianceNames.map((name, i) => (
                       <Line key={name} type="monotone" dataKey={name} stroke={APPLIANCE_COLORS[name] || ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} name={name} />
                     ))}

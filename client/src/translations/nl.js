@@ -42,6 +42,7 @@ export default {
   "chart.pred": "voorspeld",
   "chart.tariffHigh": "Hoog tarief",
   "chart.tariffLow": "Laag tarief",
+  "chart.now": "Nu",
 
   // Login
   "login.title": "MAIHomeCenter",
