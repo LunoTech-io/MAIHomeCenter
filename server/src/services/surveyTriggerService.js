@@ -148,7 +148,7 @@ async function evaluateTrigger(trigger) {
 }
 
 async function evaluateTriggerForHouse(trigger, house) {
-  const windowMinutes = trigger.sustained_minutes || 1
+  const windowMinutes = Math.max(trigger.sustained_minutes || 0, 10)
   let conditions = trigger.conditions
   if (typeof conditions === 'string') {
     try { conditions = JSON.parse(conditions) } catch { return }

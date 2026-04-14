@@ -156,8 +156,6 @@ async function evaluateRules() {
     )
     const rules = rulesResult.rows
 
-    if (rules.length === 0) return
-
     for (const rule of rules) {
       try {
         await evaluateRule(rule)
@@ -174,7 +172,7 @@ async function evaluateRules() {
     }
 
     const elapsed = ((Date.now() - start) / 1000).toFixed(1)
-    console.log(`[alerts] evaluation completed in ${elapsed}s — ${rules.length} rules checked`)
+    console.log(`[alerts] evaluation completed in ${elapsed}s — ${rules.length} alert rules, survey triggers checked`)
   } catch (err) {
     console.error('[alerts] evaluation failed:', err)
   } finally {
@@ -209,7 +207,7 @@ async function evaluateRule(rule) {
 }
 
 async function evaluateRuleForHouse(rule, house) {
-  const windowMinutes = rule.sustained_minutes || 1
+  const windowMinutes = Math.max(rule.sustained_minutes || 0, EVAL_INTERVAL_MS / 60000)
   const conditions = rule.conditions
 
   // Collect the unique sensor fields we need to query
