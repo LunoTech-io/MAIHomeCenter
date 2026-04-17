@@ -344,4 +344,13 @@ export default {
   "settings.save": "Drempels opslaan",
   "settings.saving": "Opslaan...",
   "settings.saved": "Drempels succesvol opgeslagen",
+  "settings.roomTypeHint": "Laat velden leeg om de waarde van het Standaard-tabblad over te nemen. Ingevulde velden overschrijven de standaard voor dit kamertype.",
+  "settings.resetField": "Terug naar standaard",
+  "settings.inheriting": "standaard",
+  "roomType.default": "Standaard",
+  "roomType.living": "Woonkamer",
+  "roomType.bedroom": "Slaapkamer",
+  "roomType.bathroom": "Badkamer",
+  "roomType.kitchen": "Keuken",
+  "roomType.hallway": "Hal",
 }

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { getTwinState, getComfortThresholds } from '../services/api'
+import { getRoomType, getEffectiveThresholds, normalizeThresholds } from '../utils/roomTypes'
 
 const DEFAULTS = {
   temperature: { tooCold: 17, cool: 19, warm: 23, tooHot: 26 },
@@ -83,10 +84,10 @@ function getRoomStatus(room, th) {
 
 function RoomSummary() {
   const { house } = useAuth()
-  const { t } = useLanguage()
+  const { t, tRoom } = useLanguage()
   const houseId = house?.houseId
   const [twinState, setTwinState] = useState(null)
-  const [thresholds, setThresholds] = useState(DEFAULTS)
+  const [thresholds, setThresholds] = useState({ default: DEFAULTS })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -102,11 +103,16 @@ function RoomSummary() {
         ])
         if (!cancelled) {
           setTwinState(state)
-          if (th) {
+          const normalized = normalizeThresholds(th)
+          if (normalized) {
+            const serverDefaults = normalized.default || {}
             setThresholds({
-              temperature: { ...DEFAULTS.temperature, ...th.temperature },
-              humidity: { ...DEFAULTS.humidity, ...th.humidity },
-              co2: { ...DEFAULTS.co2, ...th.co2 },
+              ...normalized,
+              default: {
+                temperature: { ...DEFAULTS.temperature, ...(serverDefaults.temperature || {}) },
+                humidity:    { ...DEFAULTS.humidity,    ...(serverDefaults.humidity    || {}) },
+                co2:         { ...DEFAULTS.co2,         ...(serverDefaults.co2         || {}) },
+              },
             })
           }
           setError(null)
@@ -156,7 +162,8 @@ function RoomSummary() {
               <span role="columnheader">{t('summary.details')}</span>
             </div>
             {twinState.rooms.map(room => {
-              const { faceIndex, noteKeys } = getRoomStatus(room, thresholds)
+              const effective = getEffectiveThresholds(thresholds, getRoomType(room.room_name))
+              const { faceIndex, noteKeys } = getRoomStatus(room, effective)
               const temp = room.temperature != null ? parseFloat(room.temperature).toFixed(1) : null
               const humidity = room.humidity != null ? parseFloat(room.humidity).toFixed(0) : null
               const co2 = room.co2 != null ? parseFloat(room.co2).toFixed(0) : null
@@ -164,7 +171,7 @@ function RoomSummary() {
               return (
                 <div key={room.room_name} className="summary-row" role="row">
                   <div className="summary-room" role="cell">
-                    <span className="summary-room-name">{room.room_name}</span>
+                    <span className="summary-room-name">{tRoom(room.room_name)}</span>
                     <span className="summary-readings">
                       {temp != null && <span>{temp}°C</span>}
                       {humidity != null && <span>{humidity}%</span>}

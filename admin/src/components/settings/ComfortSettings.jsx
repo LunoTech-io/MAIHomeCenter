@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getComfortThresholds, updateComfortThresholds } from '../../services/api'
 import { useLanguage } from '../../contexts/LanguageContext'
+import { ROOM_TYPES, normalizeThresholds } from '../../utils/roomTypes'
 
 const DEFAULTS = {
   temperature: { tooCold: 17, cool: 19, warm: 23, tooHot: 26 },
@@ -8,27 +9,66 @@ const DEFAULTS = {
   co2: { fair: 800, poor: 1200 },
 }
 
+const TEMP_FIELDS = [
+  { key: 'tooCold', prefix: '<' },
+  { key: 'cool', prefix: '' },
+  { key: 'warm', prefix: '' },
+  { key: 'tooHot', prefix: '>' },
+]
+const HUMIDITY_FIELDS = [
+  { key: 'veryDry', prefix: '<' },
+  { key: 'dry', prefix: '' },
+  { key: 'humid', prefix: '' },
+  { key: 'veryHumid', prefix: '>' },
+]
+const CO2_FIELDS = [
+  { key: 'fair', prefix: '>' },
+  { key: 'poor', prefix: '>' },
+]
+
+// Drop empty subobjects so storage stays minimal
+function pruneOverrides(obj) {
+  const out = {}
+  for (const [cat, fields] of Object.entries(obj || {})) {
+    const cleaned = {}
+    for (const [k, v] of Object.entries(fields || {})) {
+      if (v !== '' && v != null && !Number.isNaN(v)) cleaned[k] = v
+    }
+    if (Object.keys(cleaned).length > 0) out[cat] = cleaned
+  }
+  return out
+}
+
 function ComfortSettings() {
   const { t } = useLanguage()
-  const [thresholds, setThresholds] = useState(DEFAULTS)
+  const [thresholds, setThresholds] = useState({ default: DEFAULTS })
+  const [activeTab, setActiveTab] = useState('default')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState(null)
 
-  useEffect(() => {
-    loadThresholds()
-  }, [])
+  useEffect(() => { loadThresholds() }, [])
 
   const loadThresholds = async () => {
     try {
       setLoading(true)
-      const data = await getComfortThresholds()
+      const data = normalizeThresholds(await getComfortThresholds())
       if (data) {
-        setThresholds({
-          temperature: { ...DEFAULTS.temperature, ...data.temperature },
-          humidity: { ...DEFAULTS.humidity, ...data.humidity },
-          co2: { ...DEFAULTS.co2, ...data.co2 },
-        })
+        const defaults = data.default || {}
+        const next = {
+          default: {
+            temperature: { ...DEFAULTS.temperature, ...(defaults.temperature || {}) },
+            humidity:    { ...DEFAULTS.humidity,    ...(defaults.humidity    || {}) },
+            co2:         { ...DEFAULTS.co2,         ...(defaults.co2         || {}) },
+          },
+        }
+        for (const type of ROOM_TYPES) {
+          if (type === 'default') continue
+          if (data[type]) next[type] = pruneOverrides(data[type])
+        }
+        setThresholds(next)
+      } else {
+        setThresholds({ default: DEFAULTS })
       }
     } catch (err) {
       setMessage({ type: 'error', text: err.message })
@@ -37,11 +77,35 @@ function ComfortSettings() {
     }
   }
 
-  const handleChange = (category, field, value) => {
+  const updateDefaultField = (category, field, raw) => {
     setThresholds(prev => ({
       ...prev,
-      [category]: { ...prev[category], [field]: value === '' ? '' : Number(value) }
+      default: {
+        ...prev.default,
+        [category]: { ...prev.default[category], [field]: raw === '' ? '' : Number(raw) },
+      },
     }))
+  }
+
+  const updateOverrideField = (type, category, field, raw) => {
+    setThresholds(prev => {
+      const existing = prev[type] || {}
+      const catExisting = existing[category] || {}
+      let nextCat
+      if (raw === '') {
+        nextCat = { ...catExisting }
+        delete nextCat[field]
+      } else {
+        nextCat = { ...catExisting, [field]: Number(raw) }
+      }
+      const nextType = { ...existing }
+      if (Object.keys(nextCat).length === 0) delete nextType[category]
+      else nextType[category] = nextCat
+      const next = { ...prev }
+      if (Object.keys(nextType).length === 0) delete next[type]
+      else next[type] = nextType
+      return next
+    })
   }
 
   const handleSubmit = async (e) => {
@@ -49,7 +113,16 @@ function ComfortSettings() {
     setSaving(true)
     setMessage(null)
     try {
-      await updateComfortThresholds(thresholds)
+      // Normalize before saving: default stays full; others pruned
+      const payload = { default: thresholds.default }
+      for (const type of ROOM_TYPES) {
+        if (type === 'default') continue
+        if (thresholds[type]) {
+          const pruned = pruneOverrides(thresholds[type])
+          if (Object.keys(pruned).length > 0) payload[type] = pruned
+        }
+      }
+      await updateComfortThresholds(payload)
       setMessage({ type: 'success', text: t('settings.saved') })
     } catch (err) {
       setMessage({ type: 'error', text: err.message })
@@ -59,7 +132,7 @@ function ComfortSettings() {
   }
 
   const resetDefaults = () => {
-    setThresholds(DEFAULTS)
+    setThresholds({ default: DEFAULTS })
   }
 
   if (loading) {
@@ -69,6 +142,58 @@ function ComfortSettings() {
           <h1>{t('settings.comfortTitle')}</h1>
         </div>
         <div className="loading">{t('common.loading')}</div>
+      </div>
+    )
+  }
+
+  const isDefaultTab = activeTab === 'default'
+  const defaults = thresholds.default
+  const overrides = thresholds[activeTab] || {}
+
+  const renderField = (category, field, step, unit) => {
+    const defVal = defaults[category][field.key]
+    if (isDefaultTab) {
+      const val = defVal
+      return (
+        <div key={field.key} className="threshold-row">
+          <label>{t(`settings.${field.key}`)}</label>
+          <div className="threshold-input-wrap">
+            <span className="threshold-prefix">{field.prefix}</span>
+            <input
+              type="number"
+              step={step}
+              value={val}
+              onChange={e => updateDefaultField(category, field.key, e.target.value)}
+            />
+            <span className="threshold-unit">{unit}</span>
+          </div>
+        </div>
+      )
+    }
+    const overrideVal = overrides[category]?.[field.key]
+    const isOverridden = overrideVal !== undefined
+    return (
+      <div key={field.key} className="threshold-row">
+        <label>{t(`settings.${field.key}`)}</label>
+        <div className="threshold-input-wrap">
+          <span className="threshold-prefix">{field.prefix}</span>
+          <input
+            type="number"
+            step={step}
+            value={isOverridden ? overrideVal : ''}
+            placeholder={String(defVal)}
+            className={isOverridden ? '' : 'inheriting'}
+            onChange={e => updateOverrideField(activeTab, category, field.key, e.target.value)}
+          />
+          <span className="threshold-unit">{unit}</span>
+          <button
+            type="button"
+            className="reset-field-btn"
+            title={t('settings.resetField')}
+            disabled={!isOverridden}
+            onClick={() => updateOverrideField(activeTab, category, field.key, '')}
+          >↺</button>
+        </div>
       </div>
     )
   }
@@ -86,102 +211,59 @@ function ComfortSettings() {
         </div>
       )}
 
+      <div className="room-type-tabs" role="tablist">
+        {ROOM_TYPES.map(type => (
+          <button
+            key={type}
+            type="button"
+            role="tab"
+            className={`room-type-tab ${activeTab === type ? 'active' : ''}`}
+            aria-selected={activeTab === type}
+            onClick={() => setActiveTab(type)}
+          >
+            {t(`roomType.${type}`)}
+          </button>
+        ))}
+      </div>
+
+      {!isDefaultTab && <p className="room-type-hint">{t('settings.roomTypeHint')}</p>}
+
       <form onSubmit={handleSubmit}>
         <div className="admin-section">
           <h2>{t('settings.temperature')}</h2>
           <p className="form-hint">{t('settings.temperatureHint')}</p>
           <div className="threshold-grid">
-            <div className="threshold-row">
-              <label>{t('settings.tooCold')}</label>
-              <div className="threshold-input-wrap">
-                <span className="threshold-prefix">&lt;</span>
-                <input type="number" step="0.5" value={thresholds.temperature.tooCold} onChange={(e) => handleChange('temperature', 'tooCold', e.target.value)} />
-                <span className="threshold-unit">°C</span>
-              </div>
-            </div>
-            <div className="threshold-row">
-              <label>{t('settings.cool')}</label>
-              <div className="threshold-input-wrap">
-                <span className="threshold-prefix"></span>
-                <input type="number" step="0.5" value={thresholds.temperature.cool} onChange={(e) => handleChange('temperature', 'cool', e.target.value)} />
-                <span className="threshold-unit">°C</span>
-              </div>
-            </div>
-            <div className="threshold-row">
-              <label>{t('settings.warm')}</label>
-              <div className="threshold-input-wrap">
-                <span className="threshold-prefix"></span>
-                <input type="number" step="0.5" value={thresholds.temperature.warm} onChange={(e) => handleChange('temperature', 'warm', e.target.value)} />
-                <span className="threshold-unit">°C</span>
-              </div>
-            </div>
-            <div className="threshold-row">
-              <label>{t('settings.tooHot')}</label>
-              <div className="threshold-input-wrap">
-                <span className="threshold-prefix">&gt;</span>
-                <input type="number" step="0.5" value={thresholds.temperature.tooHot} onChange={(e) => handleChange('temperature', 'tooHot', e.target.value)} />
-                <span className="threshold-unit">°C</span>
-              </div>
-            </div>
+            {TEMP_FIELDS.map(f => renderField('temperature', f, '0.5', '°C'))}
           </div>
-          <table className="threshold-range-table">
-            <thead>
-              <tr>
-                <th className="scale-bad">{t('settings.tooCold')}</th>
-                <th className="scale-warn">{t('settings.cool')}</th>
-                <th className="scale-good">{t('settings.comfortable')}</th>
-                <th className="scale-warn">{t('settings.warm')}</th>
-                <th className="scale-bad">{t('settings.tooHot')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>&lt; {thresholds.temperature.tooCold}°C</td>
-                <td>{thresholds.temperature.tooCold}–{thresholds.temperature.cool}°C</td>
-                <td>{thresholds.temperature.cool}–{thresholds.temperature.warm}°C</td>
-                <td>{thresholds.temperature.warm}–{thresholds.temperature.tooHot}°C</td>
-                <td>&gt; {thresholds.temperature.tooHot}°C</td>
-              </tr>
-            </tbody>
-          </table>
+          {isDefaultTab && (
+            <table className="threshold-range-table">
+              <thead>
+                <tr>
+                  <th className="scale-bad">{t('settings.tooCold')}</th>
+                  <th className="scale-warn">{t('settings.cool')}</th>
+                  <th className="scale-good">{t('settings.comfortable')}</th>
+                  <th className="scale-warn">{t('settings.warm')}</th>
+                  <th className="scale-bad">{t('settings.tooHot')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&lt; {defaults.temperature.tooCold}°C</td>
+                  <td>{defaults.temperature.tooCold}–{defaults.temperature.cool}°C</td>
+                  <td>{defaults.temperature.cool}–{defaults.temperature.warm}°C</td>
+                  <td>{defaults.temperature.warm}–{defaults.temperature.tooHot}°C</td>
+                  <td>&gt; {defaults.temperature.tooHot}°C</td>
+                </tr>
+              </tbody>
+            </table>
+          )}
         </div>
 
         <div className="admin-section">
           <h2>{t('settings.humidity')}</h2>
           <p className="form-hint">{t('settings.humidityHint')}</p>
           <div className="threshold-grid">
-            <div className="threshold-row">
-              <label>{t('settings.veryDry')}</label>
-              <div className="threshold-input-wrap">
-                <span className="threshold-prefix">&lt;</span>
-                <input type="number" step="1" value={thresholds.humidity.veryDry} onChange={(e) => handleChange('humidity', 'veryDry', e.target.value)} />
-                <span className="threshold-unit">%</span>
-              </div>
-            </div>
-            <div className="threshold-row">
-              <label>{t('settings.dry')}</label>
-              <div className="threshold-input-wrap">
-                <span className="threshold-prefix"></span>
-                <input type="number" step="1" value={thresholds.humidity.dry} onChange={(e) => handleChange('humidity', 'dry', e.target.value)} />
-                <span className="threshold-unit">%</span>
-              </div>
-            </div>
-            <div className="threshold-row">
-              <label>{t('settings.humid')}</label>
-              <div className="threshold-input-wrap">
-                <span className="threshold-prefix"></span>
-                <input type="number" step="1" value={thresholds.humidity.humid} onChange={(e) => handleChange('humidity', 'humid', e.target.value)} />
-                <span className="threshold-unit">%</span>
-              </div>
-            </div>
-            <div className="threshold-row">
-              <label>{t('settings.veryHumid')}</label>
-              <div className="threshold-input-wrap">
-                <span className="threshold-prefix">&gt;</span>
-                <input type="number" step="1" value={thresholds.humidity.veryHumid} onChange={(e) => handleChange('humidity', 'veryHumid', e.target.value)} />
-                <span className="threshold-unit">%</span>
-              </div>
-            </div>
+            {HUMIDITY_FIELDS.map(f => renderField('humidity', f, '1', '%'))}
           </div>
         </div>
 
@@ -189,29 +271,59 @@ function ComfortSettings() {
           <h2>{t('settings.co2')}</h2>
           <p className="form-hint">{t('settings.co2Hint')}</p>
           <div className="threshold-grid">
-            <div className="threshold-row">
-              <label>{t('settings.airFresher')}</label>
-              <div className="threshold-input-wrap">
-                <span className="threshold-prefix">&gt;</span>
-                <input type="number" step="50" value={thresholds.co2.fair} onChange={(e) => handleChange('co2', 'fair', e.target.value)} />
-                <span className="threshold-unit">ppm</span>
-              </div>
-            </div>
-            <div className="threshold-row">
-              <label>{t('settings.ventilate')}</label>
-              <div className="threshold-input-wrap">
-                <span className="threshold-prefix">&gt;</span>
-                <input type="number" step="50" value={thresholds.co2.poor} onChange={(e) => handleChange('co2', 'poor', e.target.value)} />
-                <span className="threshold-unit">ppm</span>
-              </div>
-            </div>
+            {[
+              { ...CO2_FIELDS[0], label: 'airFresher' },
+              { ...CO2_FIELDS[1], label: 'ventilate' },
+            ].map(f => {
+              const defVal = defaults.co2[f.key]
+              if (isDefaultTab) {
+                return (
+                  <div key={f.key} className="threshold-row">
+                    <label>{t(`settings.${f.label}`)}</label>
+                    <div className="threshold-input-wrap">
+                      <span className="threshold-prefix">{f.prefix}</span>
+                      <input type="number" step="50" value={defVal}
+                        onChange={e => updateDefaultField('co2', f.key, e.target.value)} />
+                      <span className="threshold-unit">ppm</span>
+                    </div>
+                  </div>
+                )
+              }
+              const overrideVal = overrides.co2?.[f.key]
+              const isOverridden = overrideVal !== undefined
+              return (
+                <div key={f.key} className="threshold-row">
+                  <label>{t(`settings.${f.label}`)}</label>
+                  <div className="threshold-input-wrap">
+                    <span className="threshold-prefix">{f.prefix}</span>
+                    <input
+                      type="number" step="50"
+                      value={isOverridden ? overrideVal : ''}
+                      placeholder={String(defVal)}
+                      className={isOverridden ? '' : 'inheriting'}
+                      onChange={e => updateOverrideField(activeTab, 'co2', f.key, e.target.value)}
+                    />
+                    <span className="threshold-unit">ppm</span>
+                    <button
+                      type="button"
+                      className="reset-field-btn"
+                      title={t('settings.resetField')}
+                      disabled={!isOverridden}
+                      onClick={() => updateOverrideField(activeTab, 'co2', f.key, '')}
+                    >↺</button>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
 
         <div className="form-actions">
-          <button type="button" className="cancel-btn" onClick={resetDefaults}>
-            {t('settings.resetDefaults')}
-          </button>
+          {isDefaultTab && (
+            <button type="button" className="cancel-btn" onClick={resetDefaults}>
+              {t('settings.resetDefaults')}
+            </button>
+          )}
           <button type="submit" className="send-btn" disabled={saving}>
             {saving ? t('settings.saving') : t('settings.save')}
           </button>

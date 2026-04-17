@@ -344,4 +344,13 @@ export default {
   "settings.save": "Save thresholds",
   "settings.saving": "Saving...",
   "settings.saved": "Thresholds saved successfully",
+  "settings.roomTypeHint": "Leave fields empty to inherit from the Default tab. Filled fields override the default for that room type.",
+  "settings.resetField": "Reset to default",
+  "settings.inheriting": "using default",
+  "roomType.default": "Default",
+  "roomType.living": "Living room",
+  "roomType.bedroom": "Bedroom",
+  "roomType.bathroom": "Bathroom",
+  "roomType.kitchen": "Kitchen",
+  "roomType.hallway": "Hallway",
 }

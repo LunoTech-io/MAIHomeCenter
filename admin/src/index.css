@@ -1696,6 +1696,69 @@ body {
   color: var(--accent-green);
 }
 
+.room-type-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.room-type-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  padding: 8px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 6px 6px 0 0;
+}
+
+.room-type-tab:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+.room-type-tab.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--primary-color);
+  font-weight: 600;
+}
+
+.room-type-hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+}
+
+.threshold-input-wrap input[type="number"].inheriting {
+  color: var(--text-secondary);
+  background: transparent;
+  border-style: dashed;
+}
+
+.reset-field-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 6px;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+.reset-field-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+.reset-field-btn:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* AI Analysis */
 .analysis-section {
   margin-top: 24px;
