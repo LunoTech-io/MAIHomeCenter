@@ -20,8 +20,22 @@ export function LanguageProvider({ children }) {
       || key
   }, [language])
 
+  const tRoom = useCallback((name) => {
+    if (!name) return name
+    const key = `room.${name}`
+    const val = translations[language]?.[key] || translations[language === 'nl' ? 'en' : 'nl']?.[key]
+    return val || name
+  }, [language])
+
+  const tAppliance = useCallback((name) => {
+    if (!name) return name
+    const key = `appliance.${name}`
+    const val = translations[language]?.[key] || translations[language === 'nl' ? 'en' : 'nl']?.[key]
+    return val || name
+  }, [language])
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, tRoom, tAppliance }}>
       {children}
     </LanguageContext.Provider>
   )

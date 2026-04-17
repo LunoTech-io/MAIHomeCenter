@@ -66,7 +66,7 @@ function getHalfHourTicks(data) {
 
 function Dashboard() {
   const { house } = useAuth()
-  const { t } = useLanguage()
+  const { t, tRoom, tAppliance } = useLanguage()
   const houseId = house?.houseId
   const [sensorData, setSensorData] = useState(null)
   const [twinState, setTwinState] = useState(null)
@@ -405,12 +405,12 @@ function Dashboard() {
                   <Legend />
                   <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} label={{ value: t('chart.now'), fill: 'var(--text-secondary)', fontSize: 10, position: 'top' }} />
                   {sensorData.rooms.map((room, i) => (
-                    <Line key={room} type="monotone" dataKey={room} stroke={ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} name={room} />
+                    <Line key={room} type="monotone" dataKey={room} stroke={ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} name={tRoom(room)} />
                   ))}
                   {predictionPoints.rooms.map(room => {
                     const idx = sensorData.rooms.indexOf(room)
                     if (idx === -1) return null
-                    return <Line key={`${room}_pred`} type="monotone" dataKey={`${room}_pred`} stroke={ROOM_COLORS[idx % ROOM_COLORS.length]} strokeWidth={1.5} dot={false} strokeDasharray="6 4" name={`${room} (pred)`} />
+                    return <Line key={`${room}_pred`} type="monotone" dataKey={`${room}_pred`} stroke={ROOM_COLORS[idx % ROOM_COLORS.length]} strokeWidth={1.5} dot={false} strokeDasharray="6 4" name={`${tRoom(room)} (${t('chart.pred')})`} />
                   })}
                   {weatherData?.data?.length > 0 && (
                     <Line type="monotone" dataKey="outside" stroke="#94a3b8" strokeWidth={2} dot={false} strokeDasharray="8 4" name={t('chart.outside')} />
@@ -431,7 +431,7 @@ function Dashboard() {
                     aria-label="Select room"
                   >
                     {sensorData.rooms.map(r => (
-                      <option key={r} value={r}>{r}</option>
+                      <option key={r} value={r}>{tRoom(r)}</option>
                     ))}
                   </select>
                 )}
@@ -465,7 +465,7 @@ function Dashboard() {
                   <Legend />
                   <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                   {sensorData.rooms.map((room, i) => (
-                    <Bar key={room} dataKey={room} fill={ROOM_COLORS[i % ROOM_COLORS.length]} opacity={0.7} name={room} stackId="pir" />
+                    <Bar key={room} dataKey={room} fill={ROOM_COLORS[i % ROOM_COLORS.length]} opacity={0.7} name={tRoom(room)} stackId="pir" />
                   ))}
                 </BarChart>
               </ResponsiveContainer>
@@ -485,10 +485,10 @@ function Dashboard() {
                     <Legend />
                     <ReferenceLine x={nowTime} yAxisId="humidity" stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                     {humidityRooms.map((room, i) => (
-                      <Line key={`${room}-h`} yAxisId="humidity" type="monotone" dataKey={`${room} humidity`} stroke={ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} />
+                      <Line key={`${room}-h`} yAxisId="humidity" type="monotone" dataKey={`${room} humidity`} stroke={ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} name={`${tRoom(room)} ${t('gauge.humidity')}`} />
                     ))}
                     {humidityRooms.map((room, i) => (
-                      <Line key={`${room}-c`} yAxisId="co2" type="monotone" dataKey={`${room} CO2`} stroke={ROOM_COLORS[(i + 5) % ROOM_COLORS.length]} strokeWidth={1.5} dot={false} strokeDasharray="5 5" />
+                      <Line key={`${room}-c`} yAxisId="co2" type="monotone" dataKey={`${room} CO2`} stroke={ROOM_COLORS[(i + 5) % ROOM_COLORS.length]} strokeWidth={1.5} dot={false} strokeDasharray="5 5" name={`${tRoom(room)} CO2`} />
                     ))}
                   </LineChart>
                 </ResponsiveContainer>
@@ -551,7 +551,7 @@ function Dashboard() {
                     <Legend />
                     <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                     {applianceNames.map((name, i) => (
-                      <Line key={name} type="monotone" dataKey={name} stroke={APPLIANCE_COLORS[name] || ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} name={name} />
+                      <Line key={name} type="monotone" dataKey={name} stroke={APPLIANCE_COLORS[name] || ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} name={tAppliance(name)} />
                     ))}
                   </LineChart>
                 </ResponsiveContainer>

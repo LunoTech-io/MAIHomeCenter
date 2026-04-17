@@ -126,6 +126,24 @@ export default {
   "install.install": "Installeren",
   "install.notNow": "Niet nu",
 
+  // Rooms (canonical names from ml-server → user-facing labels)
+  "room.LivingRoom": "Woonkamer",
+  "room.Kitchen": "Keuken",
+  "room.Bathroom": "Badkamer",
+  "room.DiningRoom": "Eetkamer",
+  "room.DownstairsHall": "Hal beneden",
+  "room.UpstairsHall": "Hal boven",
+  "room.Bedroom1": "Slaapkamer 1",
+  "room.Bedroom2": "Slaapkamer 2",
+  "room.Bedroom3": "Slaapkamer 3",
+
+  // Appliances
+  "appliance.TV": "TV",
+  "appliance.Koelkast": "Koelkast",
+  "appliance.Wasmachine": "Wasmachine",
+  "appliance.Droogkast": "Droogkast",
+  "appliance.Diepvries": "Diepvries",
+
   // Common
   "common.loading": "Laden...",
   "common.loadingAlerts": "Meldingen laden...",

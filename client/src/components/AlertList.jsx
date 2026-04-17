@@ -14,7 +14,7 @@ function formatRelativeTime(isoString, t) {
 }
 
 function AlertList() {
-  const { t } = useLanguage()
+  const { t, tRoom } = useLanguage()
   const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -109,7 +109,7 @@ function AlertList() {
                 <h2 className="alert-title">{a.title}</h2>
                 {a.body && <p className="survey-description">{a.body}</p>}
                 <div className="survey-card-meta">
-                  {a.room_name && <span>{a.room_name}</span>}
+                  {a.room_name && <span>{tRoom(a.room_name)}</span>}
                   <span>{formatRelativeTime(a.created_at, t)}</span>
                 </div>
               </button>
@@ -122,7 +122,7 @@ function AlertList() {
                 <h2 className="alert-title">{a.title}</h2>
                 {a.body && <p className="survey-description">{a.body}</p>}
                 <div className="survey-card-meta">
-                  {a.room_name && <span>{a.room_name}</span>}
+                  {a.room_name && <span>{tRoom(a.room_name)}</span>}
                   <span>{formatRelativeTime(a.created_at, t)}</span>
                 </div>
               </div>

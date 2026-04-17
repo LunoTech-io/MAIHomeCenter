@@ -96,6 +96,7 @@ function SensorGauge({ value, configKey, size = 120 }) {
 }
 
 function RoomCard({ room }) {
+  const { tRoom } = useLanguage()
   const temp = room.temperature != null ? parseFloat(room.temperature) : null
   const humidity = room.humidity != null ? parseFloat(room.humidity) : null
   const co2 = room.co2 != null ? parseFloat(room.co2) : null
@@ -115,7 +116,7 @@ function RoomCard({ room }) {
     <div className="room-gauge-card">
       <div className="room-gauge-header">
         <div className="room-status-dot" style={{ background: statusColor }} />
-        <h3 className="room-gauge-name">{room.room_name}</h3>
+        <h3 className="room-gauge-name">{tRoom(room.room_name)}</h3>
         {hasMotion && <span className="room-motion-badge">Motion</span>}
       </div>
 
