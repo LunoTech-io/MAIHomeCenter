@@ -93,7 +93,10 @@ class AuthService {
 
   async getHouses() {
     const result = await query(
-      'SELECT id, house_id, name, organization, latitude, longitude, city, tariff_schedule, created_at FROM houses ORDER BY created_at DESC'
+      `SELECT h.id, h.house_id, h.name, h.organization, h.latitude, h.longitude, h.city, h.tariff_schedule, h.created_at,
+              COALESCE((SELECT SUM(points) FROM house_point_events WHERE house_id = h.id), 0)::int AS points
+       FROM houses h
+       ORDER BY h.created_at DESC`
     )
     return result.rows
   }
@@ -103,7 +106,11 @@ class AuthService {
       return this.getHouses()
     }
     const result = await query(
-      'SELECT id, house_id, name, organization, latitude, longitude, city, tariff_schedule, created_at FROM houses WHERE organization = $1 ORDER BY created_at DESC',
+      `SELECT h.id, h.house_id, h.name, h.organization, h.latitude, h.longitude, h.city, h.tariff_schedule, h.created_at,
+              COALESCE((SELECT SUM(points) FROM house_point_events WHERE house_id = h.id), 0)::int AS points
+       FROM houses h
+       WHERE h.organization = $1
+       ORDER BY h.created_at DESC`,
       [org]
     )
     return result.rows

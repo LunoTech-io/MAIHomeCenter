@@ -281,6 +281,7 @@ export default {
 
   // House Dashboard
   "dashboard.backToHouses": "Terug naar woningen",
+  "dashboard.points": "punten",
   "dashboard.loadingSensorData": "Sensorgegevens laden...",
   "dashboard.failedToLoad": "Gegevens laden mislukt:",
   "dashboard.noSensorData": "Nog geen sensorgegevens beschikbaar. Gegevens verschijnen zodra sensoren beginnen te rapporteren.",

@@ -281,6 +281,7 @@ export default {
 
   // House Dashboard
   "dashboard.backToHouses": "Back to Houses",
+  "dashboard.points": "points",
   "dashboard.loadingSensorData": "Loading sensor data...",
   "dashboard.failedToLoad": "Failed to load data:",
   "dashboard.noSensorData": "No sensor data available yet. Data will appear once sensors start reporting.",

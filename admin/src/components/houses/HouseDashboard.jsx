@@ -377,6 +377,11 @@ function HouseDashboard() {
           ← {t('dashboard.backToHouses')}
         </button>
         <h1>{houseId}</h1>
+        {houseDetails && (
+          <span className="points-badge" title={t('dashboard.points')}>
+            {houseDetails.points ?? 0} {t('dashboard.points')}
+          </span>
+        )}
       </header>
 
       {!hasData ? (

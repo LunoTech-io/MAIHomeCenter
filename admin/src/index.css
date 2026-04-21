@@ -1472,6 +1472,19 @@ body {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 4px;
+  display: inline-block;
+  margin-right: 12px;
+}
+
+.points-badge {
+  display: inline-block;
+  vertical-align: middle;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--primary-color);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .dashboard-header p {

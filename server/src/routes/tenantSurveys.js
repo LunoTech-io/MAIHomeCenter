@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { authenticateToken } from '../middleware/authMiddleware.js'
 import surveyService from '../services/surveyService.js'
+import pointsService from '../services/pointsService.js'
 
 const router = Router()
 
@@ -26,6 +27,12 @@ router.get('/:assignmentId', async (req, res) => {
     if (!survey) {
       return res.status(404).json({ error: 'Survey not found or not assigned to you' })
     }
+
+    pointsService.awardPoints({
+      houseId: req.house.id,
+      eventType: pointsService.EVENT_SURVEY_OPENED,
+      assignmentId: req.params.assignmentId,
+    }).catch(err => console.error('[points] survey_opened award failed:', err.message))
 
     res.json(survey)
   } catch (error) {
@@ -72,6 +79,12 @@ router.post('/:assignmentId/respond', async (req, res) => {
     }
 
     await surveyService.submitResponses(req.params.assignmentId, responses)
+
+    pointsService.awardPoints({
+      houseId: req.house.id,
+      eventType: pointsService.EVENT_SURVEY_COMPLETED,
+      assignmentId: req.params.assignmentId,
+    }).catch(err => console.error('[points] survey_completed award failed:', err.message))
 
     res.json({ success: true, message: 'Survey responses submitted successfully' })
   } catch (error) {
