@@ -65,6 +65,7 @@ export default {
   "houses.withAlertsWeek": "Houses with alerts this week",
   "houses.created": "Created",
   "houses.alerts": "Alerts",
+  "houses.points": "Points",
   "houses.dashboard": "Dashboard",
   "houses.delete": "Delete",
   "houses.deleteConfirm": "Are you sure you want to delete house \"{houseId}\"? This will also remove all survey assignments for this house.",

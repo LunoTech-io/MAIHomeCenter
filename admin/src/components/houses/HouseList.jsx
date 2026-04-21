@@ -232,6 +232,7 @@ function HouseList() {
                   <th>{t('houses.houseId')}</th>
                   <th>{t('houses.name')}</th>
                   <th>{t('houses.alerts')}</th>
+                  <th>{t('houses.points')}</th>
                   <th>{t('houses.organization')}</th>
                   <th>{t('houses.created')}</th>
                   <th></th>
@@ -258,6 +259,7 @@ function HouseList() {
                           <span className="house-date-cell">--</span>
                         )}
                       </td>
+                      <td className="house-points-cell">{house.points ?? 0}</td>
                       <td><span className="house-org">{house.organization}</span></td>
                       <td className="house-date-cell">{new Date(house.created_at).toLocaleDateString()}</td>
                       <td className="house-actions-cell">

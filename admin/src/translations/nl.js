@@ -65,6 +65,7 @@ export default {
   "houses.withAlertsWeek": "Woningen met meldingen deze week",
   "houses.created": "Aangemaakt",
   "houses.alerts": "Meldingen",
+  "houses.points": "Punten",
   "houses.dashboard": "Dashboard",
   "houses.delete": "Verwijderen",
   "houses.deleteConfirm": "Weet je zeker dat je woning \"{houseId}\" wilt verwijderen? Dit verwijdert ook alle enquêtetoewijzingen.",
