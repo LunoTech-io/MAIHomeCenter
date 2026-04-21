@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getSurveyTrigger, saveSurveyTrigger, deleteSurveyTrigger } from '../../services/api'
 import { useLanguage } from '../../contexts/LanguageContext'
+import { ROOM_TYPES } from '../../utils/roomTypes'
 
 const emptyCondition = { sensorField: 'temperature', operator: 'above', threshold: '' }
 
@@ -13,6 +14,7 @@ function SurveyTriggerModal({ survey, onClose }) {
   const [hasExisting, setHasExisting] = useState(false)
 
   const [conditions, setConditions] = useState([{ ...emptyCondition }])
+  const [roomTypes, setRoomTypes] = useState([])
   const [sustainedMinutes, setSustainedMinutes] = useState(0)
   const [isActive, setIsActive] = useState(true)
 
@@ -47,6 +49,7 @@ function SurveyTriggerModal({ survey, onClose }) {
             threshold: c.threshold ?? ''
           }))
         )
+        setRoomTypes(Array.isArray(trigger.room_types) ? trigger.room_types : [])
         setSustainedMinutes(trigger.sustained_minutes ?? 0)
         setIsActive(trigger.is_active ?? true)
       }
@@ -72,6 +75,10 @@ function SurveyTriggerModal({ survey, onClose }) {
     setConditions(prev => prev.filter((_, i) => i !== index))
   }
 
+  const toggleRoomType = (rt) => {
+    setRoomTypes(prev => prev.includes(rt) ? prev.filter(x => x !== rt) : [...prev, rt])
+  }
+
   const handleSave = async () => {
     if (conditions.length === 0 || conditions.some(c => c.threshold === '')) {
       setError(t('triggers.validationRequired'))
@@ -90,6 +97,7 @@ function SurveyTriggerModal({ survey, onClose }) {
           operator: c.operator,
           threshold: parseFloat(c.threshold)
         })),
+        roomTypes,
         sustainedMinutes: parseInt(sustainedMinutes, 10) || 0,
         isActive
       })
@@ -113,6 +121,7 @@ function SurveyTriggerModal({ survey, onClose }) {
       await deleteSurveyTrigger(survey.id)
       setHasExisting(false)
       setConditions([{ ...emptyCondition }])
+      setRoomTypes([])
       setSustainedMinutes(0)
       setIsActive(true)
       setSuccess(t('triggers.removed'))
@@ -145,6 +154,27 @@ function SurveyTriggerModal({ survey, onClose }) {
             <>
               {error && <div className="result-message error" style={{ position: 'static', marginBottom: '12px' }}>{error}</div>}
               {success && <div className="result-message success" style={{ position: 'static', marginBottom: '12px' }}>{success}</div>}
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ fontWeight: 600, display: 'block', marginBottom: '8px' }}>
+                  {t('triggers.roomTypes')}
+                </label>
+                <small style={{ color: '#888', display: 'block', marginBottom: '8px' }}>
+                  {t('triggers.roomTypesHelp')}
+                </small>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                  {ROOM_TYPES.map(rt => (
+                    <label key={rt} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px' }}>
+                      <input
+                        type="checkbox"
+                        checked={roomTypes.includes(rt)}
+                        onChange={() => toggleRoomType(rt)}
+                      />
+                      {t(`roomType.${rt}`)}
+                    </label>
+                  ))}
+                </div>
+              </div>
 
               <div style={{ marginBottom: '16px' }}>
                 <div className="section-header" style={{ marginBottom: '8px' }}>

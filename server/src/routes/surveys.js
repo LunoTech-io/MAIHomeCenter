@@ -296,7 +296,7 @@ router.get('/triggers/:questionSetId', authenticateAdmin, async (req, res) => {
 // POST /api/surveys/triggers - Create or update trigger for a question set
 router.post('/triggers', authenticateAdmin, async (req, res) => {
   try {
-    const { questionSetId, conditions, sustainedMinutes, isActive } = req.body
+    const { questionSetId, conditions, roomTypes, sustainedMinutes, isActive } = req.body
 
     if (!questionSetId || !conditions) {
       return res.status(400).json({ error: 'Question set ID and conditions are required' })
@@ -309,6 +309,7 @@ router.post('/triggers', authenticateAdmin, async (req, res) => {
     if (existing) {
       trigger = await surveyTriggerService.updateTrigger(existing.id, {
         conditions,
+        roomTypes,
         sustainedMinutes,
         isActive
       })
@@ -317,6 +318,7 @@ router.post('/triggers', authenticateAdmin, async (req, res) => {
         questionSetId,
         organization: req.admin.organization,
         conditions,
+        roomTypes,
         sustainedMinutes,
         isActive,
         createdBy: req.admin.id

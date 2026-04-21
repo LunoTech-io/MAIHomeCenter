@@ -1,9 +1,19 @@
 import { query } from '../db/index.js'
 import surveyService from './surveyService.js'
 import pushService from './pushService.js'
+import { ROOM_TYPES, matchesRoomTypes } from '../utils/roomTypes.js'
 
 const ALLOWED_SENSOR_FIELDS = ['temperature', 'humidity', 'co2', 'tvoc', 'pressure', 'light_level']
 const ALLOWED_OPERATORS = ['above', 'below']
+
+function validateRoomTypes(roomTypes) {
+  if (roomTypes == null) return []
+  if (!Array.isArray(roomTypes)) throw new Error('roomTypes must be an array')
+  for (const rt of roomTypes) {
+    if (!ROOM_TYPES.includes(rt)) throw new Error(`Invalid room type: ${rt}`)
+  }
+  return roomTypes
+}
 
 function validateConditions(conditions) {
   if (!Array.isArray(conditions) || conditions.length === 0) {
@@ -55,32 +65,35 @@ async function getTriggerByQuestionSetId(questionSetId) {
   return result.rows[0] || null
 }
 
-async function createTrigger({ questionSetId, organization, conditions, sustainedMinutes, isActive, createdBy }) {
+async function createTrigger({ questionSetId, organization, conditions, roomTypes, sustainedMinutes, isActive, createdBy }) {
   validateConditions(conditions)
+  const normalizedRoomTypes = validateRoomTypes(roomTypes)
 
   const result = await query(
-    `INSERT INTO survey_triggers (question_set_id, organization, conditions, sustained_minutes, is_active, created_by)
-     VALUES ($1, $2, $3, $4, $5, $6)
+    `INSERT INTO survey_triggers (question_set_id, organization, conditions, room_types, sustained_minutes, is_active, created_by)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
      RETURNING *`,
-    [questionSetId, organization, JSON.stringify(conditions), sustainedMinutes ?? 0, isActive ?? true, createdBy]
+    [questionSetId, organization, JSON.stringify(conditions), JSON.stringify(normalizedRoomTypes), sustainedMinutes ?? 0, isActive ?? true, createdBy]
   )
   return result.rows[0]
 }
 
-async function updateTrigger(id, { conditions, sustainedMinutes, isActive }) {
+async function updateTrigger(id, { conditions, roomTypes, sustainedMinutes, isActive }) {
   if (conditions) {
     validateConditions(conditions)
   }
+  const normalizedRoomTypes = roomTypes !== undefined ? validateRoomTypes(roomTypes) : null
 
   const result = await query(
     `UPDATE survey_triggers
      SET conditions = COALESCE($2, conditions),
-         sustained_minutes = COALESCE($3, sustained_minutes),
-         is_active = COALESCE($4, is_active),
+         room_types = COALESCE($3, room_types),
+         sustained_minutes = COALESCE($4, sustained_minutes),
+         is_active = COALESCE($5, is_active),
          updated_at = NOW()
      WHERE id = $1
      RETURNING *`,
-    [id, conditions ? JSON.stringify(conditions) : null, sustainedMinutes, isActive]
+    [id, conditions ? JSON.stringify(conditions) : null, normalizedRoomTypes ? JSON.stringify(normalizedRoomTypes) : null, sustainedMinutes, isActive]
   )
   return result.rows[0] || null
 }
@@ -187,9 +200,17 @@ async function evaluateTriggerForHouse(trigger, house) {
     stateByRoom[row.room_name] = row
   }
 
+  let roomTypes = trigger.room_types
+  if (typeof roomTypes === 'string') {
+    try { roomTypes = JSON.parse(roomTypes) } catch { roomTypes = [] }
+  }
+  if (!Array.isArray(roomTypes)) roomTypes = []
+
   const allRoomNames = new Set([...Object.keys(roomReadings), ...Object.keys(stateByRoom)])
 
   for (const roomName of allRoomNames) {
+    if (!matchesRoomTypes(roomName, roomTypes)) continue
+
     const readings = roomReadings[roomName] || []
     const state = stateByRoom[roomName]
     let conditionMet = false

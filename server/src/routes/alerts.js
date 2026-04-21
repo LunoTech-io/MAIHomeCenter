@@ -68,7 +68,7 @@ router.get('/rules/:id', async (req, res) => {
 // POST /api/alerts/rules - Create rule
 router.post('/rules', async (req, res) => {
   try {
-    const { name, conditions, sustainedMinutes, notificationTitle, notificationBody, isActive } = req.body
+    const { name, conditions, roomTypes, sustainedMinutes, notificationTitle, notificationBody, isActive } = req.body
 
     if (!name || !conditions || !notificationTitle || !notificationBody) {
       return res.status(400).json({ error: 'Name, conditions, notification title, and notification body are required' })
@@ -78,6 +78,7 @@ router.post('/rules', async (req, res) => {
       organization: req.admin.organization,
       name,
       conditions,
+      roomTypes,
       sustainedMinutes,
       notificationTitle,
       notificationBody,
@@ -106,11 +107,12 @@ router.put('/rules/:id', async (req, res) => {
       return res.status(403).json({ error: 'Access denied' })
     }
 
-    const { name, conditions, sustainedMinutes, notificationTitle, notificationBody, isActive } = req.body
+    const { name, conditions, roomTypes, sustainedMinutes, notificationTitle, notificationBody, isActive } = req.body
 
     const rule = await alertService.updateRule(req.params.id, {
       name,
       conditions,
+      roomTypes,
       sustainedMinutes,
       notificationTitle,
       notificationBody,

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getAlertRule, createAlertRule, updateAlertRule } from '../../services/api'
 import { useLanguage } from '../../contexts/LanguageContext'
+import { ROOM_TYPES } from '../../utils/roomTypes'
 
 const emptyCondition = { sensorField: 'temperature', operator: 'above', threshold: '' }
 
@@ -38,6 +39,7 @@ function AlertRuleEditor() {
   })
 
   const [conditions, setConditions] = useState([{ ...emptyCondition }])
+  const [roomTypes, setRoomTypes] = useState([])
 
   useEffect(() => {
     if (!isNew) {
@@ -63,6 +65,7 @@ function AlertRuleEditor() {
           threshold: c.threshold ?? ''
         }))
       )
+      setRoomTypes(Array.isArray(data.room_types) ? data.room_types : [])
       setError(null)
     } catch (err) {
       setError(err.message)
@@ -93,6 +96,10 @@ function AlertRuleEditor() {
     setConditions(prev => prev.filter((_, i) => i !== index))
   }
 
+  const toggleRoomType = (rt) => {
+    setRoomTypes(prev => prev.includes(rt) ? prev.filter(x => x !== rt) : [...prev, rt])
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -117,7 +124,8 @@ function AlertRuleEditor() {
           sensorField: c.sensorField,
           operator: c.operator,
           threshold: parseFloat(c.threshold)
-        }))
+        })),
+        roomTypes
       }
 
       if (isNew) {
@@ -214,6 +222,27 @@ function AlertRuleEditor() {
           <small style={{ color: '#888', display: 'block', marginBottom: '12px' }}>
             {t('alertRules.andLogic')}
           </small>
+
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+              {t('alertRules.roomTypes')}
+            </label>
+            <small style={{ color: '#888', display: 'block', marginBottom: '8px' }}>
+              {t('alertRules.roomTypesHelp')}
+            </small>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+              {ROOM_TYPES.map(rt => (
+                <label key={rt} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px' }}>
+                  <input
+                    type="checkbox"
+                    checked={roomTypes.includes(rt)}
+                    onChange={() => toggleRoomType(rt)}
+                  />
+                  {t(`roomType.${rt}`)}
+                </label>
+              ))}
+            </div>
+          </div>
 
           {conditions.map((condition, index) => (
             <div key={index} className="form-row" style={{ alignItems: 'flex-end', marginBottom: '8px' }}>

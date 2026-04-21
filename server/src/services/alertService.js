@@ -1,9 +1,19 @@
 import { query } from '../db/index.js'
 import pushService from './pushService.js'
 import surveyTriggerService from './surveyTriggerService.js'
+import { ROOM_TYPES, matchesRoomTypes } from '../utils/roomTypes.js'
 
 const ALLOWED_SENSOR_FIELDS = ['temperature', 'humidity', 'co2', 'tvoc', 'pressure', 'light_level']
 const ALLOWED_OPERATORS = ['above', 'below']
+
+function validateRoomTypes(roomTypes) {
+  if (roomTypes == null) return []
+  if (!Array.isArray(roomTypes)) throw new Error('roomTypes must be an array')
+  for (const rt of roomTypes) {
+    if (!ROOM_TYPES.includes(rt)) throw new Error(`Invalid room type: ${rt}`)
+  }
+  return roomTypes
+}
 const EVAL_INTERVAL_MS = 5 * 60 * 1000 // 5 minutes
 const STARTUP_DELAY_MS = 15_000
 
@@ -93,35 +103,38 @@ async function getRuleById(id) {
   return result.rows[0] || null
 }
 
-async function createRule({ organization, name, conditions, sustainedMinutes, notificationTitle, notificationBody, isActive, createdBy }) {
+async function createRule({ organization, name, conditions, roomTypes, sustainedMinutes, notificationTitle, notificationBody, isActive, createdBy }) {
   validateConditions(conditions)
+  const normalizedRoomTypes = validateRoomTypes(roomTypes)
 
   const result = await query(
-    `INSERT INTO alert_rules (organization, name, conditions, sustained_minutes, notification_title, notification_body, is_active, created_by)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    `INSERT INTO alert_rules (organization, name, conditions, room_types, sustained_minutes, notification_title, notification_body, is_active, created_by)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
      RETURNING *`,
-    [organization, name, JSON.stringify(conditions), sustainedMinutes ?? 0, notificationTitle, notificationBody, isActive ?? true, createdBy]
+    [organization, name, JSON.stringify(conditions), JSON.stringify(normalizedRoomTypes), sustainedMinutes ?? 0, notificationTitle, notificationBody, isActive ?? true, createdBy]
   )
   return result.rows[0]
 }
 
-async function updateRule(id, { name, conditions, sustainedMinutes, notificationTitle, notificationBody, isActive }) {
+async function updateRule(id, { name, conditions, roomTypes, sustainedMinutes, notificationTitle, notificationBody, isActive }) {
   if (conditions) {
     validateConditions(conditions)
   }
+  const normalizedRoomTypes = roomTypes !== undefined ? validateRoomTypes(roomTypes) : null
 
   const result = await query(
     `UPDATE alert_rules
      SET name = COALESCE($2, name),
          conditions = COALESCE($3, conditions),
-         sustained_minutes = COALESCE($4, sustained_minutes),
-         notification_title = COALESCE($5, notification_title),
-         notification_body = COALESCE($6, notification_body),
-         is_active = COALESCE($7, is_active),
+         room_types = COALESCE($4, room_types),
+         sustained_minutes = COALESCE($5, sustained_minutes),
+         notification_title = COALESCE($6, notification_title),
+         notification_body = COALESCE($7, notification_body),
+         is_active = COALESCE($8, is_active),
          updated_at = NOW()
      WHERE id = $1
      RETURNING *`,
-    [id, name, conditions ? JSON.stringify(conditions) : null, sustainedMinutes, notificationTitle, notificationBody, isActive]
+    [id, name, conditions ? JSON.stringify(conditions) : null, normalizedRoomTypes ? JSON.stringify(normalizedRoomTypes) : null, sustainedMinutes, notificationTitle, notificationBody, isActive]
   )
   return result.rows[0] || null
 }
@@ -246,9 +259,17 @@ async function evaluateRuleForHouse(rule, house) {
     stateByRoom[row.room_name] = row
   }
 
+  let roomTypes = rule.room_types
+  if (typeof roomTypes === 'string') {
+    try { roomTypes = JSON.parse(roomTypes) } catch { roomTypes = [] }
+  }
+  if (!Array.isArray(roomTypes)) roomTypes = []
+
   const allRoomNames = new Set([...Object.keys(roomReadings), ...Object.keys(stateByRoom)])
 
   for (const roomName of allRoomNames) {
+    if (!matchesRoomTypes(roomName, roomTypes)) continue
+
     const readings = roomReadings[roomName] || []
     const state = stateByRoom[roomName]
     let conditionMet = false
