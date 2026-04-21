@@ -1560,7 +1560,7 @@ body {
   margin-bottom: 24px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .chart-section {
     grid-template-columns: repeat(2, 1fr);
   }
