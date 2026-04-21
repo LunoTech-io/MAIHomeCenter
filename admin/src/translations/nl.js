@@ -168,6 +168,7 @@ export default {
   "questions.type": "Type",
   "questions.typeRadio": "Keuzerondjes",
   "questions.typeOpenText": "Open tekst",
+  "questions.typeNumber": "Getal",
   "questions.typeDisplay": "Weergavetekst",
   "questions.required": "Verplicht",
   "questions.displayTextLabel": "Weergavetekst (HTML ondersteund)",

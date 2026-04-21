@@ -91,6 +91,7 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
             <select name="type" value={question.type} onChange={handleTypeChange}>
               <option value="radio">{t('questions.typeRadio')}</option>
               <option value="open_text">{t('questions.typeOpenText')}</option>
+              <option value="number">{t('questions.typeNumber')}</option>
               <option value="display">{t('questions.typeDisplay')}</option>
             </select>
           </div>

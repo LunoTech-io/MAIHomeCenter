@@ -168,6 +168,7 @@ export default {
   "questions.type": "Type",
   "questions.typeRadio": "Radio Buttons",
   "questions.typeOpenText": "Open Text",
+  "questions.typeNumber": "Number",
   "questions.typeDisplay": "Display Text",
   "questions.required": "Required",
   "questions.displayTextLabel": "Display Text (HTML supported)",

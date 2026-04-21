@@ -4,6 +4,7 @@ import { getSurvey, submitSurveyResponses, dismissSurvey } from '../../services/
 import { useLanguage } from '../../contexts/LanguageContext'
 import RadioQuestion from './RadioQuestion'
 import OpenTextQuestion from './OpenTextQuestion'
+import NumberQuestion from './NumberQuestion'
 import DisplayText from './DisplayText'
 
 function SurveyView() {
@@ -139,6 +140,13 @@ function SurveyView() {
                 />
               ) : question.type === 'open_text' ? (
                 <OpenTextQuestion
+                  question={question}
+                  value={responses[question.id]}
+                  onChange={(value) => handleResponseChange(question.id, value)}
+                  index={index}
+                />
+              ) : question.type === 'number' ? (
+                <NumberQuestion
                   question={question}
                   value={responses[question.id]}
                   onChange={(value) => handleResponseChange(question.id, value)}

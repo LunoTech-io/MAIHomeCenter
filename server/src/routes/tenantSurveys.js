@@ -54,14 +54,20 @@ router.post('/:assignmentId/respond', async (req, res) => {
       return res.status(400).json({ error: 'Survey already completed or dismissed' })
     }
 
-    // Validate required questions
-    const requiredQuestions = survey.questions.filter(q => q.is_required && q.type !== 'display')
+    // Validate required + type constraints
     const responseMap = new Map(responses.map(r => [r.questionId, r.value]))
 
-    for (const rq of requiredQuestions) {
-      const value = responseMap.get(rq.id)
-      if (value === undefined || value === null || value === '') {
-        return res.status(400).json({ error: `Question "${rq.question_text}" is required` })
+    for (const q of survey.questions) {
+      if (q.type === 'display') continue
+      const value = responseMap.get(q.id)
+      const hasValue = value !== undefined && value !== null && value !== ''
+
+      if (q.is_required && !hasValue) {
+        return res.status(400).json({ error: `Question "${q.question_text}" is required` })
+      }
+
+      if (q.type === 'number' && hasValue && isNaN(Number(value))) {
+        return res.status(400).json({ error: `Question "${q.question_text}" must be a number` })
       }
     }
 
