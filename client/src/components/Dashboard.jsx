@@ -16,6 +16,8 @@ const chartTooltipStyle = {
   color: 'var(--text-primary)'
 }
 
+const legendStyle = { fontSize: 11, lineHeight: '18px', paddingTop: 4 }
+
 const ROOM_COLORS = [
   '#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6',
   '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#84cc16'
@@ -402,7 +404,7 @@ function Dashboard() {
                   <XAxis dataKey="time" ticks={getHalfHourTicks(tempByRoomData).ticks} tickFormatter={getHalfHourTicks(tempByRoomData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
                   <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} domain={[v => Math.floor(v - 1), v => Math.ceil(v + 1)]} unit="°C" allowDecimals={false} />
                   <Tooltip contentStyle={chartTooltipStyle} />
-                  <Legend />
+                  <Legend iconSize={10} wrapperStyle={legendStyle} />
                   <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} label={{ value: t('chart.now'), fill: 'var(--text-secondary)', fontSize: 10, position: 'top' }} />
                   {sensorData.rooms.map((room, i) => (
                     <Line key={room} type="monotone" dataKey={room} stroke={ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} name={tRoom(room)} />
@@ -442,7 +444,7 @@ function Dashboard() {
                   <XAxis dataKey="time" ticks={getHalfHourTicks(tempVsSetpointData).ticks} tickFormatter={getHalfHourTicks(tempVsSetpointData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
                   <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} domain={[v => Math.floor(v - 1), v => Math.ceil(v + 1)]} unit="°C" allowDecimals={false} />
                   <Tooltip contentStyle={chartTooltipStyle} />
-                  <Legend />
+                  <Legend iconSize={10} wrapperStyle={legendStyle} />
                   <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                   <Line type="monotone" dataKey="temperature" stroke="#10b981" strokeWidth={2} dot={false} name={t('chart.actual')} />
                   <Line type="monotone" dataKey="setpoint" stroke="#f59e0b" strokeWidth={2} dot={false} strokeDasharray="5 5" name={t('chart.setpoint')} />
@@ -462,7 +464,7 @@ function Dashboard() {
                   <XAxis dataKey="time" ticks={getHalfHourTicks(motionData).ticks} tickFormatter={getHalfHourTicks(motionData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
                   <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} allowDecimals={false} />
                   <Tooltip contentStyle={chartTooltipStyle} />
-                  <Legend />
+                  <Legend iconSize={10} wrapperStyle={legendStyle} />
                   <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                   {sensorData.rooms.map((room, i) => (
                     <Bar key={room} dataKey={room} fill={ROOM_COLORS[i % ROOM_COLORS.length]} opacity={0.7} name={tRoom(room)} stackId="pir" />
@@ -482,7 +484,7 @@ function Dashboard() {
                     <YAxis yAxisId="humidity" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit="%" allowDecimals={false} />
                     <YAxis yAxisId="co2" orientation="right" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" ppm" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
-                    <Legend />
+                    <Legend iconSize={10} wrapperStyle={legendStyle} />
                     <ReferenceLine x={nowTime} yAxisId="humidity" stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                     {humidityRooms.map((room, i) => (
                       <Line key={`${room}-h`} yAxisId="humidity" type="monotone" dataKey={`${room} humidity`} stroke={ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} name={`${tRoom(room)} ${t('gauge.humidity')}`} />
@@ -505,7 +507,7 @@ function Dashboard() {
                     <XAxis dataKey="time" ticks={getHalfHourTicks(electricityData).ticks} tickFormatter={getHalfHourTicks(electricityData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
                     <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" kW" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
-                    <Legend />
+                    <Legend iconSize={10} wrapperStyle={legendStyle} />
                     <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                     {tariffHighX && (
                       <ReferenceLine x={tariffHighX} stroke="var(--accent-red)" strokeDasharray="6 3" strokeWidth={1.5} label={{ value: t('chart.tariffHigh'), fill: 'var(--accent-red)', fontSize: 11, position: 'insideTopRight', offset: 4 }} />
@@ -530,7 +532,7 @@ function Dashboard() {
                     <XAxis dataKey="time" ticks={getHalfHourTicks(gasData).ticks} tickFormatter={getHalfHourTicks(gasData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
                     <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" m³" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
-                    <Legend />
+                    <Legend iconSize={10} wrapperStyle={legendStyle} />
                     <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                     <Line type="monotone" dataKey="gas" stroke="#8b5cf6" strokeWidth={2} dot={false} name={t('chart.gasUsage')} />
                   </LineChart>
@@ -548,7 +550,7 @@ function Dashboard() {
                     <XAxis dataKey="time" ticks={getHalfHourTicks(applianceChartData).ticks} tickFormatter={getHalfHourTicks(applianceChartData).format} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
                     <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" W" allowDecimals={false} />
                     <Tooltip contentStyle={chartTooltipStyle} />
-                    <Legend />
+                    <Legend iconSize={10} wrapperStyle={legendStyle} />
                     <ReferenceLine x={nowTime} stroke="var(--text-secondary)" strokeDasharray="4 3" strokeWidth={1} />
                     {applianceNames.map((name, i) => (
                       <Line key={name} type="monotone" dataKey={name} stroke={APPLIANCE_COLORS[name] || ROOM_COLORS[i % ROOM_COLORS.length]} strokeWidth={2} dot={false} name={tAppliance(name)} />
