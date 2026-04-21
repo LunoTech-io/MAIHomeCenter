@@ -1,8 +1,8 @@
 export default {
   // Navigation
   "nav.home": "Home",
-  "nav.surveys": "Surveys",
-  "nav.alerts": "Alerts",
+  "nav.surveys": "Messages",
+  "nav.alerts": "Notifications",
   "nav.logout": "Logout",
 
   // Dashboard
@@ -56,31 +56,31 @@ export default {
   "login.error": "Please enter your house ID and password",
 
   // Alerts
-  "alerts.title": "Alerts",
-  "alerts.unread": "unread alert",
-  "alerts.unreads": "unread alerts",
-  "alerts.recentAlerts": "Recent alert notifications for your home",
+  "alerts.title": "Notifications",
+  "alerts.unread": "unread notification",
+  "alerts.unreads": "unread notifications",
+  "alerts.recentAlerts": "Recent notifications for your home",
   "alerts.markAllRead": "Mark all as read",
-  "alerts.empty": "No alerts yet",
-  "alerts.emptyDesc": "Alert notifications will appear here when triggered.",
+  "alerts.empty": "No notifications yet",
+  "alerts.emptyDesc": "Notifications will appear here when triggered.",
   "alerts.markAsRead": "Mark as read",
 
   // Surveys
-  "surveys.title": "Your Surveys",
-  "surveys.subtitle": "Complete pending surveys to share your feedback",
+  "surveys.title": "Your Messages",
+  "surveys.subtitle": "Reply to pending messages to share your feedback",
   "surveys.allCaughtUp": "All caught up!",
-  "surveys.noPending": "You have no pending surveys at this time.",
-  "surveys.startSurvey": "Start Survey",
+  "surveys.noPending": "You have no pending messages at this time.",
+  "surveys.startSurvey": "Open Message",
   "surveys.expires": "Expires",
   "surveys.optional": "Optional",
   "surveys.back": "Back",
   "surveys.submitResponses": "Submit Responses",
   "surveys.submitting": "Submitting...",
-  "surveys.dismissSurvey": "Dismiss Survey",
-  "surveys.dismissConfirm": "Are you sure you want to dismiss this survey?",
+  "surveys.dismissSurvey": "Dismiss Message",
+  "surveys.dismissConfirm": "Are you sure you want to dismiss this message?",
   "surveys.thankYou": "Thank You!",
   "surveys.submitted": "Your responses have been submitted successfully.",
-  "surveys.backToSurveys": "Back to Surveys",
+  "surveys.backToSurveys": "Back to Messages",
   "surveys.enterResponse": "Enter your response...",
 
   // Gauge Dashboard
@@ -146,9 +146,9 @@ export default {
 
   // Common
   "common.loading": "Loading...",
-  "common.loadingAlerts": "Loading alerts...",
-  "common.loadingSurveys": "Loading surveys...",
-  "common.loadingSurvey": "Loading survey...",
+  "common.loadingAlerts": "Loading notifications...",
+  "common.loadingSurveys": "Loading messages...",
+  "common.loadingSurvey": "Loading message...",
   "common.loadingData": "Loading sensor data...",
   "common.failedToLoad": "Failed to load data",
   "common.justNow": "just now",

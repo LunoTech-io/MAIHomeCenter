@@ -1,7 +1,7 @@
 export default {
   // Navigation
   "nav.home": "Home",
-  "nav.surveys": "Enquêtes",
+  "nav.surveys": "Berichten",
   "nav.alerts": "Meldingen",
   "nav.logout": "Uitloggen",
 
@@ -66,21 +66,21 @@ export default {
   "alerts.markAsRead": "Als gelezen markeren",
 
   // Surveys
-  "surveys.title": "Je enquêtes",
-  "surveys.subtitle": "Vul openstaande enquêtes in om je feedback te delen",
+  "surveys.title": "Je berichten",
+  "surveys.subtitle": "Reageer op openstaande berichten om je feedback te delen",
   "surveys.allCaughtUp": "Alles bijgewerkt!",
-  "surveys.noPending": "Je hebt op dit moment geen openstaande enquêtes.",
-  "surveys.startSurvey": "Enquête starten",
+  "surveys.noPending": "Je hebt op dit moment geen openstaande berichten.",
+  "surveys.startSurvey": "Bericht openen",
   "surveys.expires": "Verloopt",
   "surveys.optional": "Optioneel",
   "surveys.back": "Terug",
   "surveys.submitResponses": "Antwoorden versturen",
   "surveys.submitting": "Bezig met versturen...",
-  "surveys.dismissSurvey": "Enquête overslaan",
-  "surveys.dismissConfirm": "Weet je zeker dat je deze enquête wilt overslaan?",
+  "surveys.dismissSurvey": "Bericht overslaan",
+  "surveys.dismissConfirm": "Weet je zeker dat je dit bericht wilt overslaan?",
   "surveys.thankYou": "Bedankt!",
   "surveys.submitted": "Je antwoorden zijn succesvol verstuurd.",
-  "surveys.backToSurveys": "Terug naar enquêtes",
+  "surveys.backToSurveys": "Terug naar berichten",
   "surveys.enterResponse": "Voer je antwoord in...",
 
   // Gauge Dashboard
@@ -147,8 +147,8 @@ export default {
   // Common
   "common.loading": "Laden...",
   "common.loadingAlerts": "Meldingen laden...",
-  "common.loadingSurveys": "Enquêtes laden...",
-  "common.loadingSurvey": "Enquête laden...",
+  "common.loadingSurveys": "Berichten laden...",
+  "common.loadingSurvey": "Bericht laden...",
   "common.loadingData": "Sensorgegevens laden...",
   "common.failedToLoad": "Laden mislukt",
   "common.justNow": "zojuist",
