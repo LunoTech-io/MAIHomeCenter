@@ -178,6 +178,7 @@ export default {
   "questions.options": "Options",
   "questions.valuePlaceholder": "Value",
   "questions.labelPlaceholder": "Label",
+  "questions.detailPlaceholder": "Shown when selected (optional)",
   "questions.addOption": "+ Add Option",
 
   // Response Viewer

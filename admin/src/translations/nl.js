@@ -178,6 +178,7 @@ export default {
   "questions.options": "Opties",
   "questions.valuePlaceholder": "Waarde",
   "questions.labelPlaceholder": "Label",
+  "questions.detailPlaceholder": "Toon dit bij selectie (optioneel)",
   "questions.addOption": "+ Optie toevoegen",
 
   // Response Viewer

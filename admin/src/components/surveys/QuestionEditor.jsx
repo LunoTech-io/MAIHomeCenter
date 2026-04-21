@@ -14,7 +14,7 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
 
     // Initialize options for radio type
     if (type === 'radio' && (!question.options || question.options.length === 0)) {
-      updates.options = [{ value: '', label: '' }]
+      updates.options = [{ value: '', label: '', detail: '' }]
     }
 
     onChange(updates)
@@ -22,7 +22,7 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
 
   const addOption = () => {
     onChange({
-      options: [...(question.options || []), { value: '', label: '' }]
+      options: [...(question.options || []), { value: '', label: '', detail: '' }]
     })
   }
 
@@ -138,6 +138,12 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
                   value={option.label}
                   onChange={(e) => updateOption(optIndex, 'label', e.target.value)}
                   placeholder={t('questions.labelPlaceholder')}
+                />
+                <input
+                  type="text"
+                  value={option.detail || ''}
+                  onChange={(e) => updateOption(optIndex, 'detail', e.target.value)}
+                  placeholder={t('questions.detailPlaceholder')}
                 />
                 <button
                   type="button"

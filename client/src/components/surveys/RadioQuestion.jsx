@@ -1,6 +1,8 @@
 function RadioQuestion({ question, value, onChange, index }) {
   const options = question.options || []
   const groupId = `question-${question.id}`
+  const selectedOption = options.find(o => o.value === value)
+  const selectedDetail = selectedOption && selectedOption.detail ? selectedOption.detail.trim() : ''
 
   return (
     <div className="question radio-question">
@@ -29,6 +31,12 @@ function RadioQuestion({ question, value, onChange, index }) {
           </button>
         ))}
       </div>
+
+      {selectedDetail && (
+        <div className="radio-option-detail" role="status" aria-live="polite">
+          {selectedDetail}
+        </div>
+      )}
     </div>
   )
 }
