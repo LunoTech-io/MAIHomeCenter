@@ -24,12 +24,14 @@ function SurveyTriggerModal({ survey, onClose }) {
     { value: 'co2', label: t('sensor.co2') },
     { value: 'tvoc', label: t('sensor.tvoc') },
     { value: 'pressure', label: t('sensor.pressure') },
-    { value: 'light_level', label: t('sensor.light_level') }
+    { value: 'light_level', label: t('sensor.light_level') },
+    { value: 'pir', label: t('sensor.motion') }
   ]
 
   const OPERATORS = [
     { value: 'above', label: t('sensor.above') },
-    { value: 'below', label: t('sensor.below') }
+    { value: 'below', label: t('sensor.below') },
+    { value: 'equals', label: t('sensor.equals') }
   ]
 
   useEffect(() => {

@@ -3,8 +3,8 @@ import pushService from './pushService.js'
 import surveyTriggerService from './surveyTriggerService.js'
 import { ROOM_TYPES, matchesRoomTypes } from '../utils/roomTypes.js'
 
-const ALLOWED_SENSOR_FIELDS = ['temperature', 'humidity', 'co2', 'tvoc', 'pressure', 'light_level']
-const ALLOWED_OPERATORS = ['above', 'below']
+const ALLOWED_SENSOR_FIELDS = ['temperature', 'humidity', 'co2', 'tvoc', 'pressure', 'light_level', 'pir']
+const ALLOWED_OPERATORS = ['above', 'below', 'equals']
 
 function validateRoomTypes(roomTypes) {
   if (roomTypes == null) return []
@@ -151,6 +151,7 @@ async function deleteRule(id) {
 function violatesThreshold(value, operator, threshold) {
   if (operator === 'above') return value > threshold
   if (operator === 'below') return value < threshold
+  if (operator === 'equals') return value === threshold
   return false
 }
 

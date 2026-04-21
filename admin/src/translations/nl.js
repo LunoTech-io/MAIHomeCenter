@@ -277,8 +277,10 @@ export default {
   "sensor.tvoc": "TVOC",
   "sensor.pressure": "Luchtdruk",
   "sensor.light_level": "Lichtniveau",
+  "sensor.motion": "Beweging",
   "sensor.above": "Boven",
   "sensor.below": "Onder",
+  "sensor.equals": "Gelijk aan",
 
   // House Dashboard
   "dashboard.backToHouses": "Terug naar woningen",
