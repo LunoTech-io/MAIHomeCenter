@@ -22,6 +22,8 @@ router.post('/login', async (req, res) => {
 })
 
 // GET /api/auth/me - Get current house info (requires auth)
+// Returns the same shape as /auth/login's `house` so the client can
+// drive off a single camelCase field (houseId) in either flow.
 router.get('/me', authenticateToken, async (req, res) => {
   try {
     const house = await authService.getHouseById(req.house.id)
@@ -30,7 +32,12 @@ router.get('/me', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'House not found' })
     }
 
-    res.json(house)
+    res.json({
+      id: house.id,
+      houseId: house.house_id,
+      name: house.name,
+      tariff_schedule: house.tariff_schedule,
+    })
   } catch (error) {
     console.error('Get house error:', error)
     res.status(500).json({ error: 'Failed to get house info' })
