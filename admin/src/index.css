@@ -58,7 +58,7 @@ body {
 /* Admin Page */
 .admin {
   padding: 16px 24px;
-  max-width: 1100px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
@@ -1460,7 +1460,7 @@ body {
 /* Dashboard (house detail) */
 .dashboard {
   padding: 16px;
-  max-width: 1200px;
+  max-width: 1080px;
   margin: 0 auto;
 }
 
