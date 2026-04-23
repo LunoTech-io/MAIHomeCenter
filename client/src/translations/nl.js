@@ -26,7 +26,7 @@ export default {
   "widget.motionDetected": "Beweging gedetecteerd",
   "widget.setpoint": "Instelling",
   "widget.roomsMonitored": "Kamers bewaakt",
-  "widget.powerDraw": "Stroomverbruik",
+  "widget.powerDraw": "Stroom",
   "widget.gasMeter": "Gasmeter",
   "widget.room": "kamer",
   "widget.rooms": "kamers",
