@@ -113,8 +113,9 @@ body {
   z-index: 10;
   background: var(--bg-dark);
   padding: 12px 16px 10px;
-  margin: 0 -16px 16px;
-  border-bottom: 1px solid var(--border-subtle);
+  margin: 0 0 16px;
+  box-shadow: 0 0 0 100vmax var(--bg-dark), 0 8px 6px -6px rgba(0, 0, 0, 0.08);
+  clip-path: inset(0 -100vmax -20px);
 }
 
 .dashboard-header h1 {
