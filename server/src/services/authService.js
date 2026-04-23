@@ -75,7 +75,7 @@ class AuthService {
     const result = await query(
       `INSERT INTO houses (house_id, password_hash, name, organization)
        VALUES ($1, $2, $3, $4)
-       RETURNING id, house_id, name, organization, tariff_schedule, created_at`,
+       RETURNING id, house_id, name, organization, size_sqm, residents, tariff_schedule, created_at`,
       [houseId, passwordHash, name, organization]
     )
 
@@ -93,7 +93,7 @@ class AuthService {
 
   async getHouses() {
     const result = await query(
-      `SELECT h.id, h.house_id, h.name, h.organization, h.latitude, h.longitude, h.city, h.tariff_schedule, h.created_at,
+      `SELECT h.id, h.house_id, h.name, h.organization, h.latitude, h.longitude, h.city, h.size_sqm, h.residents, h.tariff_schedule, h.created_at,
               COALESCE((SELECT SUM(points) FROM house_point_events WHERE house_id = h.id), 0)::int AS points
        FROM houses h
        ORDER BY h.created_at DESC`
@@ -106,7 +106,7 @@ class AuthService {
       return this.getHouses()
     }
     const result = await query(
-      `SELECT h.id, h.house_id, h.name, h.organization, h.latitude, h.longitude, h.city, h.tariff_schedule, h.created_at,
+      `SELECT h.id, h.house_id, h.name, h.organization, h.latitude, h.longitude, h.city, h.size_sqm, h.residents, h.tariff_schedule, h.created_at,
               COALESCE((SELECT SUM(points) FROM house_point_events WHERE house_id = h.id), 0)::int AS points
        FROM houses h
        WHERE h.organization = $1
@@ -118,24 +118,31 @@ class AuthService {
 
   async getHouseById(id) {
     const result = await query(
-      'SELECT id, house_id, name, organization, latitude, longitude, city, tariff_schedule, created_at FROM houses WHERE id = $1',
+      'SELECT id, house_id, name, organization, latitude, longitude, city, size_sqm, residents, tariff_schedule, created_at FROM houses WHERE id = $1',
       [id]
     )
     return result.rows[0] || null
   }
 
   async updateHouse(id, fields) {
-    const { name, latitude, longitude, city, tariffSchedule } = fields
+    const { name, latitude, longitude, city, sizeSqm, residents, tariffSchedule } = fields
+    const toIntOrNull = (v) => {
+      if (v === '' || v === null || v === undefined) return null
+      const n = parseInt(v, 10)
+      return Number.isFinite(n) && n >= 0 ? n : null
+    }
     const result = await query(
       `UPDATE houses
        SET name = $2,
            latitude = $3,
            longitude = $4,
            city = $5,
-           tariff_schedule = $6
+           size_sqm = $6,
+           residents = $7,
+           tariff_schedule = $8
        WHERE id = $1
-       RETURNING id, house_id, name, organization, latitude, longitude, city, tariff_schedule, created_at`,
-      [id, name || null, latitude || null, longitude || null, city || null, tariffSchedule ? JSON.stringify(tariffSchedule) : null]
+       RETURNING id, house_id, name, organization, latitude, longitude, city, size_sqm, residents, tariff_schedule, created_at`,
+      [id, name || null, latitude || null, longitude || null, city || null, toIntOrNull(sizeSqm), toIntOrNull(residents), tariffSchedule ? JSON.stringify(tariffSchedule) : null]
     )
     return result.rows[0] || null
   }

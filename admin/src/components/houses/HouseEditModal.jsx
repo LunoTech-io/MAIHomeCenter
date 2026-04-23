@@ -49,6 +49,8 @@ function HouseEditModal({ house, onClose, onUpdated }) {
     latitude: house.latitude || '',
     longitude: house.longitude || '',
     city: house.city || '',
+    sizeSqm: house.size_sqm ?? '',
+    residents: house.residents ?? '',
   })
   const [schedule, setSchedule] = useState(() => initSchedule(house.tariff_schedule))
   const [saving, setSaving] = useState(false)
@@ -189,6 +191,37 @@ function HouseEditModal({ house, onClose, onUpdated }) {
                 onChange={handleChange}
                 placeholder={t('houses.namePlaceholder')}
               />
+            </div>
+
+            <div className="form-section-label">{t('houses.propertyDetails')}</div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="edit-size-sqm">{t('houses.sizeSqm')}</label>
+                <input
+                  type="number"
+                  id="edit-size-sqm"
+                  name="sizeSqm"
+                  min="0"
+                  step="1"
+                  value={form.sizeSqm}
+                  onChange={handleChange}
+                  placeholder={t('houses.sizeSqmPlaceholder')}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="edit-residents">{t('houses.residents')}</label>
+                <input
+                  type="number"
+                  id="edit-residents"
+                  name="residents"
+                  min="0"
+                  step="1"
+                  value={form.residents}
+                  onChange={handleChange}
+                  placeholder={t('houses.residentsPlaceholder')}
+                />
+              </div>
             </div>
 
             <div className="form-section-label">{t('houses.location')}</div>

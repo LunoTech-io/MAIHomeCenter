@@ -34,6 +34,17 @@ router.get('/house-summary', async (req, res) => {
   }
 })
 
+// GET /api/alerts/house/:houseId - Last 10 alerts for a specific house (scoped to admin's org)
+router.get('/house/:houseId', async (req, res) => {
+  try {
+    const alerts = await alertService.getRecentAlertsByHouse(req.admin.organization, req.params.houseId, 10)
+    res.json(alerts)
+  } catch (error) {
+    console.error('Error fetching house alerts:', error)
+    res.status(500).json({ error: 'Failed to fetch house alerts' })
+  }
+})
+
 // GET /api/alerts/rules - List rules for admin's organization
 router.get('/rules', async (req, res) => {
   try {

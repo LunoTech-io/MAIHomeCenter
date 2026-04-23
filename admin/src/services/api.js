@@ -338,6 +338,28 @@ export async function getHouseAlertSummary() {
   return response.json()
 }
 
+export async function getHouseAlerts(houseId) {
+  const response = await fetch(`${API_BASE}/alerts/house/${encodeURIComponent(houseId)}`, {
+    headers: authHeaders()
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch house alerts')
+  }
+  return response.json()
+}
+
+export async function getHouseMessages(houseId) {
+  const response = await fetch(`${API_BASE}/surveys/house/${encodeURIComponent(houseId)}/messages`, {
+    headers: authHeaders()
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch house messages')
+  }
+  return response.json()
+}
+
 // Alert Rules API
 
 export async function getAlertRules() {

@@ -108,7 +108,13 @@ body {
 }
 
 .dashboard-header {
-  margin-bottom: 24px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg-dark);
+  padding: 16px 0 12px;
+  margin: -16px 0 16px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .dashboard-header h1 {

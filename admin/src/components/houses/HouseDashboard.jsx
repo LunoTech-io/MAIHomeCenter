@@ -4,7 +4,7 @@ import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine
 } from 'recharts'
-import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getLatestPrediction, getWeatherHistory, getHouses, getHouseAnalysis, generateHouseAnalysis } from '../../services/api'
+import { getSensorHistory, getTwinState, getMeterHistory, getApplianceHistory, getLatestPrediction, getWeatherHistory, getHouses, getHouseAnalysis, generateHouseAnalysis, getHouseAlerts, getHouseMessages } from '../../services/api'
 import { useLanguage } from '../../contexts/LanguageContext'
 
 const chartTooltipStyle = {
@@ -73,6 +73,8 @@ function HouseDashboard() {
   const [predictionData, setPredictionData] = useState(null)
   const [weatherData, setWeatherData] = useState(null)
   const [houseDetails, setHouseDetails] = useState(null)
+  const [alerts, setAlerts] = useState([])
+  const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedRoom, setSelectedRoom] = useState(null)
@@ -90,7 +92,7 @@ function HouseDashboard() {
       setLoading(true)
       setError(null)
       try {
-        const [history, state, meterHist, applianceHist, prediction, weatherHist, houses, savedAnalysis] = await Promise.all([
+        const [history, state, meterHist, applianceHist, prediction, weatherHist, houses, savedAnalysis, recentAlerts, recentMessages] = await Promise.all([
           getSensorHistory(houseId, 24),
           getTwinState(houseId),
           getMeterHistory(houseId, 24).catch(() => null),
@@ -99,6 +101,8 @@ function HouseDashboard() {
           getWeatherHistory(houseId, 24).catch(() => null),
           getHouses().catch(() => []),
           getHouseAnalysis(houseId).catch(() => null),
+          getHouseAlerts(houseId).catch(() => []),
+          getHouseMessages(houseId).catch(() => []),
         ])
         if (!cancelled) {
           setSensorData(history)
@@ -108,6 +112,8 @@ function HouseDashboard() {
           setPredictionData(prediction)
           setWeatherData(weatherHist)
           setHouseDetails(houses.find(h => h.house_id === houseId) || null)
+          setAlerts(recentAlerts || [])
+          setMessages(recentMessages || [])
           if (savedAnalysis) setAnalysis(savedAnalysis)
           if (history.rooms?.length > 0 && !selectedRoom) {
             setSelectedRoom(history.rooms[0])
@@ -382,6 +388,26 @@ function HouseDashboard() {
             {houseDetails.points ?? 0} {t('dashboard.points')}
           </span>
         )}
+        {houseDetails && (houseDetails.size_sqm != null || houseDetails.residents != null) && (
+          <span className="house-meta">
+            {houseDetails.size_sqm != null && (
+              <span className="house-meta-item">{houseDetails.size_sqm} {t('houses.sqmUnit')}</span>
+            )}
+            {houseDetails.residents != null && (
+              <span className="house-meta-item">
+                {houseDetails.residents} {houseDetails.residents === 1 ? t('houses.residentOne') : t('houses.residentMany')}
+              </span>
+            )}
+          </span>
+        )}
+        <span className="house-meta">
+          <span className="house-meta-item alert">
+            {alerts.length} {alerts.length === 1 ? t('dashboard.alertOne') : t('dashboard.alertMany')}
+          </span>
+          <span className="house-meta-item message">
+            {messages.length} {messages.length === 1 ? t('dashboard.messageOne') : t('dashboard.messageMany')}
+          </span>
+        </span>
       </header>
 
       {!hasData ? (
@@ -635,6 +661,57 @@ function HouseDashboard() {
           </div>
         </>
       )}
+
+      <div className="activity-grid">
+        <div className="admin-section activity-card">
+          <div className="section-header">
+            <h2>{t('dashboard.recentAlerts')}</h2>
+          </div>
+          {alerts.length === 0 ? (
+            <p className="no-subscribers">{t('dashboard.noRecentAlerts')}</p>
+          ) : (
+            <ul className="activity-list">
+              {alerts.map(a => (
+                <li key={a.id} className="activity-item">
+                  <div className="activity-main">
+                    <span className="activity-title">{a.title}</span>
+                    {a.roomName && <span className="activity-meta">{a.roomName}</span>}
+                  </div>
+                  {a.body && <div className="activity-body">{a.body}</div>}
+                  <div className="activity-footer">
+                    {a.ruleName && <span className="activity-tag">{a.ruleName}</span>}
+                    <span className="activity-time">{new Date(a.createdAt).toLocaleString()}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="admin-section activity-card">
+          <div className="section-header">
+            <h2>{t('dashboard.recentMessages')}</h2>
+          </div>
+          {messages.length === 0 ? (
+            <p className="no-subscribers">{t('dashboard.noRecentMessages')}</p>
+          ) : (
+            <ul className="activity-list">
+              {messages.map(m => (
+                <li key={m.id} className="activity-item">
+                  <div className="activity-main">
+                    <span className="activity-title">{m.notificationTitle || m.title}</span>
+                    <span className={`status-badge status-${m.status}`}>{t(`dashboard.messageStatus.${m.status}`)}</span>
+                  </div>
+                  {m.notificationBody && <div className="activity-body">{m.notificationBody}</div>}
+                  <div className="activity-footer">
+                    <span className="activity-time">{new Date(m.createdAt).toLocaleString()}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

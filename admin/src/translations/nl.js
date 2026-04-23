@@ -99,6 +99,14 @@ export default {
   "houses.tariffTimes": "Elektriciteitstarief tijden",
   "houses.tariffHint": "Laat leeg om de tarieftijd te wissen.",
   "houses.idAndPasswordRequired": "Woning ID en wachtwoord zijn verplicht",
+  "houses.propertyDetails": "Woninggegevens",
+  "houses.sizeSqm": "Oppervlakte (m²)",
+  "houses.sizeSqmPlaceholder": "bijv. 85",
+  "houses.residents": "Bewoners",
+  "houses.residentsPlaceholder": "bijv. 3",
+  "houses.sqmUnit": "m²",
+  "houses.residentOne": "bewoner",
+  "houses.residentMany": "bewoners",
 
   // Surveys
   "surveys.title": "Enquêtes",
@@ -323,6 +331,17 @@ export default {
   "dashboard.analyzingHouse": "Woninggegevens worden geanalyseerd, even geduld...",
   "dashboard.generatedAt": "Gegenereerd op",
   "dashboard.regenerate": "Opnieuw genereren",
+  "dashboard.alertOne": "melding",
+  "dashboard.alertMany": "meldingen",
+  "dashboard.messageOne": "bericht",
+  "dashboard.messageMany": "berichten",
+  "dashboard.recentAlerts": "Recente meldingen",
+  "dashboard.recentMessages": "Recente berichten",
+  "dashboard.noRecentAlerts": "Nog geen meldingen.",
+  "dashboard.noRecentMessages": "Nog geen berichten verzonden.",
+  "dashboard.messageStatus.pending": "In behandeling",
+  "dashboard.messageStatus.completed": "Afgerond",
+  "dashboard.messageStatus.dismissed": "Afgewezen",
 
   // Common
   "common.loading": "Laden...",

@@ -227,6 +227,17 @@ router.delete('/houses/:id', authenticateAdmin, async (req, res) => {
   }
 })
 
+// GET /api/surveys/house/:houseId/messages - Last 10 survey messages sent to a house (scoped to admin's org)
+router.get('/house/:houseId/messages', authenticateAdmin, async (req, res) => {
+  try {
+    const messages = await surveyService.getRecentMessagesByHouse(req.admin.organization, req.params.houseId, 10)
+    res.json(messages)
+  } catch (error) {
+    console.error('Error fetching house messages:', error)
+    res.status(500).json({ error: 'Failed to fetch house messages' })
+  }
+})
+
 // =====================
 // Send Survey
 // =====================

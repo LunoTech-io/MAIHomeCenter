@@ -90,6 +90,31 @@ async function getHouseAlertSummary(organization, startOfDay, startOfWeek) {
   }))
 }
 
+async function getRecentAlertsByHouse(organization, houseId, limit = 10) {
+  const result = await query(
+    `SELECT an.id, an.rule_id, an.house_id, an.room_name, an.title, an.body, an.is_read, an.created_at,
+            ar.name AS rule_name
+     FROM alert_notifications an
+     JOIN houses h ON h.house_id = an.house_id
+     LEFT JOIN alert_rules ar ON ar.id = an.rule_id
+     WHERE h.organization = $1 AND an.house_id = $2
+     ORDER BY an.created_at DESC
+     LIMIT $3`,
+    [organization, houseId, limit]
+  )
+  return result.rows.map(r => ({
+    id: r.id,
+    ruleId: r.rule_id,
+    ruleName: r.rule_name,
+    houseId: r.house_id,
+    roomName: r.room_name,
+    title: r.title,
+    body: r.body,
+    isRead: r.is_read,
+    createdAt: r.created_at,
+  }))
+}
+
 async function getRulesByOrganization(organization) {
   const result = await query(
     'SELECT * FROM alert_rules WHERE organization = $1 ORDER BY created_at DESC',
@@ -364,6 +389,7 @@ export function stopAlertCron() {
 export default {
   getHousesByAlertRule,
   getHouseAlertSummary,
+  getRecentAlertsByHouse,
   getRulesByOrganization,
   getRuleById,
   createRule,

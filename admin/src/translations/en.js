@@ -99,6 +99,14 @@ export default {
   "houses.tariffTimes": "Electricity Tariff Times",
   "houses.tariffHint": "Leave empty to clear the tariff time.",
   "houses.idAndPasswordRequired": "House ID and password are required",
+  "houses.propertyDetails": "Property Details",
+  "houses.sizeSqm": "Size (m²)",
+  "houses.sizeSqmPlaceholder": "e.g., 85",
+  "houses.residents": "Residents",
+  "houses.residentsPlaceholder": "e.g., 3",
+  "houses.sqmUnit": "m²",
+  "houses.residentOne": "resident",
+  "houses.residentMany": "residents",
 
   // Surveys
   "surveys.title": "Surveys",
@@ -323,6 +331,17 @@ export default {
   "dashboard.analyzingHouse": "Analyzing house data, this may take a moment...",
   "dashboard.generatedAt": "Generated at",
   "dashboard.regenerate": "Regenerate",
+  "dashboard.alertOne": "alert",
+  "dashboard.alertMany": "alerts",
+  "dashboard.messageOne": "message",
+  "dashboard.messageMany": "messages",
+  "dashboard.recentAlerts": "Recent Alerts",
+  "dashboard.recentMessages": "Recent Messages",
+  "dashboard.noRecentAlerts": "No alerts yet.",
+  "dashboard.noRecentMessages": "No messages sent yet.",
+  "dashboard.messageStatus.pending": "Pending",
+  "dashboard.messageStatus.completed": "Completed",
+  "dashboard.messageStatus.dismissed": "Dismissed",
 
   // Common
   "common.loading": "Loading...",

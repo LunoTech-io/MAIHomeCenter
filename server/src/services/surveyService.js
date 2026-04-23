@@ -286,6 +286,32 @@ class SurveyService {
     return result.rows
   }
 
+  async getRecentMessagesByHouse(organization, houseId, limit = 10) {
+    const result = await query(
+      `SELECT sa.id, sa.status, sa.notification_sent_at, sa.completed_at, sa.created_at,
+              qs.id AS question_set_id, qs.title, qs.notification_title, qs.notification_body, qs.expires_at
+       FROM survey_assignments sa
+       JOIN houses h ON h.id = sa.house_id
+       JOIN question_sets qs ON qs.id = sa.question_set_id
+       WHERE h.organization = $1 AND h.house_id = $2
+       ORDER BY sa.created_at DESC
+       LIMIT $3`,
+      [organization, houseId, limit]
+    )
+    return result.rows.map(r => ({
+      id: r.id,
+      status: r.status,
+      notificationSentAt: r.notification_sent_at,
+      completedAt: r.completed_at,
+      createdAt: r.created_at,
+      questionSetId: r.question_set_id,
+      title: r.title,
+      notificationTitle: r.notification_title,
+      notificationBody: r.notification_body,
+      expiresAt: r.expires_at,
+    }))
+  }
+
   async getResponseSummary(questionSetId) {
     const statusResult = await query(
       `SELECT
