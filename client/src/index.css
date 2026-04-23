@@ -345,7 +345,6 @@ body {
 .main-content {
   flex: 1;
   padding-bottom: 80px;
-  overflow-y: auto;
 }
 
 /* Bottom Navigation */
