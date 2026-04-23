@@ -103,7 +103,7 @@ body {
 
 /* Dashboard */
 .dashboard {
-  padding: 16px;
+  padding: 0 16px 16px;
   flex: 1;
 }
 
@@ -112,8 +112,8 @@ body {
   top: 0;
   z-index: 10;
   background: var(--bg-dark);
-  padding: 12px 72px 10px 16px;
-  margin: -16px -16px 16px;
+  padding: 12px 16px 10px;
+  margin: 0 -16px 16px;
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -121,6 +121,7 @@ body {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 4px;
+  padding-right: 72px;
 }
 
 .dashboard-header p {
