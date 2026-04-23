@@ -289,6 +289,7 @@ export default {
   "sensor.above": "Above",
   "sensor.below": "Below",
   "sensor.equals": "Equals",
+  "sensor.motionHint": "Motion sensors should only be used with the \"equals\" operator and threshold 0, to detect long periods of inactivity.",
 
   // House Dashboard
   "dashboard.backToHouses": "Back to Houses",

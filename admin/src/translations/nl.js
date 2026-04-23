@@ -289,6 +289,7 @@ export default {
   "sensor.above": "Boven",
   "sensor.below": "Onder",
   "sensor.equals": "Gelijk aan",
+  "sensor.motionHint": "Bewegingssensoren moeten alleen worden gebruikt met de operator \"gelijk aan\" en drempelwaarde 0, om lange periodes van inactiviteit te detecteren.",
 
   // House Dashboard
   "dashboard.backToHouses": "Terug naar woningen",

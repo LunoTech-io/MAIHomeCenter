@@ -249,7 +249,18 @@ function AlertRuleEditor() {
           {conditions.map((condition, index) => (
             <div key={index} className="form-row" style={{ alignItems: 'flex-end', marginBottom: '8px' }}>
               <div className="form-group">
-                {index === 0 && <label>{t('alertRules.sensorField')}</label>}
+                {index === 0 && (
+                  <label>
+                    {t('alertRules.sensorField')}
+                    <span
+                      className="info-tooltip"
+                      tabIndex={0}
+                      role="note"
+                      aria-label={t('sensor.motionHint')}
+                      data-tooltip={t('sensor.motionHint')}
+                    >i</span>
+                  </label>
+                )}
                 <select
                   value={condition.sensorField}
                   onChange={(e) => updateCondition(index, 'sensorField', e.target.value)}
