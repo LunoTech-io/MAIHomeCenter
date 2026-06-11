@@ -188,6 +188,7 @@ export default {
   "questions.valuePlaceholder": "Value",
   "questions.labelPlaceholder": "Label",
   "questions.detailPlaceholder": "Shown when selected (optional)",
+  "questions.duplicateValuesWarning": "Two or more options have the same value. Give each option a unique value so responses can be told apart.",
   "questions.addOption": "+ Add Option",
 
   // Response Viewer

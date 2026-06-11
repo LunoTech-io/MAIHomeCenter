@@ -743,6 +743,17 @@ body {
   cursor: not-allowed;
 }
 
+.option-warning {
+  margin: 4px 0 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: var(--accent-yellow);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .add-option-btn {
   background: transparent;
   border: 1px dashed var(--border-subtle);

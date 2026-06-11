@@ -30,7 +30,7 @@ function SurveyView() {
       setSurvey(data)
       const initialResponses = {}
       data.questions?.forEach(q => {
-        initialResponses[q.id] = ''
+        initialResponses[q.id] = null
       })
       setResponses(initialResponses)
       setError(null)
@@ -50,9 +50,20 @@ function SurveyView() {
     setSubmitting(true)
     setError(null)
     try {
-      const responseArray = Object.entries(responses)
-        .filter(([_, value]) => value !== '')
-        .map(([questionId, value]) => ({ questionId, value }))
+      const responseArray = []
+      survey?.questions?.forEach(q => {
+        const raw = responses[q.id]
+        if (raw === null || raw === '') return
+        if (q.type === 'radio') {
+          // raw is the selected option index; submit the option's value,
+          // falling back to its label when no value was configured
+          const option = q.options?.[raw]
+          const value = option?.value || option?.label
+          if (value) responseArray.push({ questionId: q.id, value })
+        } else {
+          responseArray.push({ questionId: q.id, value: raw })
+        }
+      })
       await submitSurveyResponses(assignmentId, responseArray)
       setSuccess(true)
     } catch (err) {

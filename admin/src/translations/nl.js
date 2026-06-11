@@ -188,6 +188,7 @@ export default {
   "questions.valuePlaceholder": "Waarde",
   "questions.labelPlaceholder": "Label",
   "questions.detailPlaceholder": "Toon dit bij selectie (optioneel)",
+  "questions.duplicateValuesWarning": "Twee of meer opties hebben dezelfde waarde. Geef elke optie een unieke waarde zodat antwoorden te onderscheiden zijn.",
   "questions.addOption": "+ Optie toevoegen",
 
   // Response Viewer

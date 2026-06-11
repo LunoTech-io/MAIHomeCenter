@@ -1,7 +1,9 @@
 function RadioQuestion({ question, value, onChange, index }) {
+  // `value` is the selected option index (or null), so selection display
+  // works even when options have empty or duplicate value fields
   const options = question.options || []
   const groupId = `question-${question.id}`
-  const selectedOption = options.find(o => o.value === value)
+  const selectedOption = value != null ? options[value] : null
   const selectedDetail = selectedOption && selectedOption.detail ? selectedOption.detail.trim() : ''
 
   return (
@@ -23,9 +25,9 @@ function RadioQuestion({ question, value, onChange, index }) {
             key={optIndex}
             type="button"
             role="radio"
-            aria-checked={value === option.value}
-            className={`radio-option ${value === option.value ? 'selected' : ''}`}
-            onClick={() => onChange(option.value)}
+            aria-checked={value === optIndex}
+            className={`radio-option ${value === optIndex ? 'selected' : ''}`}
+            onClick={() => onChange(optIndex)}
           >
             {option.label}
           </button>

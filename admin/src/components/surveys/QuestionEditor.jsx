@@ -28,9 +28,20 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
 
   const updateOption = (optionIndex, field, value) => {
     const newOptions = [...(question.options || [])]
-    newOptions[optionIndex] = { ...newOptions[optionIndex], [field]: value }
+    const current = newOptions[optionIndex]
+    const updated = { ...current, [field]: value }
+    // keep value in sync with label until the admin types a custom value
+    if (field === 'label' && (current.value === '' || current.value === current.label)) {
+      updated.value = value
+    }
+    newOptions[optionIndex] = updated
     onChange({ options: newOptions })
   }
+
+  const optionValues = (question.options || []).map(o => (o.value || '').trim())
+  const hasDuplicateValues = optionValues.some(
+    (v, i) => v !== '' && optionValues.indexOf(v) !== i
+  )
 
   const removeOption = (optionIndex) => {
     const newOptions = (question.options || []).filter((_, i) => i !== optionIndex)
@@ -155,6 +166,11 @@ function QuestionEditor({ question, index, totalQuestions, onChange, onRemove, o
                 </button>
               </div>
             ))}
+            {hasDuplicateValues && (
+              <div className="option-warning" role="alert">
+                {t('questions.duplicateValuesWarning')}
+              </div>
+            )}
             <button type="button" className="add-option-btn" onClick={addOption}>
               {t('questions.addOption')}
             </button>

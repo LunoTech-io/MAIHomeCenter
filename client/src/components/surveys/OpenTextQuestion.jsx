@@ -11,7 +11,7 @@ function OpenTextQuestion({ question, value, onChange, index }) {
       <textarea
         id={textareaId}
         className="text-input"
-        value={value}
+        value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Enter your response..."
         rows={4}
