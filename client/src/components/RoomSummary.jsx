@@ -135,6 +135,11 @@ function RoomSummary() {
 
   const faces = ['\u{1F60A}', '\u{1F642}', '\u{1F610}', '\u{1F615}', '\u{1F61F}']
 
+  // hide rooms without any sensor readings
+  const roomsWithData = (twinState?.rooms || []).filter(room =>
+    room.temperature != null || room.humidity != null || room.co2 != null
+  )
+
   return (
     <div className="dashboard">
       <header className="dashboard-header">
@@ -148,7 +153,7 @@ function RoomSummary() {
       {loading && <div className="loading">{t('common.loading')}</div>}
       {error && <div className="error-message" role="alert">{t('common.failedToLoad')}: {error}</div>}
 
-      {!loading && !error && twinState?.rooms?.length > 0 && (
+      {!loading && !error && roomsWithData.length > 0 && (
         <>
           {outsideTemp != null && (
             <div className="summary-outside">
@@ -161,7 +166,7 @@ function RoomSummary() {
               <span role="columnheader">{t('summary.status')}</span>
               <span role="columnheader">{t('summary.details')}</span>
             </div>
-            {twinState.rooms.map(room => {
+            {roomsWithData.map(room => {
               const effective = getEffectiveThresholds(thresholds, getRoomType(room.room_name))
               const { faceIndex, noteKeys } = getRoomStatus(room, effective)
               const temp = room.temperature != null ? parseFloat(room.temperature).toFixed(1) : null
@@ -193,7 +198,7 @@ function RoomSummary() {
         </>
       )}
 
-      {!loading && !error && (!twinState?.rooms?.length) && (
+      {!loading && !error && roomsWithData.length === 0 && (
         <div className="empty-message">{t('summary.noData')}</div>
       )}
     </div>
