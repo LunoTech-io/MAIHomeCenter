@@ -33,8 +33,9 @@ function RadioQuestion({ question, value, onChange, index }) {
       </div>
 
       {selectedDetail && (
-        <div className="radio-option-detail" role="status" aria-live="polite">
-          {selectedDetail}
+        <div key={value} className="radio-option-detail" role="status" aria-live="polite">
+          <span className="radio-option-detail-icon" aria-hidden="true">💡</span>
+          <span>{selectedDetail}</span>
         </div>
       )}
     </div>

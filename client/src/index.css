@@ -24,6 +24,8 @@
   --nav-shadow: 0 -4px 30px rgba(0, 0, 0, 0.3);
   --grid-stroke: rgba(255, 255, 255, 0.08);
   --card-shadow: none;
+  --primary-tint: rgba(79, 70, 229, 0.18);
+  --primary-tint-border: rgba(99, 102, 241, 0.45);
 }
 
 [data-theme="light"] {
@@ -45,6 +47,8 @@
   --nav-shadow: 0 -1px 8px rgba(0, 0, 0, 0.08);
   --grid-stroke: rgba(0, 0, 0, 0.08);
   --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --primary-tint: rgba(79, 70, 229, 0.08);
+  --primary-tint-border: rgba(79, 70, 229, 0.3);
 }
 
 body {
@@ -989,14 +993,25 @@ body {
 }
 
 .radio-option-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   margin-top: 12px;
-  padding: 12px 16px;
+  padding: 14px 16px;
   border-radius: 12px;
-  background: var(--bg-card-hover);
-  border: 1px solid var(--border-subtle);
+  background: var(--primary-tint);
+  border: 1px solid var(--primary-tint-border);
+  border-left: 4px solid var(--primary-color);
   color: var(--text-primary);
   font-size: 15px;
   line-height: 1.5;
+  animation: slideUp 0.25s ease-out;
+}
+
+.radio-option-detail-icon {
+  flex-shrink: 0;
+  font-size: 17px;
+  line-height: 1.4;
 }
 
 /* Open Text Question */
