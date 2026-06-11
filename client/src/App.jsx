@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate, NavLink } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, NavLink, useParams } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { ThemeProvider, useTheme } from './contexts/ThemeContext'
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext'
@@ -39,6 +39,23 @@ function AuthRoute({ children }) {
   }
 
   return children
+}
+
+// House deep link: maihome.nl/<houseId> opens the login page with the
+// house ID prefilled, or goes straight in when already authenticated
+function HouseDeepLink() {
+  const { houseSlug } = useParams()
+  const { isAuthenticated, loading } = useAuth()
+
+  if (loading) {
+    return <div className="loading-screen">Loading...</div>
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />
+  }
+
+  return <Navigate to="/login" replace state={{ houseId: houseSlug }} />
 }
 
 function TopRightControls() {
@@ -164,6 +181,7 @@ function AppContent() {
                 <SurveyView />
               </ProtectedRoute>
             } />
+            <Route path="/:houseSlug" element={<HouseDeepLink />} />
           </Routes>
         </Suspense>
       </main>

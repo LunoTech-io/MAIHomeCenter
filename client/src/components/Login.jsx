@@ -1,11 +1,14 @@
 import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 
 function Login() {
   const { login, error: authError } = useAuth()
   const { t } = useLanguage()
-  const [form, setForm] = useState({ houseId: '', password: '' })
+  const location = useLocation()
+  // prefilled by the house deep link route (e.g. maihome.nl/wonenlimburg1)
+  const [form, setForm] = useState({ houseId: location.state?.houseId || '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
