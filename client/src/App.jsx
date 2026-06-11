@@ -140,14 +140,15 @@ function AppContent() {
             } />
             <Route path="/" element={
               <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/summary" element={
-              <ProtectedRoute>
                 <RoomSummary />
               </ProtectedRoute>
             } />
+            <Route path="/charts" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/summary" element={<Navigate to="/" replace />} />
             <Route path="/alerts" element={
               <ProtectedRoute>
                 <AlertList />

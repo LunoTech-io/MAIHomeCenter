@@ -375,7 +375,7 @@ function Dashboard() {
         <h1>{t('dashboard.title')}</h1>
         <p>{house?.name || t('dashboard.charts')}</p>
         <div className="view-toggle-links">
-          <Link to="/summary" className="view-toggle-link">{t('dashboard.summary')}</Link>
+          <Link to="/" className="view-toggle-link">{t('dashboard.summary')}</Link>
         </div>
       </header>
 

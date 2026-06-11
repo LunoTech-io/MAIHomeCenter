@@ -141,7 +141,7 @@ function RoomSummary() {
         <h1>{t('dashboard.title')}</h1>
         <p>{house?.name || t('summary.title')}</p>
         <div className="view-toggle-links">
-          <Link to="/" className="view-toggle-link">{t('dashboard.charts')}</Link>
+          <Link to="/charts" className="view-toggle-link">{t('dashboard.charts')}</Link>
         </div>
       </header>
 
