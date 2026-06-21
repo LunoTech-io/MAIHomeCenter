@@ -3,6 +3,15 @@ import os
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
+# Cap CPU threads BEFORE importing torch. In a container, torch sizes its thread
+# pools from the host's core count (48 here), not the cgroup CPU quota (4 cores).
+# That oversubscription turns a sub-second batch-1 LSTM forward pass into a 50s+
+# CPU-pinning stall. For this workload a small fixed thread count is both faster
+# and far cheaper. OMP/MKL must be set before torch is imported to take effect.
+_TORCH_THREADS = max(1, int(os.environ.get("ML_TORCH_THREADS", "1")))
+os.environ.setdefault("OMP_NUM_THREADS", str(_TORCH_THREADS))
+os.environ.setdefault("MKL_NUM_THREADS", str(_TORCH_THREADS))
+
 import numpy as np
 import pandas as pd
 import torch
@@ -11,6 +20,18 @@ import torch.nn as nn
 from app.config import HOUSE_MODEL_MAP
 
 logger = logging.getLogger(__name__)
+
+# Runtime cap as well, in case the env vars were already set elsewhere.
+torch.set_num_threads(_TORCH_THREADS)
+try:
+    torch.set_num_interop_threads(_TORCH_THREADS)
+except RuntimeError:
+    # interop count can only be set before any parallel work has started
+    pass
+logger.info(
+    "torch threads capped to %d (host reports %d cores)",
+    _TORCH_THREADS, os.cpu_count() or -1,
+)
 
 # ── Constants ──
 
