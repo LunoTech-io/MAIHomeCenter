@@ -308,6 +308,13 @@ HOUSES = {
         {"id": 10251, "name": "Wonen in Limburg 5 - Wasmachine"},
         {"id": 10260, "name": "Wonen in Limburg 5 - Watermeter"},
     ],
+    # Fase-2 homes: the whole home is a single Calculus asset with per-room
+    # sensors nested as dataSources (no separate room/meter assets). The
+    # "fase2" flag routes the twin push through _extract_fase2_rooms.
+    "wonenlimburg6": [{"id": 23660, "name": "Wonen in Limburg 6", "fase2": True}],
+    "wonenlimburg7": [{"id": 23658, "name": "Wonen in Limburg 7", "fase2": True}],
+    "wonenlimburg9": [{"id": 23659, "name": "Wonen in Limburg 9", "fase2": True}],
+    "wonenlimburg10": [{"id": 23656, "name": "Wonen in Limburg 10", "fase2": True}],
 }
 
 
@@ -318,19 +325,33 @@ def _datetime_to_unix(dt: datetime) -> int:
 
 
 def _extract_reading_data(data: dict, asset_id: int) -> list[dict]:
-    """Extract flat reading records from the Calculus API response."""
+    """Extract flat reading records from the Calculus API response.
+
+    Fase-1 assets carry a single dataSource, so the bare sensor key
+    (e.g. "temperature") is unambiguous. Fase-2 assets pack a whole home
+    into one asset with many dataSources — and several emit the same key
+    (every WT101 valve reports "temperature", every WS202 reports
+    "pir_status"). When more than one source is present we prefix the
+    column with the cleaned source name (e.g. "WT101_Badkamer_temperature")
+    so per-room readings don't collapse onto one column and overwrite each
+    other during the groupby. Single-source (Fase-1) assets are unchanged,
+    which keeps the trained models' feature column names stable.
+    """
+    disambiguate = len(data["dataSources"]) > 1
     reading_data = []
     for source in data["dataSources"]:
         sensor_name = source["name"]
+        source_prefix = re.sub(r"[^\w\s]", "", sensor_name).strip().replace(" ", "_")
         for series in source["dataSeries"]:
             key_parts = series["key"].split("|")
             sensor_key = key_parts[1].split("#")[0]
+            column = f"{source_prefix}_{sensor_key}" if disambiguate else sensor_key
             for entry in series["value"]:
                 reading_data.append({
                     "SensorID": asset_id,
                     "SensorType": sensor_name,
                     "Timestamp": entry["key"],
-                    sensor_key: entry["value"],
+                    column: entry["value"],
                 })
     return reading_data
 
