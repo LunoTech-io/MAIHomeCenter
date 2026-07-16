@@ -247,12 +247,9 @@ def build_sensor_payload(house_id: str, sensor_df: pd.DataFrame) -> dict | None:
     return payload
 
 
-async def push_sensor_data(house_id: str, sensor_df: pd.DataFrame) -> dict:
-    """Build the structured payload and push it to the twin server."""
-    payload = build_sensor_payload(house_id, sensor_df)
-    if not payload:
-        return {}
-
+async def push_payload(payload: dict) -> dict:
+    """POST an already-built sensor payload to the twin server."""
+    house_id = payload["houseId"]
     client = _get_client()
     try:
         response = await client.post("/api/twin/sensor-data", json=payload)
@@ -270,6 +267,14 @@ async def push_sensor_data(house_id: str, sensor_df: pd.DataFrame) -> dict:
     except httpx.RequestError as e:
         logger.error("Failed to reach server: %s", e)
         raise
+
+
+async def push_sensor_data(house_id: str, sensor_df: pd.DataFrame) -> dict:
+    """Build the structured payload and push it to the twin server."""
+    payload = build_sensor_payload(house_id, sensor_df)
+    if not payload:
+        return {}
+    return await push_payload(payload)
 
 
 async def push_prediction(house_id: str, result: dict) -> dict:

@@ -44,7 +44,25 @@ def _client():
 
 # ---------------------------------------------------------------- ping mode
 
+def _age(last_ts: str | None, end_time) -> str:
+    """Human-readable age of the freshest reading, relative to now."""
+    if not last_ts:
+        return "never"
+    delta = end_time - datetime.fromisoformat(last_ts)
+    mins = int(delta.total_seconds() // 60)
+    if mins < 0:
+        return "just now"
+    if mins < 60:
+        return f"{mins}m ago"
+    if mins < 1440:
+        return f"{mins // 60}h ago"
+    return f"{mins // 1440}d ago"
+
+
 async def ping_asset(client, asset, start_time, end_time):
+    """Ping one asset and count LIVE (non-null) readings — Calculus returns a
+    full grid of timestamps with null gaps, so a row count overstates health.
+    We count values that are actually present and track the freshest one."""
     asset_id = asset["id"]
     asset_name = asset["name"]
     url = (
@@ -52,23 +70,29 @@ async def ping_asset(client, asset, start_time, end_time):
         f"?unixTimestampStart={_datetime_to_unix(start_time)}"
         f"&unixTimestampEnd={_datetime_to_unix(end_time)}"
     )
+    base = {"id": asset_id, "name": asset_name, "live": 0, "last": None, "metrics": []}
     try:
         resp = await client.get(url)
     except httpx.RequestError as e:
-        return (asset_id, asset_name, "ERR", f"request failed: {e}")
+        return {**base, "status": "ERR", "note": f"request failed: {e}"}
 
     if resp.status_code != 200:
-        return (asset_id, asset_name, str(resp.status_code), resp.text[:120])
+        return {**base, "status": str(resp.status_code), "note": resp.text[:100]}
 
-    try:
-        rows = _extract_reading_data(resp.json(), asset_id)
-    except (KeyError, ValueError) as e:
-        return (asset_id, asset_name, "200", f"unexpected shape: {e}")
-
-    if not rows:
-        return (asset_id, asset_name, "200", "EMPTY (0 readings)")
-    keys = sorted({k for r in rows for k in r if k not in ("SensorID", "SensorType", "Timestamp")})
-    return (asset_id, asset_name, "200", f"OK  {len(rows)} readings  keys={keys}")
+    live = 0
+    last_ts = None
+    metrics = set()
+    for source in resp.json().get("dataSources", []):
+        for series in source["dataSeries"]:
+            key = series["key"]
+            sk = key.split("|")[1].split("#")[0] if "|" in key else key
+            for entry in series["value"]:
+                if entry["value"] is not None:
+                    live += 1
+                    metrics.add(sk)
+                    if last_ts is None or entry["key"] > last_ts:
+                        last_ts = entry["key"]
+    return {**base, "status": "200", "live": live, "last": last_ts, "metrics": sorted(metrics)}
 
 
 async def ping_house(client, house_id, hours):
@@ -82,9 +106,24 @@ async def ping_house(client, house_id, hours):
     results = await asyncio.gather(
         *(ping_asset(client, a, start_time, end_time) for a in assets)
     )
-    for asset_id, name, status, note in results:
-        flag = " " if status == "200" and note.startswith("OK") else "*"
-        print(f" {flag} [{status:>3}] {asset_id:>7}  {name:<34}  {note}")
+    house_live = 0
+    freshest = None
+    for r in results:
+        ok = r["status"] == "200" and r["live"] > 0
+        if ok:
+            house_live += r["live"]
+            if freshest is None or (r["last"] and r["last"] > freshest):
+                freshest = r["last"]
+        if r["status"] != "200":
+            note = f"[{r['status']}] {r['note']}"
+        elif r["live"] == 0:
+            note = "DARK (0 live readings)"
+        else:
+            note = f"{r['live']:>5} live  last {_age(r['last'], end_time):<8}  {r['metrics']}"
+        print(f" {' ' if ok else '*'} {r['id']:>7}  {r['name']:<34}  {note}")
+    verdict = "LIVE" if house_live else "DARK"
+    tail = f", freshest {_age(freshest, end_time)}" if freshest else ""
+    print(f"  --> {verdict}: {house_live} live readings across {len(assets)} assets{tail}")
 
 
 async def run_ping(args):
@@ -95,7 +134,7 @@ async def run_ping(args):
     else:
         houses = list(HOUSES)
     print(f"Pinging {settings.CALCULUS_API_URL} for {len(houses)} house(s), "
-          f"last {args.hours}h. '*' = no/empty data.")
+          f"last {args.hours}h. '*' = no/empty/dark. 'live' = non-null readings.")
     async with _client() as client:
         for h in houses:
             await ping_house(client, h, args.hours)

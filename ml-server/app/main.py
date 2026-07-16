@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.scheduler import start_scheduler, stop_scheduler, get_status
+from app.scheduler import start_scheduler, stop_scheduler, get_status, get_health
 from app.clients import twin_client
 from app.ml import predictor
 
@@ -62,3 +62,10 @@ async def health():
 @app.get("/api/ml/status")
 async def ml_status():
     return get_status()
+
+
+@app.get("/api/ml/health")
+async def ml_health():
+    """Per-house data health — which houses are reporting live data and which
+    are dark (all sensors offline). Populated after the first cycle runs."""
+    return get_health()
