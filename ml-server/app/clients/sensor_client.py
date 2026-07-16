@@ -315,6 +315,18 @@ HOUSES = {
     "wonenlimburg7": [{"id": 23658, "name": "Wonen in Limburg 7", "fase2": True}],
     "wonenlimburg9": [{"id": 23659, "name": "Wonen in Limburg 9", "fase2": True}],
     "wonenlimburg10": [{"id": 23656, "name": "Wonen in Limburg 10", "fase2": True}],
+    # Leefgoed — Fase-2 corporation.
+    "leefgoed1": [{"id": 23663, "name": "Leefgoed 1", "fase2": True}],
+    "leefgoed2": [{"id": 23664, "name": "Leefgoed 2", "fase2": True}],
+    "leefgoed3": [{"id": 23665, "name": "Leefgoed 3", "fase2": True}],
+    "leefgoed4": [{"id": 23666, "name": "Leefgoed 4", "fase2": True}],
+    "leefgoed5": [{"id": 23667, "name": "Leefgoed 5", "fase2": True}],
+    # Tiwos — Fase-2 corporation. Tiwos 1 has only a gateway (no room
+    # sensors) until commissioned, so it pushes empty rooms for now.
+    "tiwos1": [{"id": 23552, "name": "Tiwos 1", "fase2": True}],
+    "tiwos3": [{"id": 23554, "name": "Tiwos 3", "fase2": True}],
+    "tiwos4": [{"id": 23555, "name": "Tiwos 4", "fase2": True}],
+    "tiwos5": [{"id": 23556, "name": "Tiwos 5", "fase2": True}],
 }
 
 
