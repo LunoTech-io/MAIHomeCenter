@@ -25,7 +25,7 @@ HOUSE_MODEL_MAP = {
 class Settings(BaseSettings):
     PORT: int = 8000
     TWIN_SERVER_URL: str = "http://localhost:5801"
-    CALCULUS_API_URL: str = "https://api.calculus.group/v3"
+    CALCULUS_API_URL: str = "https://api.calculus.group/v4"
     CALCULUS_API_KEY: str = ""
     PREDICTION_INTERVAL_MINUTES: int = 15
     SENSOR_HISTORY_HOURS: int = 24

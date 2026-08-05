@@ -98,7 +98,8 @@ if _main is not None:
 def _normalize_col(col: str) -> str:
     c = col.lower()
     room = ""
-    if "digitale_meter" in c:
+    if "digitale_meter" in c or "__meter__" in c:
+        # v4 canonical meter column '<home>_Home__meter__gas.kuub'
         room = "SmartMeter"
     elif "living" in c:
         room = "LivingRoom"
@@ -145,6 +146,11 @@ def _process_to_model_format(sensor_df: pd.DataFrame) -> pd.DataFrame | None:
         df.set_index("Timestamp", inplace=True)
 
     df = df.rename(columns=_normalize_col)
+    # Two raw columns can normalize to the same feature (e.g. a device that
+    # reports several temperature.* variants). Collapse duplicates to the first
+    # non-null so reindex doesn't choke on duplicate labels.
+    if df.columns.duplicated().any():
+        df = df.T.groupby(level=0).first().T
     return df.reindex(columns=ORDERED_COLS)
 
 

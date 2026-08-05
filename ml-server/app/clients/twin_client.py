@@ -53,9 +53,6 @@ WATER_FIELDS = {
     "temperature": "temperature",
 }
 
-# Asset names that map to appliances
-APPLIANCE_NAMES = {"TV", "Koelkast", "Wasmachine", "Droogkast", "Diepvries", "Koelkast/diepvries"}
-
 
 def _get_client() -> httpx.AsyncClient:
     global _client
@@ -79,106 +76,67 @@ def _clean_prefix(asset_name: str) -> str:
     return re.sub(r"[^\w\s]", "", asset_name).strip().replace(" ", "_")
 
 
-# Dutch room name → standardized English name
+# Raw Dutch room token (spaces→underscores, lower-cased) → app room key.
+# Aligned with Calculus's phase-normalization mapping so Phase 1 and Phase 2
+# collapse onto the same room keys: Living/Eetkamer→living room, Hal
+# beneden↔Hal 1, Hal boven↔Hal 2.
 _ROOM_NAME_MAP = {
     "living": "LivingRoom",
-    "woonkamer": "LivingRoom",  # Fase-2 living room label
+    "woonkamer": "LivingRoom",     # Fase-2 living-room label
+    "eetkamer": "LivingRoom",      # Calculus: Eetkamer folds into the living room
     "keuken": "Kitchen",
     "badkamer": "Bathroom",
-    "hal beneden": "DownstairsHall",
-    "hal boven": "UpstairsHall",
-    "hal 1": "Hall1",  # Fase-2 halls are numbered, not floor-labelled
-    "hal 2": "Hall2",
-    "eetkamer": "DiningRoom",
-    "slaapkamer 1": "Bedroom1",
-    "slaapkamer 2": "Bedroom2",
-    "slaapkamer 3": "Bedroom3",
-    "bedroom 1": "Bedroom1",
-    "bedroom 2": "Bedroom2",
-    "bedroom 3": "Bedroom3",
+    "hal_beneden": "DownstairsHall",
+    "hal_1": "DownstairsHall",     # Fase-2 'Hal 1' == 'Hal beneden'
+    "hal_boven": "UpstairsHall",
+    "hal_2": "UpstairsHall",       # Fase-2 'Hal 2' == 'Hal boven'
+    "slaapkamer_1": "Bedroom1",
+    "slaapkamer_2": "Bedroom2",
+    "slaapkamer_3": "Bedroom3",
+    "bedroom_1": "Bedroom1",
+    "bedroom_2": "Bedroom2",
+    "bedroom_3": "Bedroom3",
+}
+
+# Category (from the canonical column) → the field map used to read its metrics.
+# Room categories are tried climate→motion→valve→door so an AM307 ambient
+# reading wins over a WT101 valve reading for shared keys (e.g. temperature).
+_ROOM_CATEGORIES = ("climate", "motion", "valve", "door")
+_CATEGORY_FIELD_MAP = {
+    "climate": ROOM_FIELDS,
+    "motion": ROOM_FIELDS,
+    "valve": ROOM_FIELDS,
+    "door": ROOM_FIELDS,
+    "meter": METER_FIELDS,
+    "appliance": APPLIANCE_FIELDS,
+    "water": WATER_FIELDS,
 }
 
 
-def _extract_room_name(asset_name: str) -> str:
-    """Extract the room/device name from 'HOUSE PREFIX - Room Name' and normalize to English."""
-    parts = asset_name.split(" - ", 1)
-    raw = parts[1].strip() if len(parts) > 1 else parts[0].strip()
-    return _ROOM_NAME_MAP.get(raw.lower(), raw)
+def _map_room(room_token: str) -> str:
+    """Normalize a raw room token to its app room key (raw token if unknown)."""
+    return _ROOM_NAME_MAP.get(room_token.lower(), room_token.replace("_", " "))
 
 
-def _classify_asset(asset_name: str) -> str:
-    """Classify an asset as 'meter', 'water', 'appliance', or 'room'."""
-    name = _extract_room_name(asset_name).lower()
-    if "digitale meter" in name or "gasmeter" in name:
-        return "meter"
-    if "watermeter" in name:
-        return "water"
-    # Check appliance names (case-insensitive)
-    for app_name in APPLIANCE_NAMES:
-        if name == app_name.lower():
-            return "appliance"
-    return "room"
-
-
-def _extract_fields(latest: pd.Series, col_prefix: str, field_map: dict) -> dict:
-    """Extract values from the latest row using a field map."""
-    result = {}
-    for sensor_key, payload_key in field_map.items():
-        col_name = f"{col_prefix}_{sensor_key}"
-        val = latest.get(col_name)
-        if val is not None and pd.notna(val):
-            if payload_key == "state":
-                result[payload_key] = str(val)
-            else:
-                try:
-                    result[payload_key] = round(float(val), 2)
-                except (ValueError, TypeError):
-                    result[payload_key] = val
-    return result
-
-
-def _extract_fase2_rooms(latest: pd.Series, asset_name: str, columns) -> dict:
-    """Group a single Fase-2 asset's source-prefixed columns into rooms.
-
-    Fase-2 columns look like '<AssetPrefix>_<Device>_<Room>_<metric>'
-    (e.g. 'Wonen_in_Limburg_6_WT101_Badkamer_temperature'). Several devices
-    (AM307, WS202, WT101) can share a room; their fields are merged, with the
-    first source alphabetically (AM307's ambient reading) winning over later
-    ones (the WT101 valve reading) for shared keys such as temperature.
-    """
-    asset_prefix = _clean_prefix(asset_name)
-    metrics_by_len = sorted(ROOM_FIELDS, key=len, reverse=True)
-
-    # Discover the distinct '<AssetPrefix>_<Device>_<Room>' source prefixes by
-    # stripping the known metric suffix off each column.
-    source_prefixes = set()
-    for col in columns:
-        if col == "Timestamp" or not col.startswith(asset_prefix + "_"):
-            continue
-        for metric in metrics_by_len:
-            if col.endswith("_" + metric):
-                source_prefixes.add(col[: -(len(metric) + 1)])
-                break
-
-    rooms: dict[str, dict] = {}
-    for src in sorted(source_prefixes):
-        device, _, room_raw = src[len(asset_prefix) + 1:].partition("_")
-        if not room_raw or device.lower() == "gateway":
-            continue
-        room_name = _extract_room_name(room_raw.replace("_", " "))
-        fields = _extract_fields(latest, src, ROOM_FIELDS)
-        bucket = rooms.setdefault(room_name, {})
-        for key, value in fields.items():
-            bucket.setdefault(key, value)
-    return {name: data for name, data in rooms.items() if data}
+def _coerce(payload_key: str, val):
+    """Coerce a raw reading to its payload representation."""
+    if payload_key == "state":
+        return str(val)
+    try:
+        return round(float(val), 2)
+    except (ValueError, TypeError):
+        return val
 
 
 def build_sensor_payload(house_id: str, sensor_df: pd.DataFrame) -> dict | None:
     """Transform a sensor DataFrame into the structured twin-server payload.
 
-    Handles both layouts: Fase-1 homes (one Calculus asset per room, meter,
-    appliance) and Fase-2 homes (one asset for the whole home, with sensors
-    nested as per-room dataSources). Pure/synchronous so it can be dry-run.
+    Both phases now arrive as one parent asset whose sensors are nested
+    dataSources, flattened by sensor_client into canonical columns
+    '<home>_<room>__<category>__<metric>'. This single path parses those
+    columns: room categories (climate/motion/valve/door) are grouped and
+    normalized into rooms, and meter/appliance/water categories are routed to
+    their payload sections. Pure/synchronous so it can be dry-run.
     """
     if sensor_df.empty:
         logger.warning("Empty sensor DataFrame — skipping push")
@@ -196,42 +154,49 @@ def build_sensor_payload(house_id: str, sensor_df: pd.DataFrame) -> dict | None:
         logger.warning("No assets configured for %s", house_id)
         return None
 
+    home_prefix = _clean_prefix(assets[0]["name"]) + "_"
+
     rooms: dict = {}
     meter: dict = {}
     appliances: dict = {}
     water: dict = {}
 
-    if any(asset.get("fase2") for asset in assets):
-        rooms = _extract_fase2_rooms(latest, assets[0]["name"], sensor_df.columns)
-    else:
-        meter_seen = False  # digitale meter and gasmeter share P1 data; deduplicate
-        for asset in assets:
-            asset_name = asset["name"]
-            col_prefix = _clean_prefix(asset_name)
-            asset_type = _classify_asset(asset_name)
+    # Parse columns into (room_token, category, metric), then process room
+    # categories in climate→motion→valve→door order so AM307 ambient readings
+    # win over WT101 valve readings for shared keys (setdefault, first wins).
+    parsed = []
+    for col in sensor_df.columns:
+        if col == "Timestamp" or not col.startswith(home_prefix):
+            continue
+        parts = col[len(home_prefix):].split("__")
+        if len(parts) == 3:
+            parsed.append((col, *parts))
+    _order = {"climate": 0, "motion": 1, "valve": 2, "door": 3}
+    parsed.sort(key=lambda p: _order.get(p[2], 9))
 
-            if asset_type == "room":
-                data = _extract_fields(latest, col_prefix, ROOM_FIELDS)
-                if data:
-                    rooms[_extract_room_name(asset_name)] = data
+    for col, room_token, category, metric in parsed:
+        field_map = _CATEGORY_FIELD_MAP.get(category)
+        if not field_map:
+            continue
+        payload_key = field_map.get(metric)
+        if payload_key is None:
+            continue
+        val = latest.get(col)
+        if val is None or not pd.notna(val):
+            continue
+        value = _coerce(payload_key, val)
 
-            elif asset_type == "meter":
-                if meter_seen:
-                    # Merge additional meter fields (gasmeter may have gas.kuub)
-                    extra = _extract_fields(latest, col_prefix, METER_FIELDS)
-                    for k, v in extra.items():
-                        meter.setdefault(k, v)
-                else:
-                    meter = _extract_fields(latest, col_prefix, METER_FIELDS)
-                    meter_seen = True
+        if category in _ROOM_CATEGORIES:
+            bucket = rooms.setdefault(_map_room(room_token), {})
+            bucket.setdefault(payload_key, value)  # earlier category wins
+        elif category == "meter":
+            meter.setdefault(payload_key, value)
+        elif category == "appliance":
+            appliances.setdefault(room_token.replace("_", " "), {})[payload_key] = value
+        elif category == "water":
+            water.setdefault(payload_key, value)
 
-            elif asset_type == "appliance":
-                data = _extract_fields(latest, col_prefix, APPLIANCE_FIELDS)
-                if data:
-                    appliances[_extract_room_name(asset_name)] = data
-
-            elif asset_type == "water":
-                water = _extract_fields(latest, col_prefix, WATER_FIELDS)
+    rooms = {name: data for name, data in rooms.items() if data}
 
     payload = {
         "houseId": house_id,
