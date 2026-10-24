@@ -66,21 +66,10 @@ class PushService {
     const subject = process.env.VAPID_SUBJECT || 'mailto:admin@maihomecenter.local'
 
     if (!publicKey || !privateKey) {
-      console.warn('VAPID keys not configured. Run: npx web-push generate-vapid-keys')
-      const vapidKeys = webpush.generateVAPIDKeys()
-      process.env.VAPID_PUBLIC_KEY = vapidKeys.publicKey
-      process.env.VAPID_PRIVATE_KEY = vapidKeys.privateKey
-      console.log('Generated temporary VAPID keys for development:')
-      console.log('Public Key:', vapidKeys.publicKey)
-      console.log('Private Key:', vapidKeys.privateKey)
-      console.log('Add these to your .env file for persistent keys.')
+      throw new Error('VAPID keys not configured. Run: npx web-push generate-vapid-keys')
     }
 
-    webpush.setVapidDetails(
-      subject,
-      process.env.VAPID_PUBLIC_KEY,
-      process.env.VAPID_PRIVATE_KEY
-    )
+    webpush.setVapidDetails(subject, publicKey, privateKey)
 
     this.initialized = true
     console.log('Push service initialized')

@@ -15,6 +15,13 @@ import { startWeatherCron } from './services/weatherService.js'
 
 dotenv.config()
 
+// Refuse to start without secrets rather than fall back to insecure defaults
+const missingSecrets = ['JWT_SECRET', 'VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY'].filter(name => !process.env[name])
+if (missingSecrets.length > 0) {
+  console.error(`Missing required environment variables: ${missingSecrets.join(', ')}`)
+  process.exit(1)
+}
+
 const app = express()
 const PORT = process.env.PORT || 5801
 

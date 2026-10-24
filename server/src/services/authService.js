@@ -9,8 +9,7 @@ class AuthService {
   getJwtSecret() {
     const secret = process.env.JWT_SECRET
     if (!secret) {
-      console.warn('JWT_SECRET not configured, using default (not secure for production)')
-      return 'maihomecenter-dev-secret-change-in-production'
+      throw new Error('JWT_SECRET not configured')
     }
     return secret
   }
